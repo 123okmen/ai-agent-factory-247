@@ -1,0 +1,3064 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NHÀ MÁY AI 3D ANIME CHIBI 24/7 — NGUYỄN TÂN KHANH COMMAND CENTER</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="three.min.js"></script>
+  <style>
+    :root {
+      --bg-deep: #050711;
+      --bg-panel: #0b1021;
+      --bg-card: rgba(15, 23, 42, 0.86);
+      --bg-card-hover: rgba(24, 37, 68, 0.95);
+      --border-dim: rgba(56, 189, 248, 0.18);
+      --border-glow: rgba(0, 242, 254, 0.55);
+      --cyan: #00f2fe;
+      --blue: #38bdf8;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --pink: #ec4899;
+      --violet: #a855f7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-deep);
+      background-image:
+        radial-gradient(circle at 10% 15%, rgba(236, 72, 153, 0.09) 0%, transparent 38%),
+        radial-gradient(circle at 88% 12%, rgba(0, 242, 254, 0.12) 0%, transparent 42%),
+        radial-gradient(circle at 50% 85%, rgba(168, 85, 247, 0.10) 0%, transparent 45%),
+        linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ======================== ANIME CYBER WARP TAB SHUTTER ======================== */
+    #tab-warp-fx {
+      position: fixed;
+      inset: 0;
+      z-index: 800;
+      pointer-events: none;
+      opacity: 0;
+      background:
+        radial-gradient(circle at center, rgba(0, 242, 254, 0.22) 0%, rgba(236, 72, 153, 0.14) 45%, transparent 75%);
+      transition: opacity 0.28s ease;
+    }
+    #tab-warp-fx.trigger {
+      opacity: 1;
+    }
+    #tab-warp-beam {
+      position: fixed;
+      top: 0;
+      left: -120%;
+      width: 80%;
+      height: 100vh;
+      z-index: 801;
+      pointer-events: none;
+      background: linear-gradient(90deg, transparent, rgba(0, 242, 254, 0.28), rgba(236, 72, 153, 0.25), transparent);
+      transform: skewX(-22deg);
+    }
+    #tab-warp-beam.sweep {
+      animation: animeSweep 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes animeSweep {
+      0% { left: -120%; opacity: 1; }
+      100% { left: 160%; opacity: 0; }
+    }
+
+    /* ======================== ZERO-TRUST VAULT LOCK SCREEN ======================== */
+    #vault-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: radial-gradient(circle at center, #0e1730 0%, #03050a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.45s;
+    }
+    #vault-overlay.hidden {
+      opacity: 0;
+      transform: scale(1.06);
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .vault-box {
+      width: 100%;
+      max-width: 490px;
+      background: rgba(11, 18, 36, 0.94);
+      border: 1px solid rgba(0, 242, 254, 0.4);
+      border-radius: 24px;
+      padding: 36px 32px;
+      box-shadow: 0 0 70px rgba(0, 242, 254, 0.16), 0 0 40px rgba(236, 72, 153, 0.12), inset 0 0 25px rgba(0, 242, 254, 0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    .vault-box::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -50%;
+      width: 200%;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, var(--cyan), var(--pink), var(--emerald), var(--violet), transparent);
+      animation: scanline 3s linear infinite;
+    }
+    @keyframes scanline {
+      0% { transform: translateX(-30%); }
+      100% { transform: translateX(30%); }
+    }
+    .vault-chibi-mascot {
+      width: 84px;
+      height: 84px;
+      margin: 0 auto 16px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(236, 72, 153, 0.22));
+      border: 2px solid rgba(0, 242, 254, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      box-shadow: 0 0 30px rgba(0, 242, 254, 0.3);
+      animation: chibiFloat 2.6s ease-in-out infinite;
+    }
+    @keyframes chibiFloat {
+      0%, 100% { transform: translateY(0px) rotate(-2deg); }
+      50% { transform: translateY(-7px) rotate(2deg); }
+    }
+    .vault-title {
+      text-align: center;
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      background: linear-gradient(90deg, #fff, var(--cyan), #f472b6, var(--emerald));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+    .vault-sub {
+      text-align: center;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 20px;
+    }
+    .vault-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 22px;
+    }
+    .v-badge {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      padding: 4px 9px;
+      border-radius: 7px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--cyan);
+    }
+    .vault-input-wrap {
+      position: relative;
+      margin-bottom: 14px;
+    }
+    .vault-input {
+      width: 100%;
+      padding: 14px 44px 14px 16px;
+      border-radius: 13px;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      background: rgba(4, 8, 18, 0.92);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 15px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .vault-input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+    }
+    .vault-toggle-pw {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .vault-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 13px;
+      border: none;
+      background: linear-gradient(135deg, #00f2fe, #ec4899, #a855f7);
+      background-size: 200% 200%;
+      animation: gradientShift 4s ease infinite;
+      color: #fff;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.45);
+      font-weight: 800;
+      font-size: 14.5px;
+      letter-spacing: 0.6px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 6px 26px rgba(0, 242, 254, 0.32);
+    }
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    .vault-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(236, 72, 153, 0.45);
+    }
+    .vault-error {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 9px;
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.45);
+      color: #fda4af;
+      font-size: 12.5px;
+      text-align: center;
+      display: none;
+    }
+
+    /* ======================== MAIN FACTORY HEADER ======================== */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 150;
+      background: rgba(6, 11, 24, 0.9);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border-dim);
+      padding: 11px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+    .factory-core-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.22), rgba(236, 72, 153, 0.22));
+      border: 1px solid var(--cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 23px;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+    }
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 10px var(--emerald);
+      display: inline-block;
+      animation: pulseGlow 1.6s infinite;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.65; }
+    }
+    .brand-title {
+      font-size: 16.5px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: linear-gradient(90deg, #fff, var(--cyan), #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .brand-meta {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .action-btn {
+      padding: 8px 13px;
+      border-radius: 10px;
+      border: 1px solid var(--border-dim);
+      background: rgba(15, 23, 42, 0.88);
+      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .action-btn:hover {
+      border-color: var(--cyan);
+      background: rgba(25, 38, 70, 0.96);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 242, 254, 0.18);
+    }
+    .action-btn.emerald {
+      border-color: rgba(16, 185, 129, 0.5);
+      background: rgba(16, 185, 129, 0.15);
+      color: #6ee7b7;
+    }
+    .action-btn.pink {
+      border-color: rgba(236, 72, 153, 0.55);
+      background: rgba(236, 72, 153, 0.16);
+      color: #f9a8d4;
+    }
+    .action-btn.danger {
+      border-color: rgba(244, 63, 94, 0.5);
+      background: rgba(244, 63, 94, 0.16);
+      color: #fda4af;
+    }
+
+    /* ======================== KPI RIBBON ======================== */
+    .kpi-ribbon {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      padding: 14px 22px 6px;
+    }
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-dim);
+      border-radius: 15px;
+      padding: 13px 15px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-glow);
+      box-shadow: 0 8px 25px rgba(0, 242, 254, 0.12);
+    }
+    .kpi-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .kpi-value {
+      font-size: 20px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      margin-bottom: 3px;
+    }
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* ======================== ANIMATED NAVIGATION TABS ======================== */
+    .nav-tabs {
+      display: flex;
+      gap: 9px;
+      padding: 10px 22px;
+      overflow-x: auto;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.14);
+      position: relative;
+    }
+    .tab-btn {
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border-dim);
+      background: rgba(15, 23, 42, 0.78);
+      color: var(--text-muted);
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .tab-btn:hover {
+      color: #fff;
+      border-color: rgba(0, 242, 254, 0.4);
+      transform: translateY(-2px);
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.22), rgba(236, 72, 153, 0.20), rgba(168, 85, 247, 0.20));
+      border-color: var(--cyan);
+      color: #fff;
+      box-shadow: 0 0 24px rgba(0, 242, 254, 0.28), inset 0 0 12px rgba(236, 72, 153, 0.15);
+      transform: translateY(-2px) scale(1.02);
+    }
+    .tab-btn.active::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 10%;
+      width: 80%;
+      height: 3px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--cyan), var(--pink), var(--emerald));
+    }
+
+    /* ======================== 3D PERSPECTIVE TAB TRANSITIONS ======================== */
+    .view-section {
+      display: none;
+      padding: 18px 22px 38px;
+      transform-origin: center top;
+    }
+    .view-section.active {
+      display: block;
+      animation: tabCyberEnter 0.52s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes tabCyberEnter {
+      0% {
+        opacity: 0;
+        transform: perspective(1200px) rotateX(6deg) translateY(24px) scale(0.97);
+        filter: blur(6px);
+      }
+      60% {
+        filter: blur(0px);
+      }
+      100% {
+        opacity: 1;
+        transform: perspective(1200px) rotateX(0deg) translateY(0px) scale(1);
+        filter: blur(0px);
+      }
+    }
+
+    /* ======================== VIEW 1: 3D ANIME CHIBI FACTORY WORLD ======================== */
+    .chibi-world-wrapper {
+      position: relative;
+      width: 100%;
+      height: 650px;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 242, 254, 0.38);
+      background: radial-gradient(circle at 50% 35%, #111c38 0%, #050814 100%);
+      overflow: hidden;
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.65), inset 0 0 50px rgba(0, 242, 254, 0.08);
+      margin-bottom: 16px;
+    }
+    #chibi-3d-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+    }
+    #chibi-3d-canvas:active {
+      cursor: grabbing;
+    }
+    #chibi-labels-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .chibi-floating-tag {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      pointer-events: auto;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.15s ease;
+      z-index: 20;
+    }
+    .chibi-floating-tag:hover {
+      transform: translate(-50%, -106%) scale(1.08);
+      z-index: 40;
+    }
+    .chibi-tag-card {
+      background: rgba(8, 13, 28, 0.88);
+      backdrop-filter: blur(8px);
+      border: 1.5px solid var(--cyan);
+      border-radius: 12px;
+      padding: 4px 9px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.55);
+      text-align: center;
+      min-width: 125px;
+      max-width: 185px;
+    }
+    .chibi-tag-name {
+      font-size: 11px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+    .chibi-tag-bubble {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: #bae6fd;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    .world-hud-top {
+      position: absolute;
+      top: 14px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      pointer-events: none;
+      z-index: 30;
+    }
+    .world-hud-box {
+      pointer-events: auto;
+      background: rgba(8, 14, 29, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 242, 254, 0.35);
+      border-radius: 13px;
+      padding: 9px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .cam-btn {
+      padding: 6px 11px;
+      border-radius: 8px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      background: rgba(15, 23, 42, 0.9);
+      color: #e2e8f0;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cam-btn:hover, .cam-btn.active {
+      border-color: var(--cyan);
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.24), rgba(236, 72, 153, 0.24));
+      color: #fff;
+      box-shadow: 0 0 12px rgba(0, 242, 254, 0.3);
+    }
+
+    /* Chibi Character Roster Dock at Bottom of 3D World */
+    .chibi-roster-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+      gap: 10px;
+    }
+    .chibi-roster-card {
+      background: linear-gradient(145deg, rgba(16, 24, 46, 0.92), rgba(9, 14, 28, 0.92));
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 14px;
+      padding: 10px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .chibi-roster-card:hover {
+      transform: translateY(-3px) scale(1.02);
+      border-color: var(--cyan);
+      box-shadow: 0 8px 22px rgba(0, 242, 254, 0.2);
+    }
+    .chibi-avatar-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      flex-shrink: 0;
+      border: 1.5px solid rgba(255,255,255,0.3);
+    }
+
+    /* ======================== VIEW 2: 2.5D CONVEYOR FLOOR ======================== */
+    .factory-banner {
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.95), rgba(14, 45, 75, 0.7), rgba(38, 16, 55, 0.75));
+      border: 1px solid rgba(0, 242, 254, 0.32);
+      border-radius: 16px;
+      padding: 15px 20px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .conveyor-pipeline-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .production-line {
+      background: rgba(10, 17, 32, 0.92);
+      border: 1px solid rgba(56, 189, 248, 0.24);
+      border-radius: 18px;
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.45);
+    }
+    .line-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed rgba(56, 189, 248, 0.22);
+    }
+    .line-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 800;
+    }
+    .line-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: rgba(0, 242, 254, 0.12);
+      border: 1px solid rgba(0, 242, 254, 0.35);
+      color: var(--cyan);
+    }
+    .stations-track {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 18px;
+      position: relative;
+    }
+    .station-node {
+      background: linear-gradient(160deg, rgba(17, 26, 48, 0.95), rgba(9, 14, 28, 0.95));
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 14px;
+      padding: 14px 15px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.22s, border-color 0.22s, box-shadow 0.22s;
+    }
+    .station-node:hover {
+      transform: translateY(-4px);
+      border-color: var(--cyan);
+      box-shadow: 0 10px 26px rgba(0, 242, 254, 0.2);
+    }
+    .station-node::after {
+      content: "➔";
+      position: absolute;
+      right: -14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--cyan);
+      font-size: 15px;
+      text-shadow: 0 0 8px var(--cyan);
+      animation: arrowFlow 1.2s infinite ease-in-out;
+    }
+    .station-node:last-child::after {
+      display: none;
+    }
+    @keyframes arrowFlow {
+      0%, 100% { transform: translate(0, -50%); opacity: 0.5; }
+      50% { transform: translate(3px, -50%); opacity: 1; }
+    }
+    .station-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .station-icon-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .gear-spin {
+      display: inline-block;
+      animation: spin360 6s linear infinite;
+    }
+    @keyframes spin360 {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .station-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .station-role {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    .station-bubble {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 7px 9px;
+      border-radius: 8px;
+      background: rgba(3, 7, 18, 0.85);
+      border-left: 3px solid var(--cyan);
+      color: #bae6fd;
+      margin-bottom: 9px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .conveyor-belt-bar {
+      height: 6px;
+      border-radius: 99px;
+      background: rgba(15, 23, 42, 0.9);
+      overflow: hidden;
+      position: relative;
+    }
+    .conveyor-belt-fill {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 10px,
+        var(--cyan) 10px,
+        var(--pink) 22px
+      );
+      background-size: 200% 100%;
+      animation: beltMove 1.6s linear infinite;
+    }
+    @keyframes beltMove {
+      0% { background-position: 100% 0; }
+      100% { background-position: 0 0; }
+    }
+
+    /* ======================== VIEW 3: LANGGRAPH NODE DAG ======================== */
+    .dag-container {
+      background: rgba(7, 12, 24, 0.95);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      border-radius: 18px;
+      height: 650px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 50px rgba(0, 242, 254, 0.06);
+    }
+    #dag-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: pointer;
+    }
+    .dag-legend {
+      position: absolute;
+      top: 14px;
+      left: 16px;
+      background: rgba(11, 17, 32, 0.9);
+      border: 1px solid var(--border-dim);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 11.5px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    /* ======================== PANELS & TABLES ======================== */
+    .two-col-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .three-col-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .panel-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-dim);
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .panel-title {
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+    .data-table th, .data-table td {
+      padding: 10px 10px;
+      text-align: left;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+    }
+    .data-table th {
+      color: var(--text-muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+    .terminal-box {
+      background: #03060d;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      line-height: 1.55;
+      color: #a7f3d0;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .terminal-line {
+      padding: 2px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.04);
+      word-break: break-all;
+    }
+    .status-pill {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 99px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .status-pill.ok {
+      background: rgba(16, 185, 129, 0.16);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #34d399;
+    }
+    .status-pill.warn {
+      background: rgba(245, 158, 11, 0.16);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #fbbf24;
+    }
+    .status-pill.err {
+      background: rgba(244, 63, 94, 0.16);
+      border: 1px solid rgba(244, 63, 94, 0.45);
+      color: #fb7185;
+    }
+
+    /* ======================== STATION INSPECTOR DRAWER ======================== */
+    #inspector-drawer {
+      position: fixed;
+      top: 0;
+      right: -520px;
+      width: 100%;
+      max-width: 500px;
+      height: 100vh;
+      z-index: 300;
+      background: rgba(8, 13, 26, 0.98);
+      border-left: 1px solid var(--cyan);
+      box-shadow: -15px 0 45px rgba(0, 0, 0, 0.75);
+      padding: 22px;
+      overflow-y: auto;
+      transition: right 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #inspector-drawer.open {
+      right: 0;
+    }
+    .toast-bar {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      z-index: 950;
+      background: rgba(11, 18, 35, 0.96);
+      border: 1px solid var(--cyan);
+      border-radius: 12px;
+      padding: 12px 18px;
+      color: #fff;
+      font-size: 13px;
+      box-shadow: 0 10px 30px rgba(0, 242, 254, 0.28);
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== ANIME CYBER WARP TAB TRANSITION FX ==================== -->
+  <div id="tab-warp-fx"></div>
+  <div id="tab-warp-beam"></div>
+
+  <!-- ==================== ZERO-TRUST VAULT LOCK OVERLAY ==================== -->
+  <div id="vault-overlay">
+    <div class="vault-box">
+      <div class="vault-chibi-mascot">🤖</div>
+      <div class="vault-title">NHÀ MÁY AI 3D ANIME CHIBI 24/7</div>
+      <div class="vault-sub">
+        Trung tâm Điều hành Đa Tác Nhân của <b>Nguyễn Tân Khanh</b><br/>
+        Bảo mật Zero-Trust PBKDF2-HMAC-SHA256 (310,000 vòng) & AES-256-CTR Vault
+      </div>
+      <div class="vault-badges">
+        <span class="v-badge">PBKDF2 310K Rounds</span>
+        <span class="v-badge">Zero-Plaintext Password</span>
+        <span class="v-badge">CSRF + HMAC Guard</span>
+        <span class="v-badge">3D Anime Chibi Engine</span>
+      </div>
+      <form id="login-form" onsubmit="handleVaultLogin(event)">
+        <div class="vault-input-wrap">
+          <input
+            type="password"
+            id="vault-password"
+            class="vault-input"
+            placeholder="Nhập mật khẩu mở khóa Nhà máy..."
+            autocomplete="current-password"
+            required
+          />
+          <button type="button" class="vault-toggle-pw" onclick="togglePwVisibility()" title="Hiện/Ẩn mật khẩu">👁️</button>
+        </div>
+        <button type="submit" class="vault-btn" id="login-submit-btn">
+          ✨ MỞ KHÓA NHÀ MÁY AI 3D CHIBI
+        </button>
+      </form>
+      <div id="vault-error" class="vault-error"></div>
+    </div>
+  </div>
+
+  <!-- ==================== TOP COMMAND HEADER ==================== -->
+  <header class="top-header">
+    <div class="brand-group">
+      <div class="factory-core-icon">🏭</div>
+      <div>
+        <div class="brand-title">
+          <span class="pulse-dot"></span>
+          NHÀ MÁY AI 3D ANIME CHIBI 24/7 — NGUYỄN TÂN KHANH
+        </div>
+        <div class="brand-meta" id="header-meta">
+          Owner: tankhanh345@gmail.com • Hotline: 0931.811.872 • GCP: project-104b6acd-1607-4a2d-ac5
+        </div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="action-btn pink" onclick="triggerChibiOverdrive()">
+        💃 Kích Hoạt Chibi Overdrive (Tăng Tốc 3x)
+      </button>
+      <button class="action-btn emerald" onclick="triggerFactoryAction('heal_daemons')">
+        ⚡ Tự Động Hồi Sinh & Kiểm Tra 24/7
+      </button>
+      <button class="action-btn" onclick="triggerFactoryAction('ping_ai_routers')">
+        📡 Test Tốc Độ OmniRoute & 9Router
+      </button>
+      <button class="action-btn" onclick="triggerFactoryAction('sync_fnb_orders')">
+        🍱 Quét Đơn 3 Quán F&B
+      </button>
+      <button class="action-btn danger" onclick="handleLogout(true)" title="Phím tắt: Alt + L">
+        🔒 KHÓA NHÀ MÁY (Alt+L)
+      </button>
+    </div>
+  </header>
+
+  <!-- ==================== REAL-TIME KPI RIBBON ==================== -->
+  <section class="kpi-ribbon">
+    <div class="kpi-card">
+      <div class="kpi-label">
+        <span>🤖 HERMES GATEWAY & SWARM</span>
+        <span id="kpi-hermes-badge" class="status-pill ok">ONLINE</span>
+      </div>
+      <div class="kpi-value" id="kpi-hermes-val">PID 8588</div>
+      <div class="kpi-sub" id="kpi-hermes-sub">@alicewordbot • Qwen4-Max 1M + Solar-Mini4</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">
+        <span>📈 XƯỞNG TRADE FUTURES v11.0</span>
+        <span id="kpi-trade-badge" class="status-pill ok">PORT 49199</span>
+      </div>
+      <div class="kpi-value" id="kpi-trade-pnl" style="color: var(--emerald);">+$11.29 USDT</div>
+      <div class="kpi-sub" id="kpi-trade-sub">Tổng vốn: $577.31 • 2 Ví (Anh Khánh & Ví Trí 🐷)</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">
+        <span>⚡ TRẠM ĐIỆN OMNIROUTE + 9ROUTER</span>
+        <span id="kpi-router-badge" class="status-pill ok">20129 / 20128</span>
+      </div>
+      <div class="kpi-value" id="kpi-router-val">595 Models</div>
+      <div class="kpi-sub" id="kpi-router-sub">45 Auto-Combos • 3x GCP Gemini Free Pool</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">
+        <span>🍱 DÂY CHUYỀN 3 QUÁN F&B & POS</span>
+        <span id="kpi-fnb-badge" class="status-pill ok">9 AGENCIES</span>
+      </div>
+      <div class="kpi-value" id="kpi-fnb-orders">52 Đơn Ghi Sổ</div>
+      <div class="kpi-sub">Cafe Đông Thạnh • Cơm Tấm • Food Station 7A</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">
+        <span>🛡️ PHÁO ĐÀI BẢO MẬT OWASP</span>
+        <span id="kpi-mode-badge" class="status-pill ok">ZERO-TRUST</span>
+      </div>
+      <div class="kpi-value" id="kpi-sec-val">PBKDF2 310K</div>
+      <div class="kpi-sub" id="kpi-sec-sub">Whitelist Telegram: 7220726428, 6442591047</div>
+    </div>
+  </section>
+
+  <!-- ==================== NAVIGATION TABS ==================== -->
+  <nav class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('chibi3d', this)">
+      🎮 1. NHÀ MÁY 3D ANIME CHIBI (12 BOT DI CHUYỂN THẬT)
+    </button>
+    <button class="tab-btn" onclick="switchTab('floor', this)">
+      🏭 2. BĂNG CHUYỀN 2.5D & TRẠM MÁY CHI TIẾT
+    </button>
+    <button class="tab-btn" onclick="switchTab('dag', this)">
+      🕸️ 3. SƠ ĐỒ MẠCH NODE DAG (LANGGRAPH / XYFLOW)
+    </button>
+    <button class="tab-btn" onclick="switchTab('trade', this)">
+      📈 4. XƯỞNG LUYỆN KIM CRYPTO FUTURES 24/7
+    </button>
+    <button class="tab-btn" onclick="switchTab('fnb', this)">
+      🍱 5. TỔ HỢP 3 QUÁN F&B & 9 AGENCY TINH HOA
+    </button>
+    <button class="tab-btn" onclick="switchTab('security', this)">
+      🛡️ 6. PHÁO ĐÀI BẢO MẬT & NHẬT KÝ KIỂM TOÁN
+    </button>
+  </nav>
+
+  <!-- ==================== VIEW 1: 3D ANIME CHIBI FACTORY SIMULATION ==================== -->
+  <section id="view-chibi3d" class="view-section active">
+    <div class="chibi-world-wrapper" id="chibi-world-wrapper">
+      <div class="world-hud-top">
+        <div class="world-hud-box">
+          <span style="font-size:12.5px; font-weight:800; color:var(--cyan);">🎥 GÓC MÁY CAMERA 3D:</span>
+          <button class="cam-btn active" onclick="setCameraPreset('overview', this)">🌐 Toàn Cảnh Nhà Máy</button>
+          <button class="cam-btn" onclick="setCameraPreset('power', this)">⚡ Trạm Điện OmniRoute & GCP</button>
+          <button class="cam-btn" onclick="setCameraPreset('hermes', this)">👑 Trung Tâm Hermes & Cowork</button>
+          <button class="cam-btn" onclick="setCameraPreset('trade', this)">📈 Xưởng Luyện Kim Trade Coin</button>
+          <button class="cam-btn" onclick="setCameraPreset('fnb', this)">🍱 Xưởng 3 Quán F&B & 9 Agency</button>
+        </div>
+        <div class="world-hud-box">
+          <span style="font-family:var(--font-mono); font-size:11.5px; color:#f9a8d4;">
+            ✨ Kéo chuột để Xoay 360° • Cuộn để Thu/Phóng • Nhấp vào Nhân Vật Chibi để Theo Dõi
+          </span>
+        </div>
+      </div>
+
+      <canvas id="chibi-3d-canvas"></canvas>
+      <div id="chibi-labels-layer"></div>
+    </div>
+
+    <div style="margin-bottom:8px; font-size:13.5px; font-weight:800; color:var(--cyan); display:flex; justify-content:space-between; align-items:center;">
+      <span>🎎 ĐỘI NGŨ 12 NHÂN VẬT 3D ANIME CHIBI ĐANG VẬN HÀNH TRONG NHÀ MÁY (NHẤP ĐỂ CAMERA ĐI THEO NHÂN VẬT):</span>
+      <span style="font-family:var(--font-mono); font-size:11.5px; color:var(--emerald);" id="last-sync-time">Đang đồng bộ...</span>
+    </div>
+    <div class="chibi-roster-bar" id="chibi-roster-bar"></div>
+  </section>
+
+  <!-- ==================== VIEW 2: 2.5D CYBER-FACTORY CONVEYOR FLOOR ==================== -->
+  <main id="view-floor" class="view-section">
+    <div class="factory-banner">
+      <div>
+        <div style="font-size: 15px; font-weight: 800; color: var(--cyan);">
+          ⚙️ DÂY CHUYỀN BĂNG CHUYỀN 2.5D & TRẠM MÁY VI MẠCH (AGENTVERSE / CHATDEV / LANGGRAPH STUDIO)
+        </div>
+        <div style="font-size: 12.5px; color: var(--text-muted); margin-top: 3px;">
+          Mỗi trạm máy hiển thị tiến trình thật đang chạy trên máy chủ của anh Khánh. Nhấp vào bất kỳ Trạm Máy nào để mở <b>Bản Vẽ Vi Mạch & Nhật Ký Trực Tiếp</b>.
+        </div>
+      </div>
+    </div>
+
+    <div class="conveyor-pipeline-grid" id="factory-lines-container"></div>
+
+    <div class="two-col-grid" style="margin-top: 22px;">
+      <div class="panel-card">
+        <div class="panel-title">
+          <span>📟 LUỒNG NHẬT KÝ TRUNG TÂM HERMES AGENT (`agent.log`)</span>
+          <span class="status-pill ok">REAL-TIME</span>
+        </div>
+        <div class="terminal-box" id="floor-hermes-terminal">Đang tải luồng log...</div>
+      </div>
+      <div class="panel-card">
+        <div class="panel-title">
+          <span>📟 LUỒNG NHẬT KÝ XƯỞNG TRADE FUTURES (`wave_trend_news_bot.log`)</span>
+          <span class="status-pill ok">10S LOOP</span>
+        </div>
+        <div class="terminal-box" id="floor-trade-terminal">Đang tải luồng log...</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==================== VIEW 3: LANGGRAPH / XYFLOW INTERACTIVE NODE DAG ==================== -->
+  <section id="view-dag" class="view-section">
+    <div class="factory-banner">
+      <div>
+        <div style="font-size: 15px; font-weight: 800; color: var(--cyan);">
+          🕸️ SƠ ĐỒ MẠCH ĐIỆN TỬ MULTI-AGENT DAG (16 NODES • 18 LUỒNG XUNG BEZIER)
+        </div>
+        <div style="font-size: 12.5px; color: var(--text-muted); margin-top: 3px;">
+          Các hạt xung năng lượng chạy dọc dây dẫn thể hiện luồng gọi API từ Google Cloud / OmniRoute / Nous ➔ Hermes Gateway ➔ Trade Bot & 3 Quán F&B. Nhấp vào từng Node để xem chi tiết!
+        </div>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="action-btn emerald" onclick="boostDagParticles()">⚡ Bơm Xung Tín Hiệu Cao Tốc</button>
+      </div>
+    </div>
+
+    <div class="dag-container">
+      <div class="dag-legend">
+        <div class="legend-item"><span class="legend-dot" style="background:#00f2fe;"></span> Nguồn AI & Cloud</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#a855f7;"></span> Bộ Định Tuyến (OmniRoute/9Router)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#10b981;"></span> Hermes Core & Cowork Swarm</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#f59e0b;"></span> Dây Chuyền Trade Futures v11.0</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#f43f5e;"></span> 3 Quán F&B & 9 Agency</div>
+      </div>
+      <canvas id="dag-canvas"></canvas>
+    </div>
+  </section>
+
+  <!-- ==================== VIEW 4: CRYPTO FUTURES REFINERY ==================== -->
+  <section id="view-trade" class="view-section">
+    <div class="three-col-grid" id="trade-coins-cards"></div>
+
+    <div class="two-col-grid">
+      <div class="panel-card">
+        <div class="panel-title">
+          <span>💼 DANH MỤC TÀI KHOẢN BINANCE FUTURES (ĐÃ MÃ HÓA KEY)</span>
+          <span class="status-pill ok">MULTI-ACCOUNT</span>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Tài khoản</th>
+              <th>API Key (Masked)</th>
+              <th>PnL Hôm Nay</th>
+              <th>Số Lệnh</th>
+              <th>Circuit Breaker</th>
+            </tr>
+          </thead>
+          <tbody id="trade-accounts-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-title">
+          <span>🧠 BỘ NHỚ TỰ HỌC CHỐNG LỖ (`SelfLearningEngine` • `trade_lessons.json`)</span>
+          <span class="status-pill warn" id="trade-lessons-count">23 Bài Học</span>
+        </div>
+        <div id="trade-lessons-list" style="display:flex; flex-direction:column; gap:10px; max-height:260px; overflow-y:auto;"></div>
+      </div>
+    </div>
+
+    <div class="panel-card">
+      <div class="panel-title">
+        <span>📜 LỊCH SỬ KHỚP LỆNH & ĐỐI SOÁT GẦN NHẤT (`trade_history.json`)</span>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Thời gian</th>
+            <th>Cặp Coin</th>
+            <th>Chiều</th>
+            <th>Giá Vào ➔ Ra</th>
+            <th>PnL (USDT)</th>
+            <th>ROI (%)</th>
+            <th>Lý do đóng</th>
+            <th>Bối cảnh (1H / WT1 / Flow / F&G)</th>
+          </tr>
+        </thead>
+        <tbody id="trade-history-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ==================== VIEW 5: F&B 3 STORES & 9 AGENCIES ==================== -->
+  <section id="view-fnb" class="view-section">
+    <div class="three-col-grid" id="fnb-stores-grid"></div>
+
+    <div class="panel-card" style="margin-bottom: 18px;">
+      <div class="panel-title">
+        <span>🤖 ĐỘI NGŨ 9 AGENCY AI TINH HOA VẬN HÀNH 3 QUÁN 24/7</span>
+        <a href="http://localhost:8088/index.html" target="_blank" rel="noopener noreferrer" class="action-btn emerald" style="text-decoration:none;">
+          🎮 Mở Văn Phòng Ảo 3D (Port 8088) ↗
+        </a>
+      </div>
+      <div class="three-col-grid" id="fnb-agencies-grid" style="margin-bottom:0;"></div>
+    </div>
+  </section>
+
+  <!-- ==================== VIEW 6: SECURITY VAULT & AUDIT LOGS ==================== -->
+  <section id="view-security" class="view-section">
+    <div class="two-col-grid">
+      <div class="panel-card">
+        <div class="panel-title">
+          <span>🛡️ KIẾN TRÚC PHÒNG THỦ ZERO-TRUST & OWASP TOP 10</span>
+          <span class="status-pill ok">MAXIMUM SECURITY</span>
+        </div>
+        <table class="data-table" id="security-specs-table"></table>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-title">
+          <span>⏰ DANH SÁCH ROBOT WATCHDOG & CRONJOB ĐANG CHẠY (`jobs.json`)</span>
+          <span class="status-pill ok">AUTO-HEALING</span>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Mã Job</th>
+              <th>Tên Nhiệm Vụ</th>
+              <th>Lịch Chạy</th>
+              <th>Hoàn Thành</th>
+              <th>Trạng Thái</th>
+            </tr>
+          </thead>
+          <tbody id="cron-jobs-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel-card">
+      <div class="panel-title">
+        <span>📋 NHẬT KÝ KIỂM TOÁN BẢO MẬT (`security_audit.log`)</span>
+        <button class="action-btn danger" onclick="triggerFactoryAction('panic_lock')">
+          🚨 THU HỒI TOÀN BỘ PHIÊN (PANIC REVOKE)
+        </button>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Thời gian</th>
+            <th>Mức độ</th>
+            <th>Sự kiện</th>
+            <th>Địa chỉ IP</th>
+            <th>Chi tiết</th>
+          </tr>
+        </thead>
+        <tbody id="security-audit-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ==================== DEEP STATION INSPECTOR DRAWER ==================== -->
+  <aside id="inspector-drawer">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <div style="font-size:16px; font-weight:800; color:var(--cyan);" id="insp-title">Chi Tiết Trạm Máy</div>
+      <button class="action-btn" onclick="closeInspector()">✕ Đóng</button>
+    </div>
+    <div id="insp-body" style="font-size:13px; line-height:1.6; color:var(--text-main);"></div>
+  </aside>
+
+  <div id="toast-bar" class="toast-bar"></div>
+
+  <script>
+    // ============================================================================
+    // QUẢN LÝ XÁC THỰC KÉP:
+    // 1. Khi chạy tại localhost:8099 -> Xác thực Server-side PBKDF2-HMAC-SHA256 + CSRF
+    // 2. Khi chạy trên GitHub Pages -> Xác thực WebCrypto PBKDF2 (310,000 vòng)
+    //    và giải mã trực tiếp kho dữ liệu AES/SHA256-CTR (encrypted_vault.json)
+    //    Đảm bảo KHÔNG BAO GIỜ có mật khẩu rõ hay dữ liệu lộ trên GitHub!
+    // ============================================================================
+    let SESSION_TOKEN = sessionStorage.getItem("factory_token") || "";
+    let CSRF_TOKEN = sessionStorage.getItem("factory_csrf") || "";
+    let IS_STATIC_CLOUD_MODE = false;
+    let LATEST_DATA = null;
+    let pollTimer = null;
+
+    function showToast(msg, isErr = false) {
+      const el = document.getElementById("toast-bar");
+      el.textContent = msg;
+      el.style.borderColor = isErr ? "var(--rose)" : "var(--cyan)";
+      el.style.display = "block";
+      setTimeout(() => { el.style.display = "none"; }, 4200);
+    }
+
+    function togglePwVisibility() {
+      const inp = document.getElementById("vault-password");
+      inp.type = inp.type === "password" ? "text" : "password";
+    }
+
+    function hexToBytes(hex) {
+      const arr = new Uint8Array(hex.length / 2);
+      for (let i = 0; i < arr.length; i++) {
+        arr[i] = parseInt(hex.substr(i * 2, 2), 16);
+      }
+      return arr;
+    }
+
+    function bytesToHex(bytes) {
+      return Array.from(bytes).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    function b64ToBytes(b64) {
+      const bin = atob(b64);
+      const arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      return arr;
+    }
+
+    function constantTimeEqualHex(a, b) {
+      if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
+      let diff = 0;
+      for (let i = 0; i < a.length; i++) {
+        diff |= (a.charCodeAt(i) ^ b.charCodeAt(i));
+      }
+      return diff === 0;
+    }
+
+    async function tryWebCryptoVaultUnlock(password) {
+      const resp = await fetch("encrypted_vault.json", { cache: "no-store" });
+      if (!resp.ok) throw new Error("Không tìm thấy kho dữ liệu mã hóa encrypted_vault.json");
+      const vault = await resp.json();
+
+      const enc = new TextEncoder();
+      const keyMaterial = await crypto.subtle.importKey(
+        "raw",
+        enc.encode(password),
+        { name: "PBKDF2" },
+        false,
+        ["deriveBits"]
+      );
+      const saltBytes = hexToBytes(vault.salt_hex);
+      const derivedBits = await crypto.subtle.deriveBits(
+        {
+          name: "PBKDF2",
+          salt: saltBytes,
+          iterations: vault.iterations,
+          hash: "SHA-256"
+        },
+        keyMaterial,
+        512
+      );
+      const derivedAll = new Uint8Array(derivedBits);
+      const authHashHex = bytesToHex(derivedAll.slice(0, 32));
+      const encKey = derivedAll.slice(32, 64);
+
+      if (!constantTimeEqualHex(authHashHex, vault.auth_hash_hex)) {
+        return { ok: false, error: "Mật khẩu không chính xác! (PBKDF2-SHA256 310,000 vòng từ chối giải mã)" };
+      }
+
+      // Giải mã SHA-256 CTR stream bằng khóa encKey vừa dẫn xuất từ mật khẩu
+      const nonce = b64ToBytes(vault.nonce_b64);
+      const cipher = b64ToBytes(vault.cipher_b64);
+      const plain = new Uint8Array(cipher.length);
+      const numBlocks = Math.ceil(cipher.length / 32);
+
+      for (let blk = 0; blk < numBlocks; blk++) {
+        const counterBuf = new Uint8Array(8);
+        let tmp = blk;
+        for (let j = 7; j >= 0; j--) {
+          counterBuf[j] = tmp & 0xff;
+          tmp = Math.floor(tmp / 256);
+        }
+        const preimage = new Uint8Array(encKey.length + nonce.length + 8);
+        preimage.set(encKey, 0);
+        preimage.set(nonce, encKey.length);
+        preimage.set(counterBuf, encKey.length + nonce.length);
+
+        const ksBuf = await crypto.subtle.digest("SHA-256", preimage);
+        const ks = new Uint8Array(ksBuf);
+        const start = blk * 32;
+        const end = Math.min(start + 32, cipher.length);
+        for (let i = start; i < end; i++) {
+          plain[i] = cipher[i] ^ ks[i - start];
+        }
+      }
+
+      const jsonStr = new TextDecoder("utf-8").decode(plain);
+      const telemetryData = JSON.parse(jsonStr);
+      return { ok: true, data: telemetryData };
+    }
+
+    async function handleVaultLogin(e) {
+      e.preventDefault();
+      const pwInput = document.getElementById("vault-password");
+      const errBox = document.getElementById("vault-error");
+      const btn = document.getElementById("login-submit-btn");
+      const candidatePw = pwInput.value;
+      errBox.style.display = "none";
+      btn.textContent = "⏳ ĐANG KIỂM ĐỊNH PBKDF2-SHA256 (310,000 VÒNG)...";
+      btn.disabled = true;
+
+      try {
+        // Thử kết nối Server Python Local (:8099) trước
+        let serverHandled = false;
+        try {
+          const resp = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password: candidatePw })
+          });
+          if (resp.status === 200 || resp.status === 401 || resp.status === 429) {
+            serverHandled = true;
+            const data = await resp.json();
+            if (resp.ok && data.ok) {
+              IS_STATIC_CLOUD_MODE = false;
+              SESSION_TOKEN = data.token;
+              CSRF_TOKEN = data.csrf || "";
+              sessionStorage.setItem("factory_token", SESSION_TOKEN);
+              sessionStorage.setItem("factory_csrf", CSRF_TOKEN);
+              pwInput.value = "";
+              document.getElementById("vault-overlay").classList.add("hidden");
+              showToast("🔓 Xác thực Server-Side thành công! Chào mừng Chủ nhân Nguyễn Tân Khanh.");
+              await fetchFactoryTelemetry();
+              startPolling();
+              return;
+            } else {
+              errBox.textContent = data.error || "Xác thực thất bại!";
+              errBox.style.display = "block";
+              return;
+            }
+          }
+        } catch (_) {
+          // Chuyển sang chế độ WebCrypto Cloud Vault (GitHub Pages)
+        }
+
+        if (!serverHandled) {
+          const res = await tryWebCryptoVaultUnlock(candidatePw);
+          if (res.ok) {
+            IS_STATIC_CLOUD_MODE = true;
+            SESSION_TOKEN = "webcrypto_verified_session";
+            pwInput.value = "";
+            document.getElementById("vault-overlay").classList.add("hidden");
+            document.getElementById("kpi-mode-badge").textContent = "CLOUD VAULT";
+            showToast("🔓 Giải mã WebCrypto PBKDF2 310K thành công! Đã mở khóa Nhà máy 3D.");
+            LATEST_DATA = res.data;
+            renderAllViews(res.data);
+          } else {
+            errBox.textContent = res.error;
+            errBox.style.display = "block";
+          }
+        }
+      } catch (err) {
+        errBox.textContent = "Lỗi xác thực: " + err.message;
+        errBox.style.display = "block";
+      } finally {
+        btn.textContent = "✨ MỞ KHÓA NHÀ MÁY AI 3D CHIBI";
+        btn.disabled = false;
+      }
+    }
+
+    async function handleLogout(showNotice = false) {
+      if (!IS_STATIC_CLOUD_MODE && SESSION_TOKEN) {
+        try {
+          await fetch("/api/auth/logout", {
+            method: "POST",
+            headers: { "X-Factory-Token": SESSION_TOKEN }
+          });
+        } catch (_) {}
+      }
+      SESSION_TOKEN = "";
+      CSRF_TOKEN = "";
+      LATEST_DATA = null;
+      sessionStorage.removeItem("factory_token");
+      sessionStorage.removeItem("factory_csrf");
+      if (pollTimer) clearInterval(pollTimer);
+      document.getElementById("vault-overlay").classList.remove("hidden");
+      if (showNotice) showToast("🔒 Đã khóa Nhà máy & hủy Token phiên làm việc.");
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (e.altKey && (e.key === "l" || e.key === "L")) {
+        e.preventDefault();
+        handleLogout(true);
+      }
+    });
+
+    // ==================== HIỆU ỨNG CHUYỂN TAB CYBER-ANIME WARP ====================
+    function switchTab(tabId, btnEl) {
+      const fx = document.getElementById("tab-warp-fx");
+      const beam = document.getElementById("tab-warp-beam");
+      fx.classList.add("trigger");
+      beam.classList.remove("sweep");
+      void beam.offsetWidth;
+      beam.classList.add("sweep");
+      setTimeout(() => fx.classList.remove("trigger"), 320);
+
+      document.querySelectorAll(".view-section").forEach(s => s.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      const target = document.getElementById("view-" + tabId);
+      if (target) target.classList.add("active");
+      if (btnEl) btnEl.classList.add("active");
+
+      if (tabId === "dag") {
+        setTimeout(resizeDagCanvas, 50);
+      } else if (tabId === "chibi3d") {
+        setTimeout(resizeChibi3D, 50);
+      }
+    }
+
+    async function triggerFactoryAction(action) {
+      if (IS_STATIC_CLOUD_MODE) {
+        if (action === "panic_lock") {
+          handleLogout(true);
+          return;
+        }
+        triggerChibiOverdrive();
+        showToast("⚡ [GitHub Cloud Mode] Đã kích hoạt mô phỏng xung năng lượng trực tiếp trên Nhà máy 3D!");
+        return;
+      }
+      showToast("⚙️ Đang thực thi lệnh điều khiển: " + action + "...");
+      try {
+        const resp = await fetch("/api/factory/action", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Factory-Token": SESSION_TOKEN,
+            "X-CSRF-Token": CSRF_TOKEN
+          },
+          body: JSON.stringify({ action })
+        });
+        if (resp.status === 401) {
+          handleLogout();
+          return;
+        }
+        const data = await resp.json();
+        if (action === "panic_lock") {
+          handleLogout(true);
+          return;
+        }
+        showToast(data.message || "Đã thực thi thành công!", !data.ok);
+        await fetchFactoryTelemetry();
+      } catch (err) {
+        showToast("Lỗi thực thi: " + err.message, true);
+      }
+    }
+
+    async function fetchFactoryTelemetry() {
+      if (IS_STATIC_CLOUD_MODE) return;
+      try {
+        const resp = await fetch("/api/factory/telemetry", {
+          headers: { "X-Factory-Token": SESSION_TOKEN }
+        });
+        if (resp.status === 401) {
+          document.getElementById("vault-overlay").classList.remove("hidden");
+          return;
+        }
+        const data = await resp.json();
+        LATEST_DATA = data;
+        document.getElementById("vault-overlay").classList.add("hidden");
+        renderAllViews(data);
+      } catch (err) {
+        console.error("Telemetry error:", err);
+      }
+    }
+
+    function startPolling() {
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(fetchFactoryTelemetry, 4000);
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    // ============================================================================
+    // ĐỘNG CƠ 3D ANIME CHIBI FACTORY (THREE.JS REAL-TIME FACTORY FLOOR)
+    // ============================================================================
+    let scene3d, camera3d, renderer3d;
+    let chibiAgents = [];
+    let conveyorBoxes = [];
+    let machineRings = [];
+    let workSparks = [];
+    let chibiSpeedMult = 1.0;
+    let followedChibiId = null;
+
+    // Camera spherical orbit state
+    let camTarget = new THREE.Vector3(0, 1.5, 0);
+    let camGoalTarget = new THREE.Vector3(0, 1.5, 0);
+    let camRadius = 35;
+    let camGoalRadius = 35;
+    let camTheta = 0.55;
+    let camGoalTheta = 0.55;
+    let camPhi = 0.72;
+    let camGoalPhi = 0.72;
+    let isPointerDown = false;
+    let prevPointer = { x: 0, y: 0 };
+
+    const CHIBI_BLUEPRINTS = [
+      {
+        id: "qwen4_brain",
+        name: "👑 Qwen4-Max-Sama",
+        role: "Não Bộ Trung Tâm (1M Context • Nous OAuth)",
+        emoji: "👑",
+        hairColor: 0x00f2fe,
+        suitColor: 0x1e40af,
+        accentColor: 0xfacc15,
+        hatType: "crown",
+        bubble: "Điều phối 10 tầng Fallback & Cowork Swarm",
+        waypoints: [
+          { x: 6, z: -9, station: "Hermes Command Core" },
+          { x: -6, z: -9, station: "OmniRoute 595 Reactor" },
+          { x: 0, z: -2, station: "Central Hub" },
+          { x: 14, z: -9, station: "Cowork Dispatch Desk" }
+        ]
+      },
+      {
+        id: "alice_tele",
+        name: "🐱 AliceWordBot-Chan",
+        role: "Cổng Telegram @alicewordbot & WhatsApp (:3000)",
+        emoji: "🐱",
+        hairColor: 0xf472b6,
+        suitColor: 0xbe185d,
+        accentColor: 0x00f2fe,
+        hatType: "catears",
+        bubble: "Zero-Trust Lock: Anh Khánh & Trí Trần (50,127 msgs)",
+        waypoints: [
+          { x: 18, z: -13, station: "Telegram/WA Gate" },
+          { x: 8, z: -11, station: "Hermes Command Core" },
+          { x: 18, z: 7, station: "F&B Order Alert Gate" }
+        ]
+      },
+      {
+        id: "omniroute_chan",
+        name: "⚡ OmniRoute-Chan",
+        role: "Trạm Điện 595 Models & 45 Auto-Combos (:20129)",
+        emoji: "⚡",
+        hairColor: 0xa855f7,
+        suitColor: 0x581c87,
+        accentColor: 0x00f2fe,
+        hatType: "twintails",
+        bubble: "Cấp điện auto/fast & auto/coding + 3x GCP Keys",
+        waypoints: [
+          { x: -17, z: -12, station: "Google Cloud Reactor" },
+          { x: -9, z: -12, station: "OmniRoute Core :20129" },
+          { x: -9, z: -5, station: "RTK Compressor" }
+        ]
+      },
+      {
+        id: "rtk_caveman",
+        name: "🗜️ Caveman-Kun (RTK)",
+        role: "Máy Nén Token 12 Tầng (Tiết kiệm 60-85% Token)",
+        emoji: "🗜️",
+        hairColor: 0x10b981,
+        suitColor: 0x065f46,
+        accentColor: 0xf59e0b,
+        hatType: "spiky",
+        bubble: "Đang ép gọn JSON & Context trước khi gọi LLM!",
+        waypoints: [
+          { x: -11, z: -5, station: "RTK Token Press" },
+          { x: -2, z: -6, station: "Conveyor Bridge" },
+          { x: 5, z: -7, station: "Hermes Input Buffer" }
+        ]
+      },
+      {
+        id: "deepseek_9router",
+        name: "🚀 DeepSeek-9Router",
+        role: "Động Cơ Phản Lực 9Router (:20128 • 511ms)",
+        emoji: "🚀",
+        hairColor: 0x38bdf8,
+        suitColor: 0x0369a1,
+        accentColor: 0x22d3ee,
+        hatType: "visor",
+        bubble: "oc/deepseek-v4.1-flash-free & cx/gpt-5.6-luna",
+        waypoints: [
+          { x: -18, z: -5, station: "9Router Turbine :20128" },
+          { x: -10, z: -8, station: "OmniRoute Sync" },
+          { x: -5, z: 5, station: "Trade Bot AI Link" }
+        ]
+      },
+      {
+        id: "solar_cowork",
+        name: "🤝 Solar-Mini4-Kun",
+        role: "Xưởng Phân Việc Cowork Subagent Delegation",
+        emoji: "🤝",
+        hairColor: 0xf97316,
+        suitColor: 0x9a3412,
+        accentColor: 0xfde047,
+        hatType: "beret",
+        bubble: "Phân luồng Subagent xử lý đa tác vụ song song",
+        waypoints: [
+          { x: 13, z: -7, station: "Cowork Swarm Hub" },
+          { x: 10, z: 6, station: "9-Agency F&B Desk" },
+          { x: 6, z: -9, station: "Hermes Brain" }
+        ]
+      },
+      {
+        id: "watchdog_bot",
+        name: "🛡️ Watchdog-Healer",
+        role: "Robot Tuần Tra & Hồi Sinh 24/7 (3 Phút/Lần)",
+        emoji: "🛡️",
+        hairColor: 0xfacc15,
+        suitColor: 0xca8a04,
+        accentColor: 0x10b981,
+        hatType: "hardhat",
+        bubble: "Tuần tra cổng :49199, :20129, :8099 & Quét đơn F&B",
+        waypoints: [
+          { x: -15, z: -13, station: "Check OmniRoute :20129" },
+          { x: 15, z: -13, station: "Check Hermes :8588" },
+          { x: 15, z: 12, station: "Check 3 Quán F&B" },
+          { x: -15, z: 12, station: "Check Trade Bot :49199" }
+        ]
+      },
+      {
+        id: "rexapf_sniper",
+        name: "🎯 RexAPF WaveSniper",
+        role: "Chuyên Gia Sóng 15m WaveTrend & 1H EMA (:49199)",
+        emoji: "🎯",
+        hairColor: 0xf43f5e,
+        suitColor: 0x9f1239,
+        accentColor: 0xfbbf24,
+        hatType: "samurai",
+        bubble: "Quét BTC/BNB/SOL mỗi 10s (0.71s latency)",
+        waypoints: [
+          { x: -18, z: 7, station: "15m WaveTrend Furnace" },
+          { x: -11, z: 7, station: "WhaleFlow Scanner" },
+          { x: -6, z: 12, station: "Binance Execution Vault" }
+        ]
+      },
+      {
+        id: "whale_detective",
+        name: "🐋 WhaleFlow-Tantei",
+        role: "Thám Tử Cá Voi On-Chain & Fear/Greed Engine",
+        emoji: "🐋",
+        hairColor: 0x60a5fa,
+        suitColor: 0x1e3a8a,
+        accentColor: 0x34d399,
+        hatType: "visor",
+        bubble: "Top Trader L/S + OI Delta Cache 45s • F&G: 32 (Fear)",
+        waypoints: [
+          { x: -13, z: 12, station: "Whale Order Tank" },
+          { x: -18, z: 12, station: "News RSS & F&G Sensor" },
+          { x: -9, z: 8, station: "Risk Council Table" }
+        ]
+      },
+      {
+        id: "gemini_arbiter",
+        name: "⚖️ Gemini-Arbiter",
+        role: "Trọng Tài Rủi Ro GCP Gemini 2.5 & 23 Luật Chống Lỗ",
+        emoji: "⚖️",
+        hairColor: 0xe2e8f0,
+        suitColor: 0x3b0764,
+        accentColor: 0xfacc15,
+        hatType: "halo",
+        bubble: "Bảo vệ 2 Ví ($577.31 USDT • Hôm nay +$11.29)",
+        waypoints: [
+          { x: -6, z: 7, station: "SelfLearning 23 Rules Gate" },
+          { x: -4, z: 13, station: "Multi-Account Binance Vault" },
+          { x: -11, z: 10, station: "Debate Protocol Desk" }
+        ]
+      },
+      {
+        id: "tuyetmai_pos",
+        name: "☕ Tuyết Mai POS-Chan",
+        role: "Kế Toán POS 3 Quán F&B (Food Cost 34-37%)",
+        emoji: "☕",
+        hairColor: 0xfb7185,
+        suitColor: 0x831843,
+        accentColor: 0xffffff,
+        hatType: "chef",
+        bubble: "Đồng bộ 52 đơn Cafe Đông Thạnh, Cơm Tấm & 7A",
+        waypoints: [
+          { x: 6, z: 8, station: "Cafe Ăn Vặt Đông Thạnh" },
+          { x: 12, z: 8, station: "Cơm Tấm Sườn Nướng" },
+          { x: 18, z: 8, station: "Food Station 7A & Sâm Mix" }
+        ]
+      },
+      {
+        id: "baongoc_agency",
+        name: "📣 Bảo Ngọc 9-Agency",
+        role: "9 Agency Tinh Hoa + AutoCAD MCP + AnyWear VTON",
+        emoji: "📣",
+        hairColor: 0xc084fc,
+        suitColor: 0x4c1d95,
+        accentColor: 0xf472b6,
+        hatType: "beret",
+        bubble: "Tối ưu 99 ảnh HD món ăn & Combo AOV +28%",
+        waypoints: [
+          { x: 8, z: 13, station: "9-Agency Strategy Table" },
+          { x: 16, z: 13, station: "Menu Visual & VTON Studio" },
+          { x: 12, z: 7, station: "POS Sync Conveyor" }
+        ]
+      }
+    ];
+
+    function buildChibiCharacterMesh(bp) {
+      const root = new THREE.Group();
+
+      const skinMat = new THREE.MeshStandardMaterial({ color: 0xffe0cc, roughness: 0.45, metalness: 0.05 });
+      const hairMat = new THREE.MeshStandardMaterial({ color: bp.hairColor, roughness: 0.35, metalness: 0.2, emissive: bp.hairColor, emissiveIntensity: 0.15 });
+      const suitMat = new THREE.MeshStandardMaterial({ color: bp.suitColor, roughness: 0.4, metalness: 0.25 });
+      const accentMat = new THREE.MeshStandardMaterial({ color: bp.accentColor, roughness: 0.25, metalness: 0.5, emissive: bp.accentColor, emissiveIntensity: 0.35 });
+      const darkMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5 });
+      const whiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const blushMat = new THREE.MeshBasicMaterial({ color: 0xff7597 });
+
+      // 1. Glowing Under-Foot Aura Ring
+      const auraGeo = new THREE.RingGeometry(0.65, 0.88, 28);
+      const auraMat = new THREE.MeshBasicMaterial({ color: bp.hairColor, side: THREE.DoubleSide, transparent: true, opacity: 0.65 });
+      const auraMesh = new THREE.Mesh(auraGeo, auraMat);
+      auraMesh.rotation.x = -Math.PI / 2;
+      auraMesh.position.y = 0.04;
+      root.add(auraMesh);
+
+      // 2. Body Group (bounces during walk)
+      const bodyGroup = new THREE.Group();
+      root.add(bodyGroup);
+
+      // Chibi Torso
+      const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.54, 0.95, 16), suitMat);
+      torso.position.y = 1.05;
+      torso.castShadow = true;
+      bodyGroup.add(torso);
+
+      // Cute Collar / Scarf Accent
+      const belt = new THREE.Mesh(new THREE.TorusGeometry(0.46, 0.07, 10, 20), accentMat);
+      belt.rotation.x = Math.PI / 2;
+      belt.position.y = 0.85;
+      bodyGroup.add(belt);
+
+      // 3. Oversized Chibi Head (Anime Proportions!)
+      const headGroup = new THREE.Group();
+      headGroup.position.y = 2.15;
+      bodyGroup.add(headGroup);
+
+      const headMesh = new THREE.Mesh(new THREE.SphereGeometry(0.74, 24, 24), skinMat);
+      headMesh.scale.set(1.06, 0.96, 1.0);
+      headMesh.castShadow = true;
+      headGroup.add(headMesh);
+
+      // Anime Hair Cap + Side Bangs
+      const hairCap = new THREE.Mesh(
+        new THREE.SphereGeometry(0.79, 24, 18, 0, Math.PI * 2, 0, Math.PI * 0.58),
+        hairMat
+      );
+      hairCap.position.y = 0.06;
+      hairCap.rotation.x = -0.15;
+      headGroup.add(hairCap);
+
+      // Cute Front Anime Bangs
+      for (let b = -2; b <= 2; b++) {
+        const bang = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.42, 8), hairMat);
+        bang.position.set(b * 0.21, 0.44, 0.66 - Math.abs(b) * 0.06);
+        bang.rotation.x = Math.PI + 0.25;
+        bang.rotation.z = b * -0.12;
+        headGroup.add(bang);
+      }
+
+      // Large Expressive Anime Eyes (Iris + Pupil + Kawaii White Highlights)
+      const eyeGroup = new THREE.Group();
+      headGroup.add(eyeGroup);
+      [-0.27, 0.27].forEach(ex => {
+        const iris = new THREE.Mesh(new THREE.SphereGeometry(0.145, 14, 14), hairMat);
+        iris.scale.set(0.9, 1.2, 0.45);
+        iris.position.set(ex, -0.04, 0.69);
+        eyeGroup.add(iris);
+
+        const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.095, 12, 12), darkMat);
+        pupil.scale.set(0.9, 1.15, 0.45);
+        pupil.position.set(ex, -0.04, 0.72);
+        eyeGroup.add(pupil);
+
+        // Big Kawaii Eye Sparkle
+        const spark1 = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 8), whiteMat);
+        spark1.position.set(ex + 0.045, 0.03, 0.75);
+        eyeGroup.add(spark1);
+
+        // Small Secondary Sparkle
+        const spark2 = new THREE.Mesh(new THREE.SphereGeometry(0.024, 8, 8), whiteMat);
+        spark2.position.set(ex - 0.04, -0.09, 0.75);
+        eyeGroup.add(spark2);
+      });
+
+      // Rosy Anime Blush Cheeks
+      [-0.44, 0.44].forEach(bx => {
+        const blush = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 10), blushMat);
+        blush.scale.set(1.2, 0.65, 0.35);
+        blush.position.set(bx, -0.22, 0.64);
+        headGroup.add(blush);
+      });
+
+      // Custom Headgear / Anime Hair Style per Bot
+      if (bp.hatType === "crown") {
+        const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.32, 0.34, 6), accentMat);
+        crown.position.set(0, 0.85, 0);
+        headGroup.add(crown);
+      } else if (bp.hatType === "catears") {
+        [-0.48, 0.48].forEach(cx => {
+          const ear = new THREE.Mesh(new THREE.ConeGeometry(0.24, 0.46, 4), accentMat);
+          ear.position.set(cx, 0.74, 0);
+          ear.rotation.z = cx < 0 ? 0.35 : -0.35;
+          headGroup.add(ear);
+        });
+      } else if (bp.hatType === "twintails") {
+        [-0.78, 0.78].forEach(tx => {
+          const tail = new THREE.Mesh(new THREE.ConeGeometry(0.25, 0.95, 10), hairMat);
+          tail.position.set(tx, 0.1, -0.15);
+          tail.rotation.z = tx < 0 ? 0.45 : -0.45;
+          tail.rotation.x = 2.6;
+          headGroup.add(tail);
+        });
+      } else if (bp.hatType === "hardhat") {
+        const dome = new THREE.Mesh(new THREE.SphereGeometry(0.82, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.5), accentMat);
+        dome.position.y = 0.12;
+        headGroup.add(dome);
+      } else if (bp.hatType === "chef") {
+        const chef = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.42, 0.55, 14), whiteMat);
+        chef.position.y = 0.88;
+        headGroup.add(chef);
+      } else if (bp.hatType === "halo") {
+        const halo = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.06, 10, 24), accentMat);
+        halo.rotation.x = Math.PI / 2;
+        halo.position.y = 1.05;
+        headGroup.add(halo);
+      } else if (bp.hatType === "samurai" || bp.hatType === "visor") {
+        const visor = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.22, 0.35), accentMat);
+        visor.position.set(0, 0.15, 0.58);
+        headGroup.add(visor);
+      } else if (bp.hatType === "beret") {
+        const beret = new THREE.Mesh(new THREE.SphereGeometry(0.55, 16, 12), accentMat);
+        beret.scale.set(1.2, 0.45, 1.2);
+        beret.position.set(0.15, 0.72, 0);
+        headGroup.add(beret);
+      }
+
+      // 4. Chibi Arms & Legs
+      const leftArm = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.15, 0.65, 10), suitMat);
+      leftArm.position.set(-0.62, 1.15, 0);
+      bodyGroup.add(leftArm);
+
+      const rightArm = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.15, 0.65, 10), suitMat);
+      rightArm.position.set(0.62, 1.15, 0);
+      bodyGroup.add(rightArm);
+
+      const leftLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.18, 0.58, 10), darkMat);
+      leftLeg.position.set(-0.24, 0.35, 0);
+      bodyGroup.add(leftLeg);
+
+      const rightLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.18, 0.58, 10), darkMat);
+      rightLeg.position.set(0.24, 0.35, 0);
+      bodyGroup.add(rightLeg);
+
+      // 5. Carried Glowing Data Crate (shows the Chibi carrying data packets between machines!)
+      const crate = new THREE.Mesh(
+        new THREE.BoxGeometry(0.46, 0.46, 0.46),
+        new THREE.MeshStandardMaterial({
+          color: bp.accentColor,
+          emissive: bp.hairColor,
+          emissiveIntensity: 0.6,
+          roughness: 0.2
+        })
+      );
+      crate.position.set(0, 1.15, 0.68);
+      bodyGroup.add(crate);
+
+      return {
+        root,
+        bodyGroup,
+        headGroup,
+        eyeGroup,
+        leftArm,
+        rightArm,
+        leftLeg,
+        rightLeg,
+        crate,
+        auraMesh
+      };
+    }
+
+    function initChibiFactory3D() {
+      const canvas = document.getElementById("chibi-3d-canvas");
+      const wrapper = document.getElementById("chibi-world-wrapper");
+      if (!canvas || typeof THREE === "undefined") return;
+
+      const W = wrapper.clientWidth || 1100;
+      const H = wrapper.clientHeight || 650;
+
+      scene3d = new THREE.Scene();
+      scene3d.fog = new THREE.FogExp2(0x050814, 0.012);
+
+      camera3d = new THREE.PerspectiveCamera(45, W / H, 0.1, 250);
+
+      renderer3d = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+      renderer3d.setSize(W, H);
+      renderer3d.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer3d.shadowMap.enabled = true;
+      renderer3d.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      // Lights
+      const ambLight = new THREE.AmbientLight(0xdbeafe, 0.85);
+      scene3d.add(ambLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 1.15);
+      dirLight.position.set(22, 36, 24);
+      dirLight.castShadow = true;
+      dirLight.shadow.mapSize.width = 2048;
+      dirLight.shadow.mapSize.height = 2048;
+      scene3d.add(dirLight);
+
+      const cyanPoint = new THREE.PointLight(0x00f2fe, 1.6, 38);
+      cyanPoint.position.set(-12, 8, -10);
+      scene3d.add(cyanPoint);
+
+      const pinkPoint = new THREE.PointLight(0xec4899, 1.5, 38);
+      pinkPoint.position.set(12, 8, 10);
+      scene3d.add(pinkPoint);
+
+      // 1. Cyber Factory Floor & Grid
+      const floorGeo = new THREE.PlaneGeometry(64, 46);
+      const floorMat = new THREE.MeshStandardMaterial({ color: 0x070c1a, roughness: 0.7, metalness: 0.25 });
+      const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+      floorMesh.rotation.x = -Math.PI / 2;
+      floorMesh.receiveShadow = true;
+      scene3d.add(floorMesh);
+
+      const gridHelper = new THREE.GridHelper(64, 32, 0x00f2fe, 0x1e293b);
+      gridHelper.position.y = 0.02;
+      scene3d.add(gridHelper);
+
+      // 2. Build 4 Glowing Factory Zone Platforms
+      const zones = [
+        { name: "ZONE A: OMNIROUTE & GCP POWER PLANT", x: -12, z: -9, w: 20, d: 14, color: 0xa855f7 },
+        { name: "ZONE B: HERMES GATEWAY & COWORK SWARM", x: 12, z: -9, w: 20, d: 14, color: 0x00f2fe },
+        { name: "ZONE C: REXAPF v11.0 CRYPTO FUTURES FORGE", x: -12, z: 9, w: 20, d: 14, color: 0xf59e0b },
+        { name: "ZONE D: 3 QUÁN F&B POS & 9 AGENCY STUDIO", x: 12, z: 9, w: 20, d: 14, color: 0xf43f5e }
+      ];
+
+      zones.forEach(z => {
+        const plat = new THREE.Mesh(
+          new THREE.BoxGeometry(z.w, 0.24, z.d),
+          new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4, metalness: 0.35 })
+        );
+        plat.position.set(z.x, 0.12, z.z);
+        plat.receiveShadow = true;
+        scene3d.add(plat);
+
+        const border = new THREE.Mesh(
+          new THREE.BoxGeometry(z.w + 0.2, 0.28, z.d + 0.2),
+          new THREE.MeshBasicMaterial({ color: z.color, wireframe: true })
+        );
+        border.position.set(z.x, 0.14, z.z);
+        scene3d.add(border);
+      });
+
+      // 3. Build 3D Industrial Factory Machines & Spinning Turbines
+      const machineSpecs = [
+        { x: -17, z: -12, color: 0x00f2fe, h: 3.4, type: "reactor" },
+        { x: -9,  z: -12, color: 0xa855f7, h: 3.8, type: "reactor" },
+        { x: -11, z: -5,  color: 0x10b981, h: 2.6, type: "press" },
+        { x: 6,   z: -11, color: 0x00f2fe, h: 3.6, type: "reactor" },
+        { x: 14,  z: -11, color: 0xf97316, h: 2.8, type: "press" },
+        { x: 18,  z: -13, color: 0xf472b6, h: 3.2, type: "tower" },
+        { x: -18, z: 7,   color: 0xf59e0b, h: 3.2, type: "reactor" },
+        { x: -11, z: 7,   color: 0x38bdf8, h: 2.8, type: "press" },
+        { x: -5,  z: 12,  color: 0x10b981, h: 3.5, type: "reactor" },
+        { x: 6,   z: 8,   color: 0xf43f5e, h: 2.6, type: "counter" },
+        { x: 12,  z: 8,   color: 0xfb923c, h: 2.6, type: "counter" },
+        { x: 18,  z: 8,   color: 0x34d399, h: 2.6, type: "counter" }
+      ];
+
+      machineSpecs.forEach(m => {
+        const base = new THREE.Mesh(
+          new THREE.CylinderGeometry(1.15, 1.35, m.h, 16),
+          new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3, metalness: 0.6 })
+        );
+        base.position.set(m.x, m.h / 2 + 0.2, m.z);
+        base.castShadow = true;
+        scene3d.add(base);
+
+        const coreRing = new THREE.Mesh(
+          new THREE.TorusGeometry(1.3, 0.12, 12, 28),
+          new THREE.MeshBasicMaterial({ color: m.color })
+        );
+        coreRing.position.set(m.x, m.h + 0.6, m.z);
+        scene3d.add(coreRing);
+        machineRings.push(coreRing);
+      });
+
+      // 4. Physical 3D Conveyor Belts Connecting the Zones with Moving Data Cubes
+      const conveyorPaths = [
+        { p1: new THREE.Vector3(-16, 0.45, -8), p2: new THREE.Vector3(16, 0.45, -8), color: 0x00f2fe },
+        { p1: new THREE.Vector3(0, 0.45, -8),   p2: new THREE.Vector3(0, 0.45, 9),   color: 0xa855f7 },
+        { p1: new THREE.Vector3(-18, 0.45, 9),  p2: new THREE.Vector3(18, 0.45, 9),  color: 0xf59e0b }
+      ];
+
+      conveyorPaths.forEach(cp => {
+        const dist = cp.p1.distanceTo(cp.p2);
+        const mid = cp.p1.clone().add(cp.p2).multiplyScalar(0.5);
+        const track = new THREE.Mesh(
+          new THREE.BoxGeometry(dist, 0.18, 1.1),
+          new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4, metalness: 0.5 })
+        );
+        track.position.copy(mid);
+        if (Math.abs(cp.p1.z - cp.p2.z) > 1) {
+          track.rotation.y = Math.PI / 2;
+        }
+        scene3d.add(track);
+
+        for (let k = 0; k < 5; k++) {
+          const box = new THREE.Mesh(
+            new THREE.BoxGeometry(0.52, 0.52, 0.52),
+            new THREE.MeshStandardMaterial({
+              color: cp.color,
+              emissive: cp.color,
+              emissiveIntensity: 0.55
+            })
+          );
+          scene3d.add(box);
+          conveyorBoxes.push({
+            mesh: box,
+            p1: cp.p1,
+            p2: cp.p2,
+            t: k / 5,
+            speed: 0.0022
+          });
+        }
+      });
+
+      // 5. Spawn All 12 3D Anime Chibi Characters & HTML Floating Tags
+      const labelsLayer = document.getElementById("chibi-labels-layer");
+      labelsLayer.innerHTML = "";
+
+      CHIBI_BLUEPRINTS.forEach((bp, idx) => {
+        const parts = buildChibiCharacterMesh(bp);
+        const startWp = bp.waypoints[0];
+        parts.root.position.set(startWp.x, 0.24, startWp.z);
+        scene3d.add(parts.root);
+
+        // Create floating HTML tag
+        const tagEl = document.createElement("div");
+        tagEl.className = "chibi-floating-tag";
+        tagEl.id = "chibi-tag-" + bp.id;
+        const hexColor = "#" + bp.hairColor.toString(16).padStart(6, "0");
+        tagEl.innerHTML = `
+          <div class="chibi-tag-card" style="border-color:${hexColor};">
+            <div class="chibi-tag-name">${escapeHtml(bp.name)}</div>
+            <div class="chibi-tag-bubble" id="chibi-bub-${bp.id}">${escapeHtml(bp.bubble)}</div>
+          </div>
+        `;
+        tagEl.addEventListener("click", () => focusOnChibi(bp.id));
+        labelsLayer.appendChild(tagEl);
+
+        chibiAgents.push({
+          bp,
+          parts,
+          tagEl,
+          wpIndex: 0,
+          nextWpIndex: 1 % bp.waypoints.length,
+          state: "WALKING",
+          workTimer: 0,
+          phaseOffset: idx * 0.85,
+          walkSpeed: 0.055 + (idx % 3) * 0.008
+        });
+      });
+
+      renderChibiRosterBar();
+      setup3DPointerControls(canvas);
+      requestAnimationFrame(animateChibiFactory3D);
+    }
+
+    function renderChibiRosterBar() {
+      const bar = document.getElementById("chibi-roster-bar");
+      if (!bar) return;
+      bar.innerHTML = CHIBI_BLUEPRINTS.map(bp => {
+        const hexColor = "#" + bp.hairColor.toString(16).padStart(6, "0");
+        return `
+          <div class="chibi-roster-card" onclick="focusOnChibi('${bp.id}')">
+            <div class="chibi-avatar-circle" style="background:${hexColor}22; border-color:${hexColor};">
+              ${bp.emoji}
+            </div>
+            <div style="overflow:hidden;">
+              <div style="font-size:12px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                ${escapeHtml(bp.name)}
+              </div>
+              <div style="font-size:10.5px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                ${escapeHtml(bp.role)}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function focusOnChibi(chibiId) {
+      followedChibiId = chibiId;
+      const found = chibiAgents.find(c => c.bp.id === chibiId);
+      if (found) {
+        camGoalRadius = 14;
+        camGoalPhi = 0.82;
+        showToast(`🎥 Đang đi theo nhân vật 3D Chibi: ${found.bp.name} (${found.bp.role})`);
+        openInspector(
+          found.bp.name,
+          found.bp.role,
+          `Trạm hiện tại: ${found.bp.waypoints[found.wpIndex].station}\nTrạng thái hoạt động: ${found.bp.bubble}\n\n` +
+          JSON.stringify(LATEST_DATA || {}, null, 2)
+        );
+      }
+    }
+
+    function setCameraPreset(preset, btnEl) {
+      followedChibiId = null;
+      document.querySelectorAll(".cam-btn").forEach(b => b.classList.remove("active"));
+      if (btnEl) btnEl.classList.add("active");
+
+      if (preset === "overview") {
+        camGoalTarget.set(0, 1.2, 1);
+        camGoalRadius = 35;
+        camGoalTheta = 0.52;
+        camGoalPhi = 0.72;
+      } else if (preset === "power") {
+        camGoalTarget.set(-12, 1.5, -9);
+        camGoalRadius = 18;
+        camGoalTheta = -0.45;
+        camGoalPhi = 0.78;
+      } else if (preset === "hermes") {
+        camGoalTarget.set(11, 1.5, -9);
+        camGoalRadius = 18;
+        camGoalTheta = 0.48;
+        camGoalPhi = 0.78;
+      } else if (preset === "trade") {
+        camGoalTarget.set(-12, 1.5, 9);
+        camGoalRadius = 18;
+        camGoalTheta = -0.35;
+        camGoalPhi = 0.78;
+      } else if (preset === "fnb") {
+        camGoalTarget.set(12, 1.5, 9);
+        camGoalRadius = 18;
+        camGoalTheta = 0.42;
+        camGoalPhi = 0.78;
+      }
+    }
+
+    function triggerChibiOverdrive() {
+      chibiSpeedMult = 2.8;
+      showToast("💃 Chibi Overdrive Kích Hoạt! 12 Nhân vật AI tăng tốc 300% công suất!");
+      setTimeout(() => { chibiSpeedMult = 1.0; }, 6000);
+    }
+
+    function setup3DPointerControls(canvas) {
+      canvas.addEventListener("pointerdown", (e) => {
+        isPointerDown = true;
+        prevPointer.x = e.clientX;
+        prevPointer.y = e.clientY;
+      });
+      window.addEventListener("pointerup", () => { isPointerDown = false; });
+      window.addEventListener("pointermove", (e) => {
+        if (!isPointerDown) return;
+        const dx = e.clientX - prevPointer.x;
+        const dy = e.clientY - prevPointer.y;
+        prevPointer.x = e.clientX;
+        prevPointer.y = e.clientY;
+        camGoalTheta -= dx * 0.007;
+        camGoalPhi = Math.max(0.28, Math.min(1.38, camGoalPhi - dy * 0.006));
+      });
+      canvas.addEventListener("wheel", (e) => {
+        e.preventDefault();
+        camGoalRadius = Math.max(10, Math.min(55, camGoalRadius + e.deltaY * 0.02));
+      }, { passive: false });
+    }
+
+    function resizeChibi3D() {
+      if (!renderer3d || !camera3d) return;
+      const wrapper = document.getElementById("chibi-world-wrapper");
+      if (!wrapper) return;
+      const W = wrapper.clientWidth || 1100;
+      const H = wrapper.clientHeight || 650;
+      camera3d.aspect = W / H;
+      camera3d.updateProjectionMatrix();
+      renderer3d.setSize(W, H);
+    }
+
+    window.addEventListener("resize", resizeChibi3D);
+
+    function animateChibiFactory3D(nowMs) {
+      requestAnimationFrame(animateChibiFactory3D);
+      if (!scene3d || !camera3d || !renderer3d) return;
+
+      const t = nowMs * 0.001;
+
+      // 1. Rotate machine reactor rings
+      machineRings.forEach((ring, i) => {
+        ring.rotation.x = Math.sin(t * 1.5 + i) * 0.6;
+        ring.rotation.y += 0.03 * chibiSpeedMult;
+      });
+
+      // 2. Move 3D Conveyor Boxes along tracks
+      conveyorBoxes.forEach(cb => {
+        cb.t += cb.speed * chibiSpeedMult;
+        if (cb.t > 1) cb.t = 0;
+        cb.mesh.position.lerpVectors(cb.p1, cb.p2, cb.t);
+        cb.mesh.rotation.y += 0.04;
+      });
+
+      // 3. Animate all 12 Chibi Characters walking & working
+      const wrapper = document.getElementById("chibi-world-wrapper");
+      const W = wrapper ? wrapper.clientWidth : 1100;
+      const H = wrapper ? wrapper.clientHeight : 650;
+
+      chibiAgents.forEach(agent => {
+        const { bp, parts } = agent;
+        const targetWp = bp.waypoints[agent.nextWpIndex];
+        const pos = parts.root.position;
+        const dx = targetWp.x - pos.x;
+        const dz = targetWp.z - pos.z;
+        const dist = Math.hypot(dx, dz);
+
+        // Cute periodic eye blink
+        const blinkCycle = (t + agent.phaseOffset) % 3.8;
+        parts.eyeGroup.scale.y = (blinkCycle > 3.65) ? 0.12 : 1.0;
+
+        // Spinning under-foot aura
+        parts.auraMesh.rotation.z += 0.03;
+
+        if (agent.state === "WALKING") {
+          const step = agent.walkSpeed * chibiSpeedMult;
+          if (dist > step) {
+            pos.x += (dx / dist) * step;
+            pos.z += (dz / dist) * step;
+
+            // Smooth turn toward movement direction
+            const desiredAngle = Math.atan2(dx, dz);
+            parts.root.rotation.y = desiredAngle;
+
+            // Cute Chibi Hop & Swing Animation
+            const walkPhase = t * 11 * chibiSpeedMult + agent.phaseOffset;
+            parts.bodyGroup.position.y = Math.abs(Math.sin(walkPhase)) * 0.22;
+            parts.leftLeg.rotation.x = Math.sin(walkPhase) * 0.65;
+            parts.rightLeg.rotation.x = -Math.sin(walkPhase) * 0.65;
+            parts.leftArm.rotation.x = -Math.sin(walkPhase) * 0.45;
+            parts.rightArm.rotation.x = Math.sin(walkPhase) * 0.45;
+            parts.headGroup.rotation.z = Math.sin(walkPhase * 0.5) * 0.08;
+            parts.crate.visible = true;
+            parts.crate.rotation.y += 0.05;
+          } else {
+            // Arrived at workstation! Switch to WORKING state
+            agent.state = "WORKING";
+            agent.workTimer = 110;
+            agent.wpIndex = agent.nextWpIndex;
+            agent.nextWpIndex = (agent.nextWpIndex + 1) % bp.waypoints.length;
+          }
+        } else {
+          // WORKING AT MACHINE STATION (Cute crafting / hammering / typing animation)
+          agent.workTimer -= 1 * chibiSpeedMult;
+          const workPhase = t * 18 * chibiSpeedMult + agent.phaseOffset;
+          parts.bodyGroup.position.y = Math.abs(Math.sin(workPhase)) * 0.09;
+          parts.leftArm.rotation.x = -0.9 + Math.sin(workPhase) * 0.55;
+          parts.rightArm.rotation.x = -0.9 - Math.sin(workPhase) * 0.55;
+          parts.leftLeg.rotation.x = 0;
+          parts.rightLeg.rotation.x = 0;
+          parts.headGroup.rotation.x = Math.sin(workPhase) * 0.1;
+          parts.crate.position.y = 1.15 + Math.sin(workPhase) * 0.12;
+          if (agent.workTimer <= 0) {
+            agent.state = "WALKING";
+          }
+        }
+
+        // Follow camera if this Chibi is selected
+        if (followedChibiId === bp.id) {
+          camGoalTarget.set(pos.x, 1.8, pos.z);
+        }
+      });
+
+      // 4. Smooth Camera Interpolation
+      camTarget.lerp(camGoalTarget, 0.08);
+      camRadius += (camGoalRadius - camRadius) * 0.08;
+      camTheta += (camGoalTheta - camTheta) * 0.08;
+      camPhi += (camGoalPhi - camPhi) * 0.08;
+
+      camera3d.position.x = camTarget.x + camRadius * Math.sin(camPhi) * Math.sin(camTheta);
+      camera3d.position.y = camTarget.y + camRadius * Math.cos(camPhi);
+      camera3d.position.z = camTarget.z + camRadius * Math.sin(camPhi) * Math.cos(camTheta);
+      camera3d.lookAt(camTarget);
+
+      renderer3d.render(scene3d, camera3d);
+
+      // 5. Project 3D Head Positions to 2D Floating Anime Nameplates
+      chibiAgents.forEach(agent => {
+        const worldPos = new THREE.Vector3();
+        agent.parts.headGroup.getWorldPosition(worldPos);
+        worldPos.y += 1.25;
+        worldPos.project(camera3d);
+
+        if (worldPos.z > 1) {
+          agent.tagEl.style.display = "none";
+        } else {
+          const sx = (worldPos.x * 0.5 + 0.5) * W;
+          const sy = (-(worldPos.y * 0.5) + 0.5) * H;
+          agent.tagEl.style.display = "block";
+          agent.tagEl.style.left = `${sx}px`;
+          agent.tagEl.style.top = `${sy}px`;
+        }
+      });
+    }
+
+    // ============================================================================
+    // CẬP NHẬT DỮ LIỆU THỜI GIAN THỰC LÊN TOÀN BỘ 6 TAB & BONG BÓNG CHIBI 3D
+    // ============================================================================
+    function renderAllViews(d) {
+      document.getElementById("last-sync-time").textContent = "⏱️ Live Sync: " + (d.timestamp || "");
+
+      const hm = d.hermes || {};
+      const tr = d.trade_factory || {};
+      const pp = d.power_plant || {};
+      const fn = d.fnb_factory || {};
+      const sc = d.security || {};
+
+      // Update KPI Ribbon
+      const hmBadge = document.getElementById("kpi-hermes-badge");
+      hmBadge.textContent = hm.online ? "ONLINE" : "DEGRADED";
+      hmBadge.className = "status-pill " + (hm.online ? "ok" : "err");
+      document.getElementById("kpi-hermes-val").textContent = `PID ${hm.pid || 8588} • ${hm.stats?.total_messages || 0} Msgs`;
+
+      const trBadge = document.getElementById("kpi-trade-badge");
+      trBadge.textContent = tr.online ? "ONLINE :49199" : "OFFLINE";
+      trBadge.className = "status-pill " + (tr.online ? "ok" : "err");
+      const pnlVal = Number(tr.daily_realized_pnl || 0);
+      const pnlEl = document.getElementById("kpi-trade-pnl");
+      pnlEl.textContent = (pnlVal >= 0 ? "+" : "") + "$" + pnlVal.toFixed(2) + " USDT";
+      pnlEl.style.color = pnlVal >= 0 ? "var(--emerald)" : "var(--rose)";
+      document.getElementById("kpi-trade-sub").textContent =
+        `${tr.last_heartbeat || "10s Loop"} • F&G: ${tr.fear_and_greed?.value || 32} (${tr.fear_and_greed?.label || "Fear"})`;
+
+      const omniOk = pp.omniroute?.online;
+      const nineOk = pp.nine_router?.online;
+      const rtBadge = document.getElementById("kpi-router-badge");
+      rtBadge.textContent = (omniOk && nineOk) ? "DUAL ACTIVE" : (omniOk ? "OMNI ONLY" : "CHECK");
+      rtBadge.className = "status-pill " + ((omniOk && nineOk) ? "ok" : "warn");
+
+      document.getElementById("kpi-fnb-orders").textContent = `${fn.total_synced_orders || 0} Đơn Đã Ghi Sổ`;
+      document.getElementById("kpi-sec-sub").textContent = `Uptime: ${Math.floor((sc.uptime_seconds || 0) / 60)}m • Phiên: ${sc.active_sessions || 1}`;
+
+      // Update 3D Chibi Floating Speech Bubbles with Live Data
+      const bubUpdates = {
+        qwen4_brain: `PID ${hm.pid || 8588} • 1M Context • ${hm.stats?.total_sessions || 0} Sessions`,
+        alice_tele: `@alicewordbot (${hm.telegram?.state || "connected"}) • ${hm.stats?.total_messages || 0} Msgs`,
+        omniroute_chan: `OmniRoute :20129 (${pp.omniroute?.total_models || 595} Models • 45 Combos)`,
+        rtk_caveman: "RTK + Caveman 12-Stage • Nén 60-85% Token",
+        deepseek_9router: `9Router :20128 (${pp.nine_router?.online ? "ONLINE" : "STANDBY"}) • 511ms`,
+        solar_cowork: "Delegation: upstage/solar-mini4:free + auto/fast",
+        watchdog_bot: `Đang bảo vệ ${hm.stats?.active_cron_jobs || 3} Cronjobs & Tự hồi sinh 24/7`,
+        rexapf_sniper: `${tr.last_heartbeat || "Quét 10s/lần"} • Latency ${tr.cycle_latency_sec || 0.71}s`,
+        whale_detective: `Fear & Greed: ${tr.fear_and_greed?.value || 32} (${tr.fear_and_greed?.label || "Fear"})`,
+        gemini_arbiter: `PnL Hôm nay: +$${pnlVal.toFixed(2)} • ${tr.self_learning?.total_lessons || 23} Luật Chống Lỗ`,
+        tuyetmai_pos: `Đã ghi sổ ${fn.total_synced_orders || 52} đơn 3 Quán F&B • Food Cost 35%`,
+        baongoc_agency: "9 Agency Tinh Hoa • 99 Ảnh Món HD • AOV +28%"
+      };
+      Object.entries(bubUpdates).forEach(([cid, text]) => {
+        const el = document.getElementById("chibi-bub-" + cid);
+        if (el) el.textContent = text;
+      });
+
+      renderFactoryFloor(d);
+
+      const hmTerm = document.getElementById("floor-hermes-terminal");
+      hmTerm.innerHTML = (hm.agent_logs || []).map(l => `<div class="terminal-line">${escapeHtml(l)}</div>`).join("") || "Không có log.";
+      const trTerm = document.getElementById("floor-trade-terminal");
+      trTerm.innerHTML = (tr.logs || []).map(l => `<div class="terminal-line">${escapeHtml(l)}</div>`).join("") || "Không có log.";
+
+      renderTradeView(tr);
+      renderFnbView(fn);
+      renderSecurityView(sc, hm.active_crons || []);
+    }
+
+    function renderFactoryFloor(d) {
+      const hm = d.hermes || {};
+      const tr = d.trade_factory || {};
+      const pp = d.power_plant || {};
+      const fn = d.fnb_factory || {};
+
+      const lastHermesLog = (hm.agent_logs && hm.agent_logs.length) ? hm.agent_logs[hm.agent_logs.length - 1] : "Listening for Telegram/WhatsApp events...";
+      const lastTradeLog = (tr.logs && tr.logs.length) ? tr.logs[tr.logs.length - 1] : "Scanning BTCUSDT, BNBUSDT, SOLUSDT...";
+      const coinSummary = (tr.coins && tr.coins.length)
+        ? tr.coins.map(c => `${c.symbol}: ${c.signal_15m} (WT1=${c.wt1})`).join(" | ")
+        : (tr.last_heartbeat || "15m WaveTrend Active");
+
+      const lines = [
+        {
+          id: "line_power",
+          title: "DÂY CHUYỀN 1 — TRẠM ĐIỆN HẠT NHÂN AI & BỘ ĐỊNH TUYẾN ĐA TẦNG (AI POWER PLANT)",
+          tag: "595 MODELS • 45 AUTO-COMBOS • ZERO COST",
+          stations: [
+            {
+              id: "st_gcp",
+              icon: "☁️",
+              name: "Google Cloud & 3x Gemini Pool",
+              status: "ONLINE",
+              role: "Project project-104b6acd-1607-4a2d-ac5 + 3 Free Tier Projects (0393856028, 0859222007, 510912-r0)",
+              bubble: "Gemini 2.5 Flash / Pro • Unbilled Tier 100% Free",
+              detail: JSON.stringify(pp.google_cloud, null, 2)
+            },
+            {
+              id: "st_omni",
+              icon: "⚡",
+              name: "OmniRoute v3.8.54 (:20129)",
+              status: pp.omniroute?.online ? "ONLINE" : "OFFLINE",
+              role: "595 Models • 45 Auto-Combos (auto/fast, auto/coding) • OpenCode Zen + Cloudflare + Pollinations",
+              bubble: "MCP Stream: http://localhost:20129/api/mcp/stream",
+              detail: JSON.stringify(pp.omniroute, null, 2)
+            },
+            {
+              id: "st_rtk",
+              icon: "🗜️",
+              name: "Máy Nén Token RTK + Caveman",
+              status: "ACTIVE",
+              role: "12-Stage Token Compression Pipeline tích hợp trực tiếp trước mọi lệnh gọi LLM",
+              bubble: "Tiết kiệm 60% - 85% băng thông context window",
+              detail: "Cơ chế nén 12 tầng RTK + Caveman loại bỏ khoảng trắng thừa, rút gọn JSON schema và tối ưu lịch sử hội thoại."
+            },
+            {
+              id: "st_9router",
+              icon: "🚀",
+              name: "9Router (:20128) & Nous OAuth",
+              status: pp.nine_router?.online ? "ONLINE" : "OFFLINE",
+              role: "Nous Portal (qwen4-max:free 1M ctx, solar-mini4:free) + 9Router (deepseek-v4.1-flash-free, gpt-5.6-luna)",
+              bubble: "Latency trung bình: 511ms • Tool-Calling 100%",
+              detail: JSON.stringify(pp.nine_router, null, 2)
+            }
+          ]
+        },
+        {
+          id: "line_hermes",
+          title: "DÂY CHUYỀN 2 — TRUNG TÂM ĐIỀU HÀNH HERMES GATEWAY & COWORK SUBAGENT SWARM",
+          tag: `PID ${hm.pid || 8588} • TELEGRAM & WHATSAPP CONNECTED`,
+          stations: [
+            {
+              id: "st_tg_wa",
+              icon: "📲",
+              name: "Cổng Giao Tiếp Đa Kênh",
+              status: hm.online ? "CONNECTED" : "CHECK",
+              role: "Telegram Bot @alicewordbot (Zero-Trust Whitelist: Anh Khánh & Trí Trần) + WhatsApp Bridge (:3000)",
+              bubble: `Sessions: ${hm.stats?.total_sessions || 0} | Tổng tin nhắn: ${hm.stats?.total_messages || 0}`,
+              detail: JSON.stringify({ telegram: hm.telegram, whatsapp: hm.whatsapp }, null, 2)
+            },
+            {
+              id: "st_main_brain",
+              icon: "🧠",
+              name: "Não Bộ Chính (Qwen4-Max 1M)",
+              status: "WORKING",
+              role: "Primary Model: qwen/qwen4-max:free (1,000,000 context) với 10 tầng Fallback Interleaved không bao giờ đứt",
+              bubble: lastHermesLog,
+              detail: JSON.stringify(hm.models, null, 2)
+            },
+            {
+              id: "st_cowork",
+              icon: "🤝",
+              name: "Xưởng Phân Việc Cowork Swarm",
+              status: "READY",
+              role: "Subagent Delegation Engine (upstage/solar-mini4:free + omniroute/auto/fast) xử lý song song đa tác vụ",
+              bubble: "Toolsets: terminal, file, web, browser, mcp-omniroute, cronjob",
+              detail: JSON.stringify(hm.recent_sessions, null, 2)
+            },
+            {
+              id: "st_watchdog",
+              icon: "🛡️",
+              name: "Robot Tuần Tra Watchdog 3 Phút",
+              status: "GUARDING",
+              role: `Đang chạy ${hm.stats?.active_cron_jobs || 3} Cronjobs: Tự động hồi sinh Trade Bot/OmniRoute & Báo đơn F&B mới`,
+              bubble: "watchdog_don_hang.py + watch_sam_mix.py + Morning Briefing",
+              detail: JSON.stringify(hm.active_crons, null, 2)
+            }
+          ]
+        },
+        {
+          id: "line_trade",
+          title: "DÂY CHUYỀN 3 — XƯỞNG LUYỆN KIM GIAO DỊCH CRYPTO FUTURES 24/7 (REXAPF v11.0)",
+          tag: `SINGLETON :49199 • PNL HÔM NAY: +$${Number(tr.daily_realized_pnl || 0).toFixed(2)} USDT`,
+          stations: [
+            {
+              id: "st_wave",
+              icon: "📊",
+              name: "Trạm 1: TechnicalWaveAgent",
+              status: tr.online ? "SCANNING" : "OFFLINE",
+              role: "Quét song song đa luồng (ThreadPoolExecutor) 15m WaveTrend WT1/WT2 + 1H EMA34/89 & VWAP",
+              bubble: coinSummary,
+              detail: JSON.stringify(tr.coins, null, 2)
+            },
+            {
+              id: "st_whale",
+              icon: "🐋",
+              name: "Trạm 2: WhaleFlow & News Engine",
+              status: tr.online ? "ACTIVE" : "OFFLINE",
+              role: "Theo dõi dòng tiền Cá Voi (Top Trader L/S, Taker Ratio, OI Delta Cache 45s) + Fear & Greed + RSS News",
+              bubble: `Fear & Greed: ${tr.fear_and_greed?.value || 32} (${tr.fear_and_greed?.label || "Fear"}) • Chu kỳ 0.71s`,
+              detail: lastTradeLog
+            },
+            {
+              id: "st_selflearn",
+              icon: "🧬",
+              name: "Trạm 3: SelfLearning & Gemini Veto",
+              status: "ENFORCING",
+              role: `Đối chiếu ${tr.self_learning?.total_lessons || 23} luật chống lỗ tự suy luận + Trọng tài tối cao Google Cloud Gemini 2.5 Flash`,
+              bubble: "Chặn bắt đáy ngược xu hướng 1H & Xung đột dòng tiền Cá Voi",
+              detail: JSON.stringify(tr.self_learning, null, 2)
+            },
+            {
+              id: "st_binance",
+              icon: "💰",
+              name: "Trạm 4: Multi-Account Executor",
+              status: tr.online ? "CONNECTED" : "OFFLINE",
+              role: "Thực thi lệnh đồng thời trên Tài khoản 1 (Anh Khánh) & Ví Trí 🐷 + Bắn tín hiệu về Group Trade Coin",
+              bubble: `Tổng lệnh đã ghi nhận: ${tr.trade_stats?.total_recorded_trades || 0} lệnh`,
+              detail: JSON.stringify(tr.accounts, null, 2)
+            }
+          ]
+        },
+        {
+          id: "line_fnb",
+          title: "DÂY CHUYỀN 4 — TỔ HỢP 3 QUÁN F&B, POS GOOGLE SHEETS & 9 AGENCY TINH HOA",
+          tag: `${fn.total_synced_orders || 0} ĐƠN ĐÃ ĐỒNG BỘ • HOTLINE 0931.811.872`,
+          stations: [
+            {
+              id: "st_cafe",
+              icon: "☕",
+              name: "Cafe Ăn Vặt Trạm Khởi Nghiệp",
+              status: "ACTIVE",
+              role: "36/5E Nguyễn Thị Ngâu, Đông Thạnh, Hóc Môn • Cà Phê Muối, Bạc Xỉu, Cá Viên Chiên Nước Mắm",
+              bubble: `Đã đồng bộ: ${fn.stores?.[0]?.synced_orders || 0} đơn hàng thực tế`,
+              detail: JSON.stringify(fn.stores?.[0], null, 2)
+            },
+            {
+              id: "st_comtam",
+              icon: "🍖",
+              name: "Cơm Tấm Sườn Nướng Than Hoa",
+              status: "ACTIVE",
+              role: "Trạm Khởi Nghiệp Cơm Tấm Sườn Bì Chả (45K) & Suất Gymer 2 Sườn (55K) • Web App & GAS POS",
+              bubble: `Đã đồng bộ: ${fn.stores?.[1]?.synced_orders || 0} đơn hàng thực tế`,
+              detail: JSON.stringify(fn.stores?.[1], null, 2)
+            },
+            {
+              id: "st_7a_sammix",
+              icon: "🥤",
+              name: "Food Station 7A & Sâm Mix Conic",
+              status: "ACTIVE",
+              role: "Bánh Bao Kẹp, Hamburger (<90s) & Trạm Nước Sâm Mix / Mía Mix Healthy (Conic Bình Chánh)",
+              bubble: `Đã đồng bộ: ${fn.stores?.[2]?.synced_orders || 0} đơn • Watchdog Sâm Mix 3m`,
+              detail: JSON.stringify(fn.stores?.[2], null, 2)
+            },
+            {
+              id: "st_9agency",
+              icon: "🏢",
+              name: "9 Agency AI & Kỹ Thuật Sáng Tạo",
+              status: fn.virtual_office_port_8088 ? "3D LIVE :8088" : "STANDBY",
+              role: "9 Chuyên gia AI (CEO, Ops, Tuyết Mai POS, Bảo Ngọc MKT, Visual Designer...) + AutoCAD MCP + AnyWear VTON",
+              bubble: "Tự động phân tích Food Cost 34-37% & Tối ưu 99 ảnh món HD",
+              detail: JSON.stringify(fn.agencies, null, 2)
+            }
+          ]
+        }
+      ];
+
+      const container = document.getElementById("factory-lines-container");
+      container.innerHTML = lines.map(line => `
+        <div class="production-line">
+          <div class="line-header">
+            <div class="line-title">${escapeHtml(line.title)}</div>
+            <span class="line-tag">${escapeHtml(line.tag)}</span>
+          </div>
+          <div class="stations-track">
+            ${line.stations.map(st => `
+              <div class="station-node" onclick='openInspector(${JSON.stringify(st.name)}, ${JSON.stringify(st.role)}, ${JSON.stringify(st.detail)})'>
+                <div class="station-top">
+                  <div class="station-icon-wrap">
+                    <span class="gear-spin">⚙️</span>
+                    <span style="font-size:18px;">${st.icon}</span>
+                    <span class="station-name">${escapeHtml(st.name)}</span>
+                  </div>
+                  <span class="status-pill ${st.status.includes('OFFLINE') ? 'err' : 'ok'}">${escapeHtml(st.status)}</span>
+                </div>
+                <div class="station-role">${escapeHtml(st.role)}</div>
+                <div class="station-bubble" title="${escapeHtml(st.bubble)}">▸ ${escapeHtml(st.bubble)}</div>
+                <div class="conveyor-belt-bar"><div class="conveyor-belt-fill"></div></div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function openInspector(title, role, detailText) {
+      document.getElementById("insp-title").textContent = "🔍 " + title;
+      document.getElementById("insp-body").innerHTML = `
+        <div style="margin-bottom:12px; color:var(--text-muted);">${escapeHtml(role)}</div>
+        <div style="font-size:11.5px; font-weight:700; color:var(--cyan); margin-bottom:6px;">DỮ LIỆU VI MẠCH & TRẠNG THÁI TRỰC TIẾP:</div>
+        <pre class="terminal-box" style="max-height:72vh; white-space:pre-wrap;">${escapeHtml(detailText)}</pre>
+      `;
+      document.getElementById("inspector-drawer").classList.add("open");
+    }
+
+    function closeInspector() {
+      document.getElementById("inspector-drawer").classList.remove("open");
+    }
+
+    function renderTradeView(tr) {
+      const coinsGrid = document.getElementById("trade-coins-cards");
+      const coins = tr.coins && tr.coins.length ? tr.coins : [
+        { symbol: "BTCUSDT", signal_15m: "NEUTRAL", wt1: -36.5, trend_1h: "BEARISH", flow_score: -30, flow_bias: "BEARISH", fng_val: 32, fng_label: "Fear", news_score: 0 },
+        { symbol: "BNBUSDT", signal_15m: "NEUTRAL", wt1: -34.0, trend_1h: "BEARISH", flow_score: -25, flow_bias: "BEARISH", fng_val: 32, fng_label: "Fear", news_score: 0 },
+        { symbol: "SOLUSDT", signal_15m: "NEUTRAL", wt1: -50.8, trend_1h: "BEARISH", flow_score: -25, flow_bias: "BEARISH", fng_val: 32, fng_label: "Fear", news_score: 0 }
+      ];
+      coinsGrid.innerHTML = coins.map(c => `
+        <div class="panel-card">
+          <div class="panel-title">
+            <span>🪙 ${escapeHtml(c.symbol)}</span>
+            <span class="status-pill ${c.trend_1h === 'BULLISH' ? 'ok' : 'warn'}">1H: ${escapeHtml(c.trend_1h)}</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-family:var(--font-mono); font-size:12px;">
+            <div>Tín hiệu 15m: <b style="color:var(--cyan);">${escapeHtml(c.signal_15m)}</b></div>
+            <div>WaveTrend WT1: <b>${c.wt1}</b></div>
+            <div>Whale Flow: <b style="color:${c.flow_score >= 0 ? 'var(--emerald)' : 'var(--rose)'};">${c.flow_score} (${escapeHtml(c.flow_bias)})</b></div>
+            <div>Fear & Greed: <b>${c.fng_val} (${escapeHtml(c.fng_label)})</b></div>
+            <div>News Score: <b>${c.news_score}</b></div>
+            <div>Cập nhật: <b>${escapeHtml(c.updated_at || 'Live 10s')}</b></div>
+          </div>
+        </div>
+      `).join("");
+
+      const accTbody = document.getElementById("trade-accounts-tbody");
+      accTbody.innerHTML = (tr.accounts || []).map(a => `
+        <tr>
+          <td><b>${escapeHtml(a.name)}</b></td>
+          <td style="font-family:var(--font-mono); color:var(--text-muted);">${escapeHtml(a.api_key_masked)}</td>
+          <td style="font-family:var(--font-mono); font-weight:700; color:${a.daily_realized_pnl >= 0 ? 'var(--emerald)' : 'var(--rose)'};">
+            ${a.daily_realized_pnl >= 0 ? '+' : ''}$${a.daily_realized_pnl} USDT
+          </td>
+          <td style="font-family:var(--font-mono);">${a.daily_entries} lệnh</td>
+          <td><span class="status-pill ${a.circuit_breaker ? 'err' : 'ok'}">${a.circuit_breaker ? 'TRIGGERED' : 'SAFE'}</span></td>
+        </tr>
+      `).join("");
+
+      document.getElementById("trade-lessons-count").textContent = `${tr.self_learning?.total_lessons || 0} Luật Chống Lỗ`;
+      const lessonsList = document.getElementById("trade-lessons-list");
+      lessonsList.innerHTML = (tr.self_learning?.recent_rules || []).map(r => `
+        <div style="padding:10px 12px; border-radius:10px; background:rgba(3,7,18,0.8); border-left:3px solid var(--amber); font-size:12px;">
+          <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); color:var(--amber); margin-bottom:4px;">
+            <span>[${escapeHtml(r.symbol)}] ${escapeHtml(r.id)}</span>
+            <span>Mẫu lỗ: -$${r.loss_amount} (${escapeHtml(r.timestamp)})</span>
+          </div>
+          <div style="color:var(--text-main);">${escapeHtml(r.rule)}</div>
+        </div>
+      `).join("");
+
+      const histTbody = document.getElementById("trade-history-tbody");
+      histTbody.innerHTML = (tr.trade_stats?.recent_trades || []).map(t => {
+        const pnl = Number(t.pnl || 0);
+        const ctx = t.context || {};
+        return `
+          <tr>
+            <td style="font-family:var(--font-mono);">${escapeHtml(t.timestamp)}</td>
+            <td><b>${escapeHtml(t.symbol)}</b></td>
+            <td><span class="status-pill ${t.side === 'BUY' ? 'ok' : 'warn'}">${escapeHtml(t.side)}</span></td>
+            <td style="font-family:var(--font-mono);">${t.entry_price} ➔ ${t.exit_price}</td>
+            <td style="font-family:var(--font-mono); font-weight:700; color:${pnl >= 0 ? 'var(--emerald)' : 'var(--rose)'};">
+              ${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}
+            </td>
+            <td style="font-family:var(--font-mono);">${Number(t.roi || 0).toFixed(1)}%</td>
+            <td style="font-family:var(--font-mono); font-size:11px;">${escapeHtml(t.reason)}</td>
+            <td style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">
+              1H:${escapeHtml(ctx.htf_trend)} | WT1:${ctx.wt1} | Flow:${ctx.flow_score} | F&G:${ctx.fng_val}
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderFnbView(fn) {
+      const storesGrid = document.getElementById("fnb-stores-grid");
+      storesGrid.innerHTML = (fn.stores || []).map(s => `
+        <div class="panel-card">
+          <div class="panel-title">
+            <span>🏪 ${escapeHtml(s.name)}</span>
+            <span class="status-pill ok">${s.synced_orders} ĐƠN</span>
+          </div>
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">
+            📍 ${escapeHtml(s.address)}<br/>
+            📞 Hotline: <b>${escapeHtml(s.hotline)}</b> • Trạng thái: <b style="color:var(--emerald);">${escapeHtml(s.status)}</b>
+          </div>
+          <div style="font-size:11.5px; font-weight:700; color:var(--cyan); margin-bottom:6px;">GHI NHỚ CHIẾN LƯỢC TỪ AI AGENCY:</div>
+          <div style="display:flex; flex-direction:column; gap:7px;">
+            ${(s.memories || []).map(m => `
+              <div style="padding:8px 10px; border-radius:8px; background:rgba(3,7,18,0.8); border-left:2px solid var(--cyan); font-size:11.5px;">
+                <b style="color:var(--emerald);">${escapeHtml(m.agent)}:</b> ${escapeHtml(m.insight)}
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `).join("");
+
+      const agGrid = document.getElementById("fnb-agencies-grid");
+      agGrid.innerHTML = (fn.agencies || []).map(a => `
+        <div class="station-node" style="cursor:default;">
+          <div class="station-top">
+            <span class="station-name">🤖 ${escapeHtml(a.name)}</span>
+            <span class="status-pill ok">${escapeHtml(a.state)}</span>
+          </div>
+          <div class="station-role">${escapeHtml(a.role)}</div>
+          <div class="station-bubble">Engine: ${escapeHtml(a.engine)}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderSecurityView(sc, crons) {
+      const specTable = document.getElementById("security-specs-table");
+      specTable.innerHTML = `
+        <tr><th>Cơ chế Băm Mật Khẩu</th><td>${escapeHtml(sc.auth_scheme)}</td></tr>
+        <tr><th>Bảo vệ Phiên (Session)</th><td>${escapeHtml(sc.session_protection)}</td></tr>
+        <tr><th>Chống Brute-Force</th><td>${escapeHtml(sc.brute_force_shield)}</td></tr>
+        <tr><th>OWASP HTTP Headers</th><td>${escapeHtml(sc.owasp_headers)}</td></tr>
+        <tr><th>Telegram Zero-Trust Lock</th><td>${escapeHtml(sc.telegram_zero_trust)}</td></tr>
+        <tr><th>IP Đang Bị Khóa</th><td>${(sc.locked_ips && sc.locked_ips.length) ? escapeHtml(sc.locked_ips.join(", ")) : "0 IP (An toàn tuyệt đối)"}</td></tr>
+      `;
+
+      const cronTbody = document.getElementById("cron-jobs-tbody");
+      cronTbody.innerHTML = crons.map(c => `
+        <tr>
+          <td style="font-family:var(--font-mono); color:var(--cyan);">${escapeHtml(c.id)}</td>
+          <td><b>${escapeHtml(c.name)}</b><br/><span style="font-size:11px; color:var(--text-muted);">${escapeHtml(c.script)}</span></td>
+          <td style="font-family:var(--font-mono);">${escapeHtml(c.schedule)}</td>
+          <td style="font-family:var(--font-mono);">${c.completed} lần</td>
+          <td><span class="status-pill ok">${escapeHtml(c.last_status)}</span></td>
+        </tr>
+      `).join("");
+
+      const auditTbody = document.getElementById("security-audit-tbody");
+      auditTbody.innerHTML = (sc.audit_logs || []).map(a => `
+        <tr>
+          <td style="font-family:var(--font-mono);">${escapeHtml(a.time)}</td>
+          <td><span class="status-pill ${a.severity === 'INFO' ? 'ok' : (a.severity === 'WARN' ? 'warn' : 'err')}">${escapeHtml(a.severity)}</span></td>
+          <td style="font-family:var(--font-mono); font-weight:700;">${escapeHtml(a.event)}</td>
+          <td style="font-family:var(--font-mono);">${escapeHtml(a.ip)}</td>
+          <td>${escapeHtml(a.detail)}</td>
+        </tr>
+      `).join("");
+    }
+
+    // ==================== INTERACTIVE NODE DAG ENGINE (CANVAS) ====================
+    const dagCanvas = document.getElementById("dag-canvas");
+    const ctx = dagCanvas.getContext("2d");
+    let dagNodes = [];
+    let dagEdges = [];
+    let dagParticles = [];
+    let particleSpeedMultiplier = 1.0;
+
+    function initDagGraph() {
+      dagNodes = [
+        { id: "gcp", label: "Google Cloud\nproject-104b6acd", x: 0.09, y: 0.16, color: "#00f2fe", info: "Google Cloud Primary Project của Nguyễn Tân Khanh" },
+        { id: "gem_pool", label: "3x Gemini Free Pool\n(0393856028 / 0859222007)", x: 0.09, y: 0.38, color: "#00f2fe", info: "3 Project Gemini 2.5 Flash/Pro Unbilled Free Tier 100%" },
+        { id: "nous", label: "Nous Portal OAuth\nQwen4-Max 1M & Solar", x: 0.09, y: 0.62, color: "#00f2fe", info: "Nous Research Free OAuth: Qwen4-Max 1M ctx, Solar-Mini4, Step-3.7" },
+        { id: "zen_cf", label: "OpenCode Zen &\nCloudflare / Pollinations", x: 0.09, y: 0.84, color: "#00f2fe", info: "Các nguồn AI miễn phí tích hợp trong OmniRoute" },
+
+        { id: "omni", label: "OmniRoute v3.8.54\n(:20129 • 595 Models)", x: 0.29, y: 0.28, color: "#a855f7", info: "OmniRoute Gateway chạy tại localhost:20129 với 45 Auto-Combos" },
+        { id: "rtk", label: "RTK + Caveman\n12-Stage Compressor", x: 0.29, y: 0.52, color: "#a855f7", info: "Nén 60-85% token trước khi gửi tới LLM" },
+        { id: "nine", label: "9Router v0.5.119\n(:20128 • DeepSeek/Codex)", x: 0.29, y: 0.76, color: "#a855f7", info: "9Router chạy tại localhost:20128 (oc/deepseek-v4.1-flash-free)" },
+
+        { id: "hermes", label: "Hermes Gateway\n(PID 8588 • @alicewordbot)", x: 0.50, y: 0.22, color: "#10b981", info: "Hermes Agent Bot kết nối Telegram & WhatsApp 24/7" },
+        { id: "cowork", label: "Cowork Subagent\nDelegation Swarm", x: 0.50, y: 0.48, color: "#10b981", info: "Subagent xử lý đa tác vụ song song với upstage/solar-mini4:free" },
+        { id: "watchdog", label: "Watchdog Healer\nCron (3 Phút/Lần)", x: 0.50, y: 0.76, color: "#10b981", info: "watchdog_don_hang.py & watch_sam_mix.py tự động hồi sinh daemon" },
+
+        { id: "tr_wave", label: "TechnicalWave &\nWhaleFlow Agent", x: 0.72, y: 0.16, color: "#f59e0b", info: "Quét 15m WaveTrend + 1H EMA/VWAP + Dòng tiền Cá Voi 45s" },
+        { id: "tr_learn", label: "SelfLearning 23 Rules\n& Gemini Risk Arbiter", x: 0.72, y: 0.38, color: "#f59e0b", info: "Bộ nhớ chống lỗ tự suy luận & Trọng tài Gemini 2.5 Flash" },
+        { id: "fnb_pos", label: "3 Quán F&B POS\nGoogle Sheets Webhook", x: 0.72, y: 0.64, color: "#f43f5e", info: "Đồng bộ đơn hàng Cafe Đông Thạnh, Cơm Tấm, Food Station 7A" },
+        { id: "agencies", label: "9 Agency AI Tinh Hoa\nVirtual Office (:8088)", x: 0.72, y: 0.86, color: "#f43f5e", info: "9 Chuyên gia AI điều hành thực đơn, giá vốn & marketing" },
+
+        { id: "binance", label: "Binance Futures 2 Ví\n(Anh Khánh & Ví Trí 🐷)", x: 0.91, y: 0.26, color: "#f59e0b", info: "Thực thi lệnh thực tế & báo cáo Group Trade Coin -1003756028843" },
+        { id: "stores_out", label: "Báo Đơn Telegram &\nSổ Tat_Ca_Don_Hang.txt", x: 0.91, y: 0.74, color: "#f43f5e", info: "Bắn thông báo đơn hàng mới tức thì về Telegram Chủ quán" }
+      ];
+
+      dagEdges = [
+        ["gcp", "omni"], ["gem_pool", "omni"], ["gem_pool", "tr_learn"],
+        ["nous", "rtk"], ["zen_cf", "omni"], ["omni", "rtk"], ["nine", "rtk"],
+        ["rtk", "hermes"], ["rtk", "cowork"], ["hermes", "cowork"],
+        ["hermes", "watchdog"], ["watchdog", "tr_wave"], ["watchdog", "fnb_pos"],
+        ["tr_wave", "tr_learn"], ["tr_learn", "binance"], ["cowork", "agencies"],
+        ["fnb_pos", "stores_out"], ["agencies", "stores_out"]
+      ];
+
+      dagParticles = [];
+      dagEdges.forEach(([fromId, toId]) => {
+        for (let i = 0; i < 2; i++) {
+          dagParticles.push({
+            fromId,
+            toId,
+            t: Math.random(),
+            speed: 0.004 + Math.random() * 0.004
+          });
+        }
+      });
+    }
+
+    function resizeDagCanvas() {
+      const rect = dagCanvas.parentElement.getBoundingClientRect();
+      dagCanvas.width = rect.width || 1100;
+      dagCanvas.height = rect.height || 650;
+    }
+
+    function boostDagParticles() {
+      particleSpeedMultiplier = 3.2;
+      showToast("⚡ Đã kích hoạt xung tín hiệu cao tốc trên toàn mạch Node DAG!");
+      setTimeout(() => { particleSpeedMultiplier = 1.0; }, 3500);
+    }
+
+    function drawDagFrame() {
+      const W = dagCanvas.width;
+      const H = dagCanvas.height;
+      if (W > 0 && H > 0) {
+        ctx.clearRect(0, 0, W, H);
+        const nodeMap = {};
+        dagNodes.forEach(n => { nodeMap[n.id] = n; });
+
+        dagEdges.forEach(([fId, tId]) => {
+          const n1 = nodeMap[fId];
+          const n2 = nodeMap[tId];
+          if (!n1 || !n2) return;
+          const x1 = n1.x * W, y1 = n1.y * H;
+          const x2 = n2.x * W, y2 = n2.y * H;
+          const cx1 = x1 + (x2 - x1) * 0.5;
+          const cx2 = x1 + (x2 - x1) * 0.5;
+
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.bezierCurveTo(cx1, y1, cx2, y2, x2, y2);
+          ctx.strokeStyle = "rgba(56, 189, 248, 0.24)";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        });
+
+        dagParticles.forEach(p => {
+          p.t += p.speed * particleSpeedMultiplier;
+          if (p.t > 1) p.t = 0;
+          const n1 = nodeMap[p.fromId];
+          const n2 = nodeMap[p.toId];
+          if (!n1 || !n2) return;
+          const x1 = n1.x * W, y1 = n1.y * H;
+          const x2 = n2.x * W, y2 = n2.y * H;
+          const cx1 = x1 + (x2 - x1) * 0.5;
+          const cx2 = x1 + (x2 - x1) * 0.5;
+          const t = p.t;
+          const mt = 1 - t;
+          const px = mt*mt*mt*x1 + 3*mt*mt*t*cx1 + 3*mt*t*t*cx2 + t*t*t*x2;
+          const py = mt*mt*mt*y1 + 3*mt*mt*t*y1  + 3*mt*t*t*y2  + t*t*t*y2;
+
+          ctx.beginPath();
+          ctx.arc(px, py, 4, 0, Math.PI * 2);
+          ctx.fillStyle = n1.color;
+          ctx.shadowColor = n1.color;
+          ctx.shadowBlur = 12;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        });
+
+        dagNodes.forEach(n => {
+          const nx = n.x * W;
+          const ny = n.y * H;
+          const boxW = 168;
+          const boxH = 56;
+
+          ctx.save();
+          ctx.fillStyle = "rgba(11, 18, 35, 0.94)";
+          ctx.strokeStyle = n.color;
+          ctx.lineWidth = 1.8;
+          ctx.beginPath();
+          ctx.roundRect(nx - boxW / 2, ny - boxH / 2, boxW, boxH, 11);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(nx - boxW / 2 + 12, ny - boxH / 2 + 12, 4, 0, Math.PI * 2);
+          ctx.fillStyle = n.color;
+          ctx.fill();
+
+          ctx.fillStyle = "#f8fafc";
+          ctx.font = "700 11.5px 'Plus Jakarta Sans', sans-serif";
+          ctx.textAlign = "center";
+          const lines = n.label.split("\n");
+          lines.forEach((line, idx) => {
+            ctx.fillText(line, nx + 4, ny - 4 + idx * 16);
+          });
+          ctx.restore();
+        });
+      }
+      requestAnimationFrame(drawDagFrame);
+    }
+
+    dagCanvas.addEventListener("click", (e) => {
+      const rect = dagCanvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const W = dagCanvas.width;
+      const H = dagCanvas.height;
+      for (const n of dagNodes) {
+        const nx = n.x * W;
+        const ny = n.y * H;
+        if (Math.abs(mx - nx) <= 84 && Math.abs(my - ny) <= 28) {
+          openInspector(n.label.replace("\n", " — "), n.info, JSON.stringify(LATEST_DATA || {}, null, 2));
+          break;
+        }
+      }
+    });
+
+    window.addEventListener("resize", resizeDagCanvas);
+
+    // Khởi tạo
+    initChibiFactory3D();
+    initDagGraph();
+    resizeDagCanvas();
+    requestAnimationFrame(drawDagFrame);
+
+    (async function bootCheck() {
+      if (SESSION_TOKEN && !IS_STATIC_CLOUD_MODE) {
+        await fetchFactoryTelemetry();
+        startPolling();
+      }
+    })();
+  </script>
+</body>
+</html>
