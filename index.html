@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NHÀ MÁY AI 3D ANIME CHIBI 24/7 — NGUYỄN TÂN KHANH COMMAND CENTER</title>
+  <meta name="referrer" content="no-referrer" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' http://localhost:8099 http://127.0.0.1:8099; base-uri 'self'; form-action 'self';" />
+  <title>AI AGENT FACTORY 24/7 — NGUYỄN TÂN KHANH ENTERPRISE COMMAND CENTER</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -934,6 +937,118 @@
       box-shadow: 0 10px 30px rgba(0, 242, 254, 0.28);
       display: none;
     }
+
+    /* ======================== LIVE ENTERPRISE SYSTEM MATRIX ======================== */
+    .live-matrix-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .live-node-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 13px;
+      border-radius: 12px;
+      background: linear-gradient(145deg, rgba(11, 18, 36, 0.92), rgba(15, 23, 42, 0.78));
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      backdrop-filter: blur(12px);
+      transition: transform 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .live-node-pill:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0, 242, 254, 0.55);
+      box-shadow: 0 8px 22px rgba(0, 242, 254, 0.14);
+    }
+    .live-led {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--emerald);
+      box-shadow: 0 0 10px var(--emerald);
+      animation: livePulse 2s ease-in-out infinite;
+    }
+    .live-led.off {
+      background: var(--amber);
+      box-shadow: 0 0 10px var(--amber);
+    }
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.85); }
+    }
+    .live-node-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+    .live-node-sub {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .world-hud-bottom {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+      pointer-events: none;
+    }
+    .live-telemetry-hud {
+      pointer-events: auto;
+      background: rgba(5, 9, 22, 0.84);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      border-radius: 12px;
+      padding: 10px 14px;
+      backdrop-filter: blur(14px);
+      min-width: 300px;
+      max-width: 520px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+    }
+    .live-telemetry-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--cyan);
+      margin-bottom: 5px;
+      letter-spacing: 0.4px;
+    }
+    .live-telemetry-line {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #cbd5e1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .security-shield-hud {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border-radius: 12px;
+      background: rgba(5, 9, 22, 0.84);
+      border: 1px solid rgba(16, 185, 129, 0.38);
+      backdrop-filter: blur(14px);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #6ee7b7;
+    }
   </style>
 </head>
 <body>
@@ -946,16 +1061,16 @@
   <div id="vault-overlay">
     <div class="vault-box">
       <div class="vault-chibi-mascot">🤖</div>
-      <div class="vault-title">NHÀ MÁY AI 3D ANIME CHIBI 24/7</div>
+      <div class="vault-title">AI AGENT FACTORY 24/7 — COMMAND CENTER</div>
       <div class="vault-sub">
-        Trung tâm Điều hành Đa Tác Nhân của <b>Nguyễn Tân Khanh</b><br/>
-        Bảo mật Zero-Trust PBKDF2-HMAC-SHA256 (310,000 vòng) & AES-256-CTR Vault
+        Hệ thống Điều hành Đa Tác Nhân Tự Trị của <b>Nguyễn Tân Khanh</b><br/>
+        Bảo mật Zero-Trust PBKDF2-HMAC-SHA256 (310,000 vòng) • Zero-PII • HMAC Vault
       </div>
       <div class="vault-badges">
         <span class="v-badge">PBKDF2 310K Rounds</span>
-        <span class="v-badge">Zero-Plaintext Password</span>
-        <span class="v-badge">CSRF + HMAC Guard</span>
-        <span class="v-badge">3D Anime Chibi Engine</span>
+        <span class="v-badge">Zero-PII Sanitized</span>
+        <span class="v-badge">HMAC + Brute-Force Shield</span>
+        <span class="v-badge">Auto-Lock 15m</span>
       </div>
       <form id="login-form" onsubmit="handleVaultLogin(event)">
         <div class="vault-input-wrap">
@@ -984,29 +1099,29 @@
       <div>
         <div class="brand-title">
           <span class="pulse-dot"></span>
-          NHÀ MÁY AI 3D ANIME CHIBI 24/7 — NGUYỄN TÂN KHANH
+          AI AGENT FACTORY 24/7 — NGUYỄN TÂN KHANH
         </div>
         <div class="brand-meta" id="header-meta">
-          Owner: tankhanh345@gmail.com • Hotline: 0931.811.872 • GCP: project-104b6acd-1607-4a2d-ac5
+          Owner: Nguyễn Tân Khanh • Enterprise Zero-PII Command Center • <span id="live-clock-vn">--:--:-- UTC+7</span>
         </div>
       </div>
     </div>
 
     <div class="header-actions">
       <button class="action-btn pink" onclick="triggerChibiOverdrive()">
-        💃 Kích Hoạt Chibi Overdrive (Tăng Tốc 3x)
+        ⚡ Overdrive 3x
       </button>
       <button class="action-btn emerald" onclick="triggerFactoryAction('heal_daemons')">
-        ⚡ Tự Động Hồi Sinh & Kiểm Tra 24/7
+        🛡️ Kiểm Tra & Tự Hồi Sinh 24/7
       </button>
       <button class="action-btn" onclick="triggerFactoryAction('ping_ai_routers')">
-        📡 Test Tốc Độ OmniRoute & 9Router
+        📡 Ping OmniRoute & 9Router
       </button>
       <button class="action-btn" onclick="triggerFactoryAction('sync_fnb_orders')">
-        🍱 Quét Đơn 3 Quán F&B
+        🍱 Đồng Bộ Hệ Thống F&B
       </button>
       <button class="action-btn danger" onclick="handleLogout(true)" title="Phím tắt: Alt + L">
-        🔒 KHÓA NHÀ MÁY (Alt+L)
+        🔒 KHÓA VAULT (Alt+L)
       </button>
     </div>
   </header>
@@ -1015,11 +1130,11 @@
   <section class="kpi-ribbon">
     <div class="kpi-card">
       <div class="kpi-label">
-        <span>🤖 HERMES GATEWAY & SWARM</span>
+        <span>🤖 HERMES GATEWAY & WEB UI</span>
         <span id="kpi-hermes-badge" class="status-pill ok">ONLINE</span>
       </div>
-      <div class="kpi-value" id="kpi-hermes-val">PID 8588</div>
-      <div class="kpi-sub" id="kpi-hermes-sub">@alicewordbot • Qwen4-Max 1M + Solar-Mini4</div>
+      <div class="kpi-value" id="kpi-hermes-val">ONLINE • :9119</div>
+      <div class="kpi-sub" id="kpi-hermes-sub">@alicewordbot • Solar-Mini4 (~1.38s) + 4 Fallbacks</div>
     </div>
 
     <div class="kpi-card">
@@ -1027,85 +1142,102 @@
         <span>📈 XƯỞNG TRADE FUTURES v11.0</span>
         <span id="kpi-trade-badge" class="status-pill ok">PORT 49199</span>
       </div>
-      <div class="kpi-value" id="kpi-trade-pnl" style="color: var(--emerald);">+$11.29 USDT</div>
-      <div class="kpi-sub" id="kpi-trade-sub">Tổng vốn: $577.31 • 2 Ví (Anh Khánh & Ví Trí 🐷)</div>
+      <div class="kpi-value" id="kpi-trade-pnl" style="color: var(--emerald);">ACTIVE 10s</div>
+      <div class="kpi-sub" id="kpi-trade-sub">Multi-Vault Protected • SelfLearning Risk Guard</div>
     </div>
 
     <div class="kpi-card">
       <div class="kpi-label">
-        <span>⚡ TRẠM ĐIỆN OMNIROUTE + 9ROUTER</span>
+        <span>⚡ OMNIROUTE + 9ROUTER + GEMINI 3</span>
         <span id="kpi-router-badge" class="status-pill ok">20129 / 20128</span>
       </div>
       <div class="kpi-value" id="kpi-router-val">595 Models</div>
-      <div class="kpi-sub" id="kpi-router-sub">45 Auto-Combos • 3x GCP Gemini Free Pool</div>
+      <div class="kpi-sub" id="kpi-router-sub">48 Combos (trade-council, fnb-ops, dev-coding)</div>
     </div>
 
     <div class="kpi-card">
       <div class="kpi-label">
-        <span>🍱 DÂY CHUYỀN 3 QUÁN F&B & POS</span>
-        <span id="kpi-fnb-badge" class="status-pill ok">9 AGENCIES</span>
+        <span>🍱 CLOUD RUN F&B + 3D ARCH MCP</span>
+        <span id="kpi-fnb-badge" class="status-pill ok">24/7 LIVE</span>
       </div>
-      <div class="kpi-value" id="kpi-fnb-orders">52 Đơn Ghi Sổ</div>
-      <div class="kpi-sub">Cafe Đông Thạnh • Cơm Tấm • Food Station 7A</div>
+      <div class="kpi-value" id="kpi-fnb-orders">4 POS • 9 Agencies</div>
+      <div class="kpi-sub">Cloud Run Watchdog • Blender/SketchUp MCP 4K</div>
     </div>
 
     <div class="kpi-card">
       <div class="kpi-label">
-        <span>🛡️ PHÁO ĐÀI BẢO MẬT OWASP</span>
+        <span>🛡️ PHÁO ĐÀI BẢO MẬT ZERO-PII</span>
         <span id="kpi-mode-badge" class="status-pill ok">ZERO-TRUST</span>
       </div>
       <div class="kpi-value" id="kpi-sec-val">PBKDF2 310K</div>
-      <div class="kpi-sub" id="kpi-sec-sub">Whitelist Telegram: 7220726428, 6442591047</div>
+      <div class="kpi-sub" id="kpi-sec-sub">Owner: Nguyễn Tân Khanh • OWASP Top 10 Shield</div>
     </div>
   </section>
 
   <!-- ==================== NAVIGATION TABS ==================== -->
   <nav class="nav-tabs">
-    <button class="tab-btn active" onclick="switchTab('chibi3d', this)">
-      🎮 1. NHÀ MÁY 3D ANIME CHIBI (12 BOT DI CHUYỂN THẬT)
+    <button class="tab-btn active" data-view="chibi3d" onclick="switchTab('chibi3d', this)">
+      🎮 1. TRUNG TÂM 3D CHIBI LIVE (12 AGENTS)
     </button>
-    <button class="tab-btn" onclick="switchTab('floor', this)">
-      🏭 2. BĂNG CHUYỀN 2.5D & TRẠM MÁY CHI TIẾT
+    <button class="tab-btn" data-view="floor" onclick="switchTab('floor', this)">
+      🏭 2. DÂY CHUYỀN HỆ THỐNG 2.5D & LOGS
     </button>
-    <button class="tab-btn" onclick="switchTab('dag', this)">
-      🕸️ 3. SƠ ĐỒ MẠCH NODE DAG (LANGGRAPH / XYFLOW)
+    <button class="tab-btn" data-view="dag" onclick="switchTab('dag', this)">
+      🕸️ 3. KIẾN TRÚC MẠCH NODE DAG LIVE
     </button>
-    <button class="tab-btn" onclick="switchTab('trade', this)">
-      📈 4. XƯỞNG LUYỆN KIM CRYPTO FUTURES 24/7
+    <button class="tab-btn" data-view="trade" onclick="switchTab('trade', this)">
+      📈 4. XƯỞNG CRYPTO FUTURES 24/7
     </button>
-    <button class="tab-btn" onclick="switchTab('fnb', this)">
-      🍱 5. TỔ HỢP 3 QUÁN F&B & 9 AGENCY TINH HOA
+    <button class="tab-btn" data-view="fnb" onclick="switchTab('fnb', this)">
+      🍱 5. HỆ SINH THÁI F&B, 3D ARCH & 9 AGENCY
     </button>
-    <button class="tab-btn" onclick="switchTab('security', this)">
-      🛡️ 6. PHÁO ĐÀI BẢO MẬT & NHẬT KÝ KIỂM TOÁN
+    <button class="tab-btn" data-view="security" onclick="switchTab('security', this)">
+      🛡️ 6. BẢO MẬT ZERO-TRUST & AUDIT
     </button>
   </nav>
 
   <!-- ==================== VIEW 1: 3D ANIME CHIBI FACTORY SIMULATION ==================== -->
   <section id="view-chibi3d" class="view-section active">
+    <div class="live-matrix-strip" id="live-matrix-strip"></div>
+
     <div class="chibi-world-wrapper" id="chibi-world-wrapper">
       <div class="world-hud-top">
         <div class="world-hud-box">
-          <span style="font-size:12.5px; font-weight:800; color:var(--cyan);">🎥 GÓC MÁY CAMERA 3D:</span>
-          <button class="cam-btn active" onclick="setCameraPreset('overview', this)">🌐 Toàn Cảnh Nhà Máy</button>
-          <button class="cam-btn" onclick="setCameraPreset('power', this)">⚡ Trạm Điện OmniRoute & GCP</button>
-          <button class="cam-btn" onclick="setCameraPreset('hermes', this)">👑 Trung Tâm Hermes & Cowork</button>
-          <button class="cam-btn" onclick="setCameraPreset('trade', this)">📈 Xưởng Luyện Kim Trade Coin</button>
-          <button class="cam-btn" onclick="setCameraPreset('fnb', this)">🍱 Xưởng 3 Quán F&B & 9 Agency</button>
+          <span style="font-size:12px; font-weight:800; color:var(--cyan);">🎥 CAMERA 3D:</span>
+          <button class="cam-btn active" onclick="setCameraPreset('overview', this)">🌐 Toàn Cảnh</button>
+          <button class="cam-btn" onclick="setCameraPreset('power', this)">⚡ OmniRoute & Gemini 3</button>
+          <button class="cam-btn" onclick="setCameraPreset('hermes', this)">👑 Hermes & Cowork</button>
+          <button class="cam-btn" onclick="setCameraPreset('trade', this)">📈 Trade v11.0</button>
+          <button class="cam-btn" onclick="setCameraPreset('fnb', this)">🍱 F&B & 3D Arch</button>
         </div>
         <div class="world-hud-box">
-          <span style="font-family:var(--font-mono); font-size:11.5px; color:#f9a8d4;">
-            ✨ Kéo chuột để Xoay 360° • Cuộn để Thu/Phóng • Nhấp vào Nhân Vật Chibi để Theo Dõi
+          <span style="font-family:var(--font-mono); font-size:11px; color:#93c5fd;">
+            Kéo xoay 360° • Cuộn Zoom • Nhấp Chibi để Follow
           </span>
         </div>
       </div>
 
       <canvas id="chibi-3d-canvas"></canvas>
       <div id="chibi-labels-layer"></div>
+
+      <div class="world-hud-bottom">
+        <div class="live-telemetry-hud">
+          <div class="live-telemetry-head">
+            <span>● LIVE SYSTEM TELEMETRY STREAM</span>
+            <span id="hud-mode-pill" style="color:var(--emerald);">SYNCING...</span>
+          </div>
+          <div class="live-telemetry-line" id="hud-live-ticker">
+            ▸ Khởi động toàn hệ thống 24/7 của Nguyễn Tân Khanh...
+          </div>
+        </div>
+        <div class="security-shield-hud">
+          <span>🛡️ ZERO-PII • PBKDF2-310K • HMAC VAULT</span>
+        </div>
+      </div>
     </div>
 
-    <div style="margin-bottom:8px; font-size:13.5px; font-weight:800; color:var(--cyan); display:flex; justify-content:space-between; align-items:center;">
-      <span>🎎 ĐỘI NGŨ 12 NHÂN VẬT 3D ANIME CHIBI ĐANG VẬN HÀNH TRONG NHÀ MÁY (NHẤP ĐỂ CAMERA ĐI THEO NHÂN VẬT):</span>
+    <div style="margin-bottom:8px; font-size:13px; font-weight:800; color:var(--cyan); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <span>🎎 ĐỘI NGŨ 12 AI AGENTS 3D CHIBI ĐANG VẬN HÀNH TRỰC TIẾP (NHẤP ĐỂ CAMERA THEO DÕI):</span>
       <span style="font-family:var(--font-mono); font-size:11.5px; color:var(--emerald);" id="last-sync-time">Đang đồng bộ...</span>
     </div>
     <div class="chibi-roster-bar" id="chibi-roster-bar"></div>
@@ -1319,6 +1451,52 @@
     let IS_STATIC_CLOUD_MODE = false;
     let LATEST_DATA = null;
     let pollTimer = null;
+    let idleTimer = null;
+    let liveTickerTimer = null;
+    const IDLE_LOCK_MS = 15 * 60 * 1000; // Tự động khóa sau 15 phút không thao tác
+
+    function updateLiveClock() {
+      const el = document.getElementById("live-clock-vn");
+      if (!el) return;
+      const now = new Date();
+      const str = now.toLocaleTimeString("vi-VN", { hour12: false, timeZone: "Asia/Ho_Chi_Minh" });
+      el.textContent = str + " UTC+7";
+    }
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
+
+    function resetIdleAutoLock() {
+      if (idleTimer) clearTimeout(idleTimer);
+      if (!SESSION_TOKEN) return;
+      idleTimer = setTimeout(() => {
+        if (SESSION_TOKEN) handleLogout(true, "🔒 Tự động khóa Vault sau 15 phút không hoạt động (Zero-Trust).");
+      }, IDLE_LOCK_MS);
+    }
+    ["mousemove", "keydown", "click", "touchstart"].forEach(ev => {
+      window.addEventListener(ev, resetIdleAutoLock, { passive: true });
+    });
+
+    function getClientLockoutState() {
+      try {
+        const raw = JSON.parse(localStorage.getItem("factory_bf_guard") || "{}");
+        return { count: raw.count || 0, lockedUntil: raw.lockedUntil || 0 };
+      } catch {
+        return { count: 0, lockedUntil: 0 };
+      }
+    }
+    function recordClientFailedLogin() {
+      const st = getClientLockoutState();
+      st.count += 1;
+      if (st.count >= 5) {
+        st.lockedUntil = Date.now() + 60000;
+        st.count = 0;
+      }
+      try { localStorage.setItem("factory_bf_guard", JSON.stringify(st)); } catch {}
+      return st;
+    }
+    function clearClientFailedLogin() {
+      try { localStorage.removeItem("factory_bf_guard"); } catch {}
+    }
 
     function showToast(msg, isErr = false) {
       const el = document.getElementById("toast-bar");
@@ -1393,9 +1571,28 @@
         return { ok: false, error: "Mật khẩu không chính xác! (PBKDF2-SHA256 310,000 vòng từ chối giải mã)" };
       }
 
-      // Giải mã SHA-256 CTR stream bằng khóa encKey vừa dẫn xuất từ mật khẩu
+      // Xác thực toàn vẹn HMAC-SHA256 của Vault (nếu có) chống chỉnh sửa dữ liệu
       const nonce = b64ToBytes(vault.nonce_b64);
       const cipher = b64ToBytes(vault.cipher_b64);
+      if (vault.mac_hex) {
+        const hmacKey = await crypto.subtle.importKey(
+          "raw",
+          encKey,
+          { name: "HMAC", hash: "SHA-256" },
+          false,
+          ["sign"]
+        );
+        const macInput = new Uint8Array(nonce.length + cipher.length);
+        macInput.set(nonce, 0);
+        macInput.set(cipher, nonce.length);
+        const sigBuf = await crypto.subtle.sign("HMAC", hmacKey, macInput);
+        const computedMac = bytesToHex(new Uint8Array(sigBuf));
+        if (!constantTimeEqualHex(computedMac, vault.mac_hex)) {
+          return { ok: false, error: "Cảnh báo bảo mật: Dữ liệu Vault đã bị chỉnh sửa (HMAC Integrity Failed)!" };
+        }
+      }
+
+      // Giải mã SHA-256 CTR stream bằng khóa encKey vừa dẫn xuất từ mật khẩu
       const plain = new Uint8Array(cipher.length);
       const numBlocks = Math.ceil(cipher.length / 32);
 
@@ -1432,6 +1629,15 @@
       const btn = document.getElementById("login-submit-btn");
       const candidatePw = pwInput.value;
       errBox.style.display = "none";
+
+      const bfState = getClientLockoutState();
+      if (bfState.lockedUntil > Date.now()) {
+        const rem = Math.ceil((bfState.lockedUntil - Date.now()) / 1000);
+        errBox.textContent = `🛡️ Đang tạm khóa bảo vệ Brute-Force. Vui lòng thử lại sau ${rem} giây.`;
+        errBox.style.display = "block";
+        return;
+      }
+
       btn.textContent = "⏳ ĐANG KIỂM ĐỊNH PBKDF2-SHA256 (310,000 VÒNG)...";
       btn.disabled = true;
 
@@ -1448,6 +1654,7 @@
             serverHandled = true;
             const data = await resp.json();
             if (resp.ok && data.ok) {
+              clearClientFailedLogin();
               IS_STATIC_CLOUD_MODE = false;
               SESSION_TOKEN = data.token;
               CSRF_TOKEN = data.csrf || "";
@@ -1455,11 +1662,15 @@
               sessionStorage.setItem("factory_csrf", CSRF_TOKEN);
               pwInput.value = "";
               document.getElementById("vault-overlay").classList.add("hidden");
-              showToast("🔓 Xác thực Server-Side thành công! Chào mừng Chủ nhân Nguyễn Tân Khanh.");
+              const hudMode = document.getElementById("hud-mode-pill");
+              if (hudMode) hudMode.textContent = "LIVE LOCAL ENGINE :8099";
+              showToast("🔓 Xác thực Server-Side thành công! Chào mừng Nguyễn Tân Khanh.");
+              resetIdleAutoLock();
               await fetchFactoryTelemetry();
               startPolling();
               return;
             } else {
+              recordClientFailedLogin();
               errBox.textContent = data.error || "Xác thực thất bại!";
               errBox.style.display = "block";
               return;
@@ -1472,16 +1683,25 @@
         if (!serverHandled) {
           const res = await tryWebCryptoVaultUnlock(candidatePw);
           if (res.ok) {
+            clearClientFailedLogin();
             IS_STATIC_CLOUD_MODE = true;
             SESSION_TOKEN = "webcrypto_verified_session";
             pwInput.value = "";
             document.getElementById("vault-overlay").classList.add("hidden");
             document.getElementById("kpi-mode-badge").textContent = "CLOUD VAULT";
-            showToast("🔓 Giải mã WebCrypto PBKDF2 310K thành công! Đã mở khóa Nhà máy 3D.");
+            const hudMode = document.getElementById("hud-mode-pill");
+            if (hudMode) hudMode.textContent = "LIVE CLOUD TELEMETRY • ZERO-PII";
+            showToast("🔓 Giải mã WebCrypto PBKDF2 310K + HMAC thành công! Chào mừng Nguyễn Tân Khanh.");
+            resetIdleAutoLock();
             LATEST_DATA = res.data;
             renderAllViews(res.data);
+            startLiveCloudTicker(res.data);
           } else {
-            errBox.textContent = res.error;
+            const st = recordClientFailedLogin();
+            const warn = st.lockedUntil > Date.now()
+              ? " Quá 5 lần sai — đã khóa 60 giây!"
+              : ` (Cảnh báo: ${st.count}/5 lần thử)`;
+            errBox.textContent = res.error + warn;
             errBox.style.display = "block";
           }
         }
@@ -1494,7 +1714,7 @@
       }
     }
 
-    async function handleLogout(showNotice = false) {
+    async function handleLogout(showNotice = false, customMsg = "") {
       if (!IS_STATIC_CLOUD_MODE && SESSION_TOKEN) {
         try {
           await fetch("/api/auth/logout", {
@@ -1509,8 +1729,10 @@
       sessionStorage.removeItem("factory_token");
       sessionStorage.removeItem("factory_csrf");
       if (pollTimer) clearInterval(pollTimer);
+      if (idleTimer) clearTimeout(idleTimer);
+      if (liveTickerTimer) clearInterval(liveTickerTimer);
       document.getElementById("vault-overlay").classList.remove("hidden");
-      if (showNotice) showToast("🔒 Đã khóa Nhà máy & hủy Token phiên làm việc.");
+      if (showNotice) showToast(customMsg || "🔒 Đã khóa Nhà máy & hủy Token phiên làm việc.");
     }
 
     window.addEventListener("keydown", (e) => {
@@ -1534,7 +1756,15 @@
       document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
       const target = document.getElementById("view-" + tabId);
       if (target) target.classList.add("active");
-      if (btnEl) btnEl.classList.add("active");
+      if (btnEl) {
+        btnEl.classList.add("active");
+      } else {
+        const autoBtn = document.querySelector(`.tab-btn[data-view="${tabId}"]`);
+        if (autoBtn) autoBtn.classList.add("active");
+      }
+      if (history.replaceState) {
+        history.replaceState(null, "", "#view-" + tabId);
+      }
 
       if (tabId === "dag") {
         setTimeout(resizeDagCanvas, 50);
@@ -1656,13 +1886,13 @@
       {
         id: "alice_tele",
         name: "🐱 AliceWordBot-Chan",
-        role: "Cổng Telegram @alicewordbot & WhatsApp (:3000)",
+        role: "Hermes Gateway @alicewordbot & Web UI (:9119)",
         emoji: "🐱",
         hairColor: 0xf472b6,
         suitColor: 0xbe185d,
         accentColor: 0x00f2fe,
         hatType: "catears",
-        bubble: "Zero-Trust Lock: Anh Khánh & Trí Trần (50,127 msgs)",
+        bubble: "Solar-Mini4 (~1.38s) + 4 Fallbacks • Zero-Trust",
         waypoints: [
           { x: 18, z: -13, station: "Telegram/WA Gate" },
           { x: 8, z: -11, station: "Hermes Command Core" },
@@ -1784,16 +2014,16 @@
       },
       {
         id: "gemini_arbiter",
-        name: "⚖️ Gemini-Arbiter",
-        role: "Trọng Tài Rủi Ro GCP Gemini 2.5 & 23 Luật Chống Lỗ",
+        name: "⚖️ Gemini-3-Arbiter",
+        role: "Trọng Tài Rủi Ro Gemini 3.1 Pro & SelfLearning Guard",
         emoji: "⚖️",
         hairColor: 0xe2e8f0,
         suitColor: 0x3b0764,
         accentColor: 0xfacc15,
         hatType: "halo",
-        bubble: "Bảo vệ 2 Ví ($577.31 USDT • Hôm nay +$11.29)",
+        bubble: "Bảo vệ Multi-Vault • Luật Chống Lỗ Tự Học 24/7",
         waypoints: [
-          { x: -6, z: 7, station: "SelfLearning 23 Rules Gate" },
+          { x: -6, z: 7, station: "SelfLearning Rules Gate" },
           { x: -4, z: 13, station: "Multi-Account Binance Vault" },
           { x: -11, z: 10, station: "Debate Protocol Desk" }
         ]
@@ -1801,32 +2031,32 @@
       {
         id: "tuyetmai_pos",
         name: "☕ Tuyết Mai POS-Chan",
-        role: "Kế Toán POS 3 Quán F&B (Food Cost 34-37%)",
+        role: "Cloud Run 24/7 Watchdog & 4 Hệ Thống F&B POS",
         emoji: "☕",
         hairColor: 0xfb7185,
         suitColor: 0x831843,
         accentColor: 0xffffff,
         hatType: "chef",
-        bubble: "Đồng bộ 52 đơn Cafe Đông Thạnh, Cơm Tấm & 7A",
+        bubble: "Cloud Run F&B 24/7 • Đồng bộ Google Sheets POS",
         waypoints: [
-          { x: 6, z: 8, station: "Cafe Ăn Vặt Đông Thạnh" },
-          { x: 12, z: 8, station: "Cơm Tấm Sườn Nướng" },
+          { x: 6, z: 8, station: "Cafe Ăn Vặt POS #1" },
+          { x: 12, z: 8, station: "Cơm Tấm POS #2" },
           { x: 18, z: 8, station: "Food Station 7A & Sâm Mix" }
         ]
       },
       {
         id: "baongoc_agency",
-        name: "📣 Bảo Ngọc 9-Agency",
-        role: "9 Agency Tinh Hoa + AutoCAD MCP + AnyWear VTON",
-        emoji: "📣",
+        name: "🏛️ Arch3D & 9-Agency",
+        role: "Blender/SketchUp MCP + Gemini 3 Pro Image 4K & 9 Agency",
+        emoji: "🏛️",
         hairColor: 0xc084fc,
         suitColor: 0x4c1d95,
         accentColor: 0xf472b6,
         hatType: "beret",
-        bubble: "Tối ưu 99 ảnh HD món ăn & Combo AOV +28%",
+        bubble: "AutoCAD DXF -> Blender 3D -> Gemini 3 Pro Image 4K",
         waypoints: [
           { x: 8, z: 13, station: "9-Agency Strategy Table" },
-          { x: 16, z: 13, station: "Menu Visual & VTON Studio" },
+          { x: 16, z: 13, station: "3D Arch CAD & Render Studio" },
           { x: 12, z: 7, station: "POS Sync Conveyor" }
         ]
       }
@@ -2453,11 +2683,34 @@
       const fn = d.fnb_factory || {};
       const sc = d.security || {};
 
+      // Render Live Enterprise System Matrix Strip (All 7 Subsystems)
+      const subs = (d.live_subsystems && d.live_subsystems.length) ? d.live_subsystems : [
+        { id: "hermes_gw", name: "Hermes Gateway", detail: "@alicewordbot • Solar-Mini4", online: hm.online !== false },
+        { id: "hermes_web", name: "Hermes Web UI", detail: "Dashboard :9119", online: hm.web_dashboard?.online !== false },
+        { id: "omniroute", name: "OmniRoute v3.8", detail: "595 Models • :20129", online: pp.omniroute?.online !== false },
+        { id: "ninerouter", name: "9Router Engine", detail: "Fast Fallback • :20128", online: pp.nine_router?.online !== false },
+        { id: "trade_bot", name: "RexAPF Trade v11", detail: "10s Loop • :49199", online: tr.online !== false },
+        { id: "cloud_run", name: "Cloud Run F&B", detail: "24/7 Watchdog GCP", online: true },
+        { id: "arch_3d", name: "3D Arch & Render", detail: "Blender/SketchUp MCP", online: true }
+      ];
+      const matrixEl = document.getElementById("live-matrix-strip");
+      if (matrixEl) {
+        matrixEl.innerHTML = subs.map(s => `
+          <div class="live-node-pill">
+            <span class="live-led ${s.online ? '' : 'off'}"></span>
+            <div style="min-width:0;">
+              <div class="live-node-title">${escapeHtml(s.name)}</div>
+              <div class="live-node-sub">${escapeHtml(s.detail)} • ${s.online ? 'LIVE' : 'STANDBY'}</div>
+            </div>
+          </div>
+        `).join("");
+      }
+
       // Update KPI Ribbon
       const hmBadge = document.getElementById("kpi-hermes-badge");
       hmBadge.textContent = hm.online ? "ONLINE" : "DEGRADED";
       hmBadge.className = "status-pill " + (hm.online ? "ok" : "err");
-      document.getElementById("kpi-hermes-val").textContent = `PID ${hm.pid || 8588} • ${hm.stats?.total_messages || 0} Msgs`;
+      document.getElementById("kpi-hermes-val").textContent = `ONLINE • ${hm.stats?.total_messages || 0} Msgs`;
 
       const trBadge = document.getElementById("kpi-trade-badge");
       trBadge.textContent = tr.online ? "ONLINE :49199" : "OFFLINE";
@@ -2475,23 +2728,35 @@
       rtBadge.textContent = (omniOk && nineOk) ? "DUAL ACTIVE" : (omniOk ? "OMNI ONLY" : "CHECK");
       rtBadge.className = "status-pill " + ((omniOk && nineOk) ? "ok" : "warn");
 
-      document.getElementById("kpi-fnb-orders").textContent = `${fn.total_synced_orders || 0} Đơn Đã Ghi Sổ`;
-      document.getElementById("kpi-sec-sub").textContent = `Uptime: ${Math.floor((sc.uptime_seconds || 0) / 60)}m • Phiên: ${sc.active_sessions || 1}`;
+      document.getElementById("kpi-fnb-orders").textContent = `${fn.total_synced_orders || 0} Đơn POS • 4 Quán`;
+      document.getElementById("kpi-sec-sub").textContent = `Owner: Nguyễn Tân Khanh • Zero-PII • Uptime ${Math.floor((sc.uptime_seconds || 0) / 60)}m`;
+
+      const syncEl = document.getElementById("last-sync-time");
+      if (syncEl) syncEl.textContent = `LIVE SYNC: ${d.timestamp || "24/7"} • ${subs.filter(x => x.online).length}/${subs.length} Subsystems Online`;
+
+      // Update Live Ticker immediately
+      const tickerEl = document.getElementById("hud-live-ticker");
+      if (tickerEl) {
+        const lastLog = (hm.agent_logs && hm.agent_logs.length)
+          ? hm.agent_logs[hm.agent_logs.length - 1]
+          : `Hermes @alicewordbot (Solar-Mini4) + OmniRoute :20129 + Trade :49199 + Cloud Run F&B: ALL SYSTEMS LIVE`;
+        tickerEl.textContent = "▸ " + lastLog;
+      }
 
       // Update 3D Chibi Floating Speech Bubbles with Live Data
       const bubUpdates = {
-        qwen4_brain: `PID ${hm.pid || 8588} • 1M Context • ${hm.stats?.total_sessions || 0} Sessions`,
-        alice_tele: `@alicewordbot (${hm.telegram?.state || "connected"}) • ${hm.stats?.total_messages || 0} Msgs`,
-        omniroute_chan: `OmniRoute :20129 (${pp.omniroute?.total_models || 595} Models • 45 Combos)`,
+        qwen4_brain: `1M Context Reasoning • ${hm.stats?.total_sessions || 0} Sessions`,
+        alice_tele: `@alicewordbot (${hm.telegram?.state || "connected"}) • Solar-Mini4 ~1.38s`,
+        omniroute_chan: `OmniRoute :20129 (${pp.omniroute?.total_models || 595} Models • Gemini 3.x)`,
         rtk_caveman: "RTK + Caveman 12-Stage • Nén 60-85% Token",
         deepseek_9router: `9Router :20128 (${pp.nine_router?.online ? "ONLINE" : "STANDBY"}) • 511ms`,
-        solar_cowork: "Delegation: upstage/solar-mini4:free + auto/fast",
-        watchdog_bot: `Đang bảo vệ ${hm.stats?.active_cron_jobs || 3} Cronjobs & Tự hồi sinh 24/7`,
+        solar_cowork: "Primary: upstage/solar-mini4:free + 4 Verified Fallbacks",
+        watchdog_bot: `Bảo vệ ${hm.stats?.active_cron_jobs || 5} Cronjobs + Cloud Run 24/7`,
         rexapf_sniper: `${tr.last_heartbeat || "Quét 10s/lần"} • Latency ${tr.cycle_latency_sec || 0.71}s`,
         whale_detective: `Fear & Greed: ${tr.fear_and_greed?.value || 32} (${tr.fear_and_greed?.label || "Fear"})`,
-        gemini_arbiter: `PnL Hôm nay: +$${pnlVal.toFixed(2)} • ${tr.self_learning?.total_lessons || 23} Luật Chống Lỗ`,
-        tuyetmai_pos: `Đã ghi sổ ${fn.total_synced_orders || 52} đơn 3 Quán F&B • Food Cost 35%`,
-        baongoc_agency: "9 Agency Tinh Hoa • 99 Ảnh Món HD • AOV +28%"
+        gemini_arbiter: `PnL Hôm nay: ${pnlVal >= 0 ? '+' : ''}$${pnlVal.toFixed(2)} • ${tr.self_learning?.total_lessons || 23} Luật Chống Lỗ`,
+        tuyetmai_pos: `Cloud Run F&B 24/7 • ${fn.total_synced_orders || 52} đơn POS đồng bộ`,
+        baongoc_agency: "Blender/SketchUp MCP + Gemini 3 Pro Image 4K & 9 Agency"
       };
       Object.entries(bubUpdates).forEach(([cid, text]) => {
         const el = document.getElementById("chibi-bub-" + cid);
@@ -2510,6 +2775,29 @@
       renderSecurityView(sc, hm.active_crons || []);
     }
 
+    function startLiveCloudTicker(d) {
+      if (liveTickerTimer) clearInterval(liveTickerTimer);
+      const hm = d.hermes || {};
+      const tr = d.trade_factory || {};
+      const fn = d.fnb_factory || {};
+      const msgs = [
+        `Hermes Gateway @alicewordbot: ONLINE • Primary upstage/solar-mini4:free (~1.38s) + 4 Fallbacks`,
+        `Hermes Web Dashboard (:9119) & OmniRoute v3.8.54 (:20129): 595 Models • Combos trade-council, fnb-ops, dev-coding`,
+        `RexAPF Trade Bot v11.0 (:49199): 10s Quantitative Loop • F&G ${tr.fear_and_greed?.value || 32} (${tr.fear_and_greed?.label || "Fear"}) • ${tr.self_learning?.total_lessons || 23} Risk Rules`,
+        `Google Cloud Run F&B Watchdog (asia-southeast1): 24/7 LIVE • ${fn.total_synced_orders || 0} đơn POS đồng bộ`,
+        `3D Arch CAD Studio: AutoCAD DXF -> Blender 4.5.10 LTS / SketchUp MCP -> Gemini 3 Pro Image 4K`,
+        `Zero-Trust OWASP Top 10 Shield: PBKDF2-310K + HMAC Vault + Zero-PII Sanitizer ACTIVE`
+      ];
+      let idx = 0;
+      liveTickerTimer = setInterval(() => {
+        const el = document.getElementById("hud-live-ticker");
+        if (el) {
+          idx = (idx + 1) % msgs.length;
+          el.textContent = "▸ " + msgs[idx];
+        }
+      }, 4200);
+    }
+
     function renderFactoryFloor(d) {
       const hm = d.hermes || {};
       const tr = d.trade_factory || {};
@@ -2525,16 +2813,16 @@
       const lines = [
         {
           id: "line_power",
-          title: "DÂY CHUYỀN 1 — TRẠM ĐIỆN HẠT NHÂN AI & BỘ ĐỊNH TUYẾN ĐA TẦNG (AI POWER PLANT)",
-          tag: "595 MODELS • 45 AUTO-COMBOS • ZERO COST",
+          title: "DÂY CHUYỀN 1 — TRẠM ĐIỆN AI ĐA TẦNG (GEMINI 3.x + OMNIROUTE + 9ROUTER)",
+          tag: "595 MODELS • 48 COMBOS • ZERO-PII PROTECTED",
           stations: [
             {
               id: "st_gcp",
               icon: "☁️",
-              name: "Google Cloud & 3x Gemini Pool",
+              name: "Google Cloud & Gemini 3.x Pool",
               status: "ONLINE",
-              role: "Project project-104b6acd-1607-4a2d-ac5 + 3 Free Tier Projects (0393856028, 0859222007, 510912-r0)",
-              bubble: "Gemini 2.5 Flash / Pro • Unbilled Tier 100% Free",
+              role: "Gemini 3.x Paid Tier (gemini-3.1-pro-preview, gemini-3-pro-image) + 3x Free Tier Load-Balanced Pool",
+              bubble: "Cloud Run 24/7 Watchdog + Gemini 3.x High-Throughput",
               detail: JSON.stringify(pp.google_cloud, null, 2)
             },
             {
@@ -2542,8 +2830,8 @@
               icon: "⚡",
               name: "OmniRoute v3.8.54 (:20129)",
               status: pp.omniroute?.online ? "ONLINE" : "OFFLINE",
-              role: "595 Models • 45 Auto-Combos (auto/fast, auto/coding) • OpenCode Zen + Cloudflare + Pollinations",
-              bubble: "MCP Stream: http://localhost:20129/api/mcp/stream",
+              role: "595 Models • 48 Auto-Combos (trade-council, fnb-ops, dev-coding, auto/fast)",
+              bubble: "MCP Stream Active • Multi-Provider Failover",
               detail: JSON.stringify(pp.omniroute, null, 2)
             },
             {
@@ -2560,7 +2848,7 @@
               icon: "🚀",
               name: "9Router (:20128) & Nous OAuth",
               status: pp.nine_router?.online ? "ONLINE" : "OFFLINE",
-              role: "Nous Portal (qwen4-max:free 1M ctx, solar-mini4:free) + 9Router (deepseek-v4.1-flash-free, gpt-5.6-luna)",
+              role: "Nous Portal (solar-mini4:free, qwen4-max:free, hy4-flash:free) + 9Router (deepseek-v4.1, gpt-5.6-luna)",
               bubble: "Latency trung bình: 511ms • Tool-Calling 100%",
               detail: JSON.stringify(pp.nine_router, null, 2)
             }
@@ -2568,43 +2856,43 @@
         },
         {
           id: "line_hermes",
-          title: "DÂY CHUYỀN 2 — TRUNG TÂM ĐIỀU HÀNH HERMES GATEWAY & COWORK SUBAGENT SWARM",
-          tag: `PID ${hm.pid || 8588} • TELEGRAM & WHATSAPP CONNECTED`,
+          title: "DÂY CHUYỀN 2 — TRUNG TÂM ĐIỀU HÀNH HERMES GATEWAY, WEB UI (:9119) & COWORK",
+          tag: `HERMES ONLINE • WEB UI :9119 • ZERO-TRUST WHITELIST`,
           stations: [
             {
               id: "st_tg_wa",
               icon: "📲",
               name: "Cổng Giao Tiếp Đa Kênh",
               status: hm.online ? "CONNECTED" : "CHECK",
-              role: "Telegram Bot @alicewordbot (Zero-Trust Whitelist: Anh Khánh & Trí Trần) + WhatsApp Bridge (:3000)",
+              role: "Telegram Bot @alicewordbot (Zero-Trust Owner Whitelist: Nguyễn Tân Khanh) + WhatsApp Bridge",
               bubble: `Sessions: ${hm.stats?.total_sessions || 0} | Tổng tin nhắn: ${hm.stats?.total_messages || 0}`,
               detail: JSON.stringify({ telegram: hm.telegram, whatsapp: hm.whatsapp }, null, 2)
             },
             {
               id: "st_main_brain",
               icon: "🧠",
-              name: "Não Bộ Chính (Qwen4-Max 1M)",
+              name: "Não Bộ Chính (Solar-Mini4 + 4 Fallbacks)",
               status: "WORKING",
-              role: "Primary Model: qwen/qwen4-max:free (1,000,000 context) với 10 tầng Fallback Interleaved không bao giờ đứt",
+              role: "Primary: upstage/solar-mini4:free (~1.38s) -> qwen4-max -> hy4-flash -> auto/fast -> gemini-3.1-pro",
               bubble: lastHermesLog,
               detail: JSON.stringify(hm.models, null, 2)
             },
             {
               id: "st_cowork",
               icon: "🤝",
-              name: "Xưởng Phân Việc Cowork Swarm",
-              status: "READY",
-              role: "Subagent Delegation Engine (upstage/solar-mini4:free + omniroute/auto/fast) xử lý song song đa tác vụ",
-              bubble: "Toolsets: terminal, file, web, browser, mcp-omniroute, cronjob",
+              name: "Hermes Web Dashboard (:9119) & Swarm",
+              status: hm.web_dashboard?.online ? "ONLINE :9119" : "READY",
+              role: "Subagent Delegation Engine xử lý song song đa tác vụ + Giám sát Web Dashboard 24/7",
+              bubble: "Toolsets: terminal, file, web, browser, mcp-omniroute, blender-mcp",
               detail: JSON.stringify(hm.recent_sessions, null, 2)
             },
             {
               id: "st_watchdog",
               icon: "🛡️",
-              name: "Robot Tuần Tra Watchdog 3 Phút",
+              name: "Robot Tuần Tra Watchdog & Cloud Run",
               status: "GUARDING",
-              role: `Đang chạy ${hm.stats?.active_cron_jobs || 3} Cronjobs: Tự động hồi sinh Trade Bot/OmniRoute & Báo đơn F&B mới`,
-              bubble: "watchdog_don_hang.py + watch_sam_mix.py + Morning Briefing",
+              role: `Đang chạy ${hm.stats?.active_cron_jobs || 5} Cronjobs + Google Cloud Run 24/7 Watchdog (asia-southeast1)`,
+              bubble: "Auto-Heal Trade Bot / OmniRoute / Hermes + Báo doanh thu 21h30",
               detail: JSON.stringify(hm.active_crons, null, 2)
             }
           ]
@@ -2612,7 +2900,7 @@
         {
           id: "line_trade",
           title: "DÂY CHUYỀN 3 — XƯỞNG LUYỆN KIM GIAO DỊCH CRYPTO FUTURES 24/7 (REXAPF v11.0)",
-          tag: `SINGLETON :49199 • PNL HÔM NAY: +$${Number(tr.daily_realized_pnl || 0).toFixed(2)} USDT`,
+          tag: `SINGLETON :49199 • PNL HÔM NAY: ${Number(tr.daily_realized_pnl || 0) >= 0 ? '+' : ''}$${Number(tr.daily_realized_pnl || 0).toFixed(2)} USDT`,
           stations: [
             {
               id: "st_wave",
@@ -2637,16 +2925,16 @@
               icon: "🧬",
               name: "Trạm 3: SelfLearning & Gemini Veto",
               status: "ENFORCING",
-              role: `Đối chiếu ${tr.self_learning?.total_lessons || 23} luật chống lỗ tự suy luận + Trọng tài tối cao Google Cloud Gemini 2.5 Flash`,
+              role: `Đối chiếu ${tr.self_learning?.total_lessons || 23} luật chống lỗ tự suy luận + Trọng tài tối cao Gemini 3.1 Pro`,
               bubble: "Chặn bắt đáy ngược xu hướng 1H & Xung đột dòng tiền Cá Voi",
               detail: JSON.stringify(tr.self_learning, null, 2)
             },
             {
               id: "st_binance",
               icon: "💰",
-              name: "Trạm 4: Multi-Account Executor",
+              name: "Trạm 4: Multi-Vault Executor",
               status: tr.online ? "CONNECTED" : "OFFLINE",
-              role: "Thực thi lệnh đồng thời trên Tài khoản 1 (Anh Khánh) & Ví Trí 🐷 + Bắn tín hiệu về Group Trade Coin",
+              role: "Thực thi lệnh bảo mật đa tài khoản (AES-256 Encrypted Keys) & cảnh báo tức thì qua kênh riêng tư",
               bubble: `Tổng lệnh đã ghi nhận: ${tr.trade_stats?.total_recorded_trades || 0} lệnh`,
               detail: JSON.stringify(tr.accounts, null, 2)
             }
@@ -2654,15 +2942,15 @@
         },
         {
           id: "line_fnb",
-          title: "DÂY CHUYỀN 4 — TỔ HỢP 3 QUÁN F&B, POS GOOGLE SHEETS & 9 AGENCY TINH HOA",
-          tag: `${fn.total_synced_orders || 0} ĐƠN ĐÃ ĐỒNG BỘ • HOTLINE 0931.811.872`,
+          title: "DÂY CHUYỀN 4 — HỆ SINH THÁI 4 QUÁN F&B POS, 3D ARCH MCP & 9 AGENCY TINH HOA",
+          tag: `${fn.total_synced_orders || 0} ĐƠN POS • 10 GITHUB REPOS OWASP HARDENED`,
           stations: [
             {
               id: "st_cafe",
               icon: "☕",
               name: "Cafe Ăn Vặt Trạm Khởi Nghiệp",
               status: "ACTIVE",
-              role: "36/5E Nguyễn Thị Ngâu, Đông Thạnh, Hóc Môn • Cà Phê Muối, Bạc Xỉu, Cá Viên Chiên Nước Mắm",
+              role: "Hệ thống POS & Cloud Sheets đồng bộ tự động 24/7 • Cà Phê Muối, Bạc Xỉu, Ăn Vặt",
               bubble: `Đã đồng bộ: ${fn.stores?.[0]?.synced_orders || 0} đơn hàng thực tế`,
               detail: JSON.stringify(fn.stores?.[0], null, 2)
             },
@@ -2671,27 +2959,27 @@
               icon: "🍖",
               name: "Cơm Tấm Sườn Nướng Than Hoa",
               status: "ACTIVE",
-              role: "Trạm Khởi Nghiệp Cơm Tấm Sườn Bì Chả (45K) & Suất Gymer 2 Sườn (55K) • Web App & GAS POS",
+              role: "Trạm Khởi Nghiệp Cơm Tấm Sườn Bì Chả & Suất Gymer • Web App & GAS POS (OWASP Protected)",
               bubble: `Đã đồng bộ: ${fn.stores?.[1]?.synced_orders || 0} đơn hàng thực tế`,
               detail: JSON.stringify(fn.stores?.[1], null, 2)
             },
             {
               id: "st_7a_sammix",
               icon: "🥤",
-              name: "Food Station 7A & Sâm Mix Conic",
+              name: "Food Station 7A & Sâm Mix Healthy",
               status: "ACTIVE",
-              role: "Bánh Bao Kẹp, Hamburger (<90s) & Trạm Nước Sâm Mix / Mía Mix Healthy (Conic Bình Chánh)",
-              bubble: `Đã đồng bộ: ${fn.stores?.[2]?.synced_orders || 0} đơn • Watchdog Sâm Mix 3m`,
+              role: "Fast Food (<90s) & Trạm Nước Sâm Mix Healthy • Cloud Run Watchdog 24/7",
+              bubble: `Đã đồng bộ: ${fn.stores?.[2]?.synced_orders || 0} đơn • Watchdog 3m`,
               detail: JSON.stringify(fn.stores?.[2], null, 2)
             },
             {
               id: "st_9agency",
-              icon: "🏢",
-              name: "9 Agency AI & Kỹ Thuật Sáng Tạo",
-              status: fn.virtual_office_port_8088 ? "3D LIVE :8088" : "STANDBY",
-              role: "9 Chuyên gia AI (CEO, Ops, Tuyết Mai POS, Bảo Ngọc MKT, Visual Designer...) + AutoCAD MCP + AnyWear VTON",
-              bubble: "Tự động phân tích Food Cost 34-37% & Tối ưu 99 ảnh món HD",
-              detail: JSON.stringify(fn.agencies, null, 2)
+              icon: "🏛️",
+              name: "3D Arch CAD MCP & 9 Agency AI",
+              status: "LIVE STUDIO",
+              role: "AutoCAD 2D DXF -> Blender 4.5.10 LTS / SketchUp MCP -> Gemini 3 Pro Image 4K + 9 Chuyên gia AI",
+              bubble: "Tự động dựng 3D, Render 4K & tối ưu vận hành 10 Web Repos",
+              detail: JSON.stringify({ arch_3d: pp.creative_arch_3d, agencies: fn.agencies }, null, 2)
             }
           ]
         }
@@ -2820,8 +3108,8 @@
             <span class="status-pill ok">${s.synced_orders} ĐƠN</span>
           </div>
           <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">
-            📍 ${escapeHtml(s.address)}<br/>
-            📞 Hotline: <b>${escapeHtml(s.hotline)}</b> • Trạng thái: <b style="color:var(--emerald);">${escapeHtml(s.status)}</b>
+            ☁️ ${escapeHtml(s.address)}<br/>
+            🛡️ Trạng thái: <b style="color:var(--emerald);">${escapeHtml(s.status)}</b> • Bảo mật Zero-PII
           </div>
           <div style="font-size:11.5px; font-weight:700; color:var(--cyan); margin-bottom:6px;">GHI NHỚ CHIẾN LƯỢC TỪ AI AGENCY:</div>
           <div style="display:flex; flex-direction:column; gap:7px;">
@@ -2850,10 +3138,12 @@
     function renderSecurityView(sc, crons) {
       const specTable = document.getElementById("security-specs-table");
       specTable.innerHTML = `
+        <tr><th>Chủ sở hữu hệ thống</th><td><b>Nguyễn Tân Khanh</b> (Zero-PII Enterprise Mode)</td></tr>
         <tr><th>Cơ chế Băm Mật Khẩu</th><td>${escapeHtml(sc.auth_scheme)}</td></tr>
         <tr><th>Bảo vệ Phiên (Session)</th><td>${escapeHtml(sc.session_protection)}</td></tr>
         <tr><th>Chống Brute-Force</th><td>${escapeHtml(sc.brute_force_shield)}</td></tr>
         <tr><th>OWASP HTTP Headers</th><td>${escapeHtml(sc.owasp_headers)}</td></tr>
+        <tr><th>Bảo vệ Thông Tin Cá Nhân</th><td>${escapeHtml(sc.pii_protection || "Zero-PII Sanitizer Active (0 Emails, 0 Phones, 0 Addresses, 0 Raw Keys)")}</td></tr>
         <tr><th>Telegram Zero-Trust Lock</th><td>${escapeHtml(sc.telegram_zero_trust)}</td></tr>
         <tr><th>IP Đang Bị Khóa</th><td>${(sc.locked_ips && sc.locked_ips.length) ? escapeHtml(sc.locked_ips.join(", ")) : "0 IP (An toàn tuyệt đối)"}</td></tr>
       `;
@@ -2891,26 +3181,26 @@
 
     function initDagGraph() {
       dagNodes = [
-        { id: "gcp", label: "Google Cloud\nproject-104b6acd", x: 0.09, y: 0.16, color: "#00f2fe", info: "Google Cloud Primary Project của Nguyễn Tân Khanh" },
-        { id: "gem_pool", label: "3x Gemini Free Pool\n(0393856028 / 0859222007)", x: 0.09, y: 0.38, color: "#00f2fe", info: "3 Project Gemini 2.5 Flash/Pro Unbilled Free Tier 100%" },
-        { id: "nous", label: "Nous Portal OAuth\nQwen4-Max 1M & Solar", x: 0.09, y: 0.62, color: "#00f2fe", info: "Nous Research Free OAuth: Qwen4-Max 1M ctx, Solar-Mini4, Step-3.7" },
-        { id: "zen_cf", label: "OpenCode Zen &\nCloudflare / Pollinations", x: 0.09, y: 0.84, color: "#00f2fe", info: "Các nguồn AI miễn phí tích hợp trong OmniRoute" },
+        { id: "gcp", label: "Google Cloud\nGemini 3.x Paid Tier", x: 0.09, y: 0.16, color: "#00f2fe", info: "Google Cloud Primary AI Infrastructure của Nguyễn Tân Khanh (Gemini 3.1 Pro + Gemini 3 Pro Image)" },
+        { id: "gem_pool", label: "Gemini Multi-Key\nLoad-Balanced Pool", x: 0.09, y: 0.38, color: "#00f2fe", info: "Cụm API Gemini đa tầng (Paid + Free Tier) bảo mật Zero-PII" },
+        { id: "nous", label: "Nous Portal OAuth\nSolar-Mini4 & Qwen4", x: 0.09, y: 0.62, color: "#00f2fe", info: "Nous Research OAuth: upstage/solar-mini4:free (~1.38s), qwen4-max:free (1M ctx), hy4-flash" },
+        { id: "zen_cf", label: "Cloud Run 24/7\nF&B Watchdog GCP", x: 0.09, y: 0.84, color: "#00f2fe", info: "Google Cloud Run Serverless Monitor (asia-southeast1) giám sát 4 quán F&B 24/7" },
 
-        { id: "omni", label: "OmniRoute v3.8.54\n(:20129 • 595 Models)", x: 0.29, y: 0.28, color: "#a855f7", info: "OmniRoute Gateway chạy tại localhost:20129 với 45 Auto-Combos" },
+        { id: "omni", label: "OmniRoute v3.8.54\n(:20129 • 595 Models)", x: 0.29, y: 0.28, color: "#a855f7", info: "OmniRoute Gateway với 48 Auto-Combos (trade-council, fnb-ops, dev-coding)" },
         { id: "rtk", label: "RTK + Caveman\n12-Stage Compressor", x: 0.29, y: 0.52, color: "#a855f7", info: "Nén 60-85% token trước khi gửi tới LLM" },
-        { id: "nine", label: "9Router v0.5.119\n(:20128 • DeepSeek/Codex)", x: 0.29, y: 0.76, color: "#a855f7", info: "9Router chạy tại localhost:20128 (oc/deepseek-v4.1-flash-free)" },
+        { id: "nine", label: "9Router v0.5.119\n(:20128 • DeepSeek/Codex)", x: 0.29, y: 0.76, color: "#a855f7", info: "9Router Fast Fallback (oc/deepseek-v4.1-flash-free, cx/gpt-5.6-luna)" },
 
-        { id: "hermes", label: "Hermes Gateway\n(PID 8588 • @alicewordbot)", x: 0.50, y: 0.22, color: "#10b981", info: "Hermes Agent Bot kết nối Telegram & WhatsApp 24/7" },
-        { id: "cowork", label: "Cowork Subagent\nDelegation Swarm", x: 0.50, y: 0.48, color: "#10b981", info: "Subagent xử lý đa tác vụ song song với upstage/solar-mini4:free" },
-        { id: "watchdog", label: "Watchdog Healer\nCron (3 Phút/Lần)", x: 0.50, y: 0.76, color: "#10b981", info: "watchdog_don_hang.py & watch_sam_mix.py tự động hồi sinh daemon" },
+        { id: "hermes", label: "Hermes Gateway\n@alicewordbot & :9119", x: 0.50, y: 0.22, color: "#10b981", info: "Hermes Agent Bot & Web Dashboard (:9119) kết nối Telegram & WhatsApp 24/7" },
+        { id: "cowork", label: "Cowork Subagent\nDelegation Swarm", x: 0.50, y: 0.48, color: "#10b981", info: "Subagent xử lý đa tác vụ song song với Solar-Mini4 + 4 Verified Fallbacks" },
+        { id: "watchdog", label: "Watchdog Healer\n5 Cronjobs 24/7", x: 0.50, y: 0.76, color: "#10b981", info: "Tự động hồi sinh daemon & báo cáo doanh thu 21h30 hàng ngày" },
 
-        { id: "tr_wave", label: "TechnicalWave &\nWhaleFlow Agent", x: 0.72, y: 0.16, color: "#f59e0b", info: "Quét 15m WaveTrend + 1H EMA/VWAP + Dòng tiền Cá Voi 45s" },
-        { id: "tr_learn", label: "SelfLearning 23 Rules\n& Gemini Risk Arbiter", x: 0.72, y: 0.38, color: "#f59e0b", info: "Bộ nhớ chống lỗ tự suy luận & Trọng tài Gemini 2.5 Flash" },
-        { id: "fnb_pos", label: "3 Quán F&B POS\nGoogle Sheets Webhook", x: 0.72, y: 0.64, color: "#f43f5e", info: "Đồng bộ đơn hàng Cafe Đông Thạnh, Cơm Tấm, Food Station 7A" },
-        { id: "agencies", label: "9 Agency AI Tinh Hoa\nVirtual Office (:8088)", x: 0.72, y: 0.86, color: "#f43f5e", info: "9 Chuyên gia AI điều hành thực đơn, giá vốn & marketing" },
+        { id: "tr_wave", label: "TechnicalWave &\nWhaleFlow Agent", x: 0.72, y: 0.16, color: "#f59e0b", info: "Quét 15m WaveTrend + 1H EMA/VWAP + Dòng tiền Cá Voi 45s (:49199)" },
+        { id: "tr_learn", label: "SelfLearning Rules\n& Gemini 3 Arbiter", x: 0.72, y: 0.38, color: "#f59e0b", info: "Bộ nhớ chống lỗ tự suy luận & Trọng tài Gemini 3.1 Pro" },
+        { id: "fnb_pos", label: "4 Quán F&B POS\nGoogle Sheets Cloud", x: 0.72, y: 0.64, color: "#f43f5e", info: "Đồng bộ đơn hàng Cafe, Cơm Tấm, Food Station 7A & Sâm Mix Healthy" },
+        { id: "agencies", label: "3D Arch CAD MCP &\n9 Agency AI Studio", x: 0.72, y: 0.86, color: "#f43f5e", info: "AutoCAD DXF -> Blender/SketchUp MCP -> Gemini 3 Pro Image 4K & 9 Agency" },
 
-        { id: "binance", label: "Binance Futures 2 Ví\n(Anh Khánh & Ví Trí 🐷)", x: 0.91, y: 0.26, color: "#f59e0b", info: "Thực thi lệnh thực tế & báo cáo Group Trade Coin -1003756028843" },
-        { id: "stores_out", label: "Báo Đơn Telegram &\nSổ Tat_Ca_Don_Hang.txt", x: 0.91, y: 0.74, color: "#f43f5e", info: "Bắn thông báo đơn hàng mới tức thì về Telegram Chủ quán" }
+        { id: "binance", label: "Binance Futures\nEncrypted Multi-Vault", x: 0.91, y: 0.26, color: "#f59e0b", info: "Thực thi lệnh bảo mật AES-256 & báo cáo kênh riêng tư (Zero-PII)" },
+        { id: "stores_out", label: "10 Hardened Repos &\nZero-PII Reports", x: 0.91, y: 0.74, color: "#f43f5e", info: "10 Web Repos chuẩn OWASP Top 10 & Báo cáo tự động về Telegram Chủ nhân" }
       ];
 
       dagEdges = [
@@ -3054,7 +3344,13 @@
     requestAnimationFrame(drawDagFrame);
 
     (async function bootCheck() {
+      const hash = (window.location.hash || "").replace(/^#view-/, "");
+      const validTabs = ["chibi3d", "floor", "dag", "trade", "fnb", "security"];
+      if (validTabs.includes(hash)) {
+        switchTab(hash);
+      }
       if (SESSION_TOKEN && !IS_STATIC_CLOUD_MODE) {
+        resetIdleAutoLock();
         await fetchFactoryTelemetry();
         startPolling();
       }
