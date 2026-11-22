@@ -6,935 +6,197 @@
   <title>NHÀ MÁY AI 3D ANIME CHIBI 24/7 — NGUYỄN TÂN KHANH COMMAND CENTER</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>document.documentElement.classList.add("js");</script>
   <script src="three.min.js"></script>
-  <style>
-    :root {
-      --bg-deep: #050711;
-      --bg-panel: #0b1021;
-      --bg-card: rgba(15, 23, 42, 0.86);
-      --bg-card-hover: rgba(24, 37, 68, 0.95);
-      --border-dim: rgba(56, 189, 248, 0.18);
-      --border-glow: rgba(0, 242, 254, 0.55);
-      --cyan: #00f2fe;
-      --blue: #38bdf8;
-      --emerald: #10b981;
-      --amber: #f59e0b;
-      --rose: #f43f5e;
-      --pink: #ec4899;
-      --violet: #a855f7;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
+  
+<style>
+  :root{
+    --bg-deep:#181818;
+    --bg-panel:#1F1F1F;
+    --bg-card:#272727;
+    --text-main:#f8fafc;
+    --text-muted:#94a3b8;
+    --accent:#00f2fe;
+    --accent-soft:rgba(0,242,254,.14);
+    --ok:#10b981;
+    --warn:#f59e0b;
+    --err:#f43f5e;
+    --easing:cubic-bezier(.22,1,.36,1);
+    --radius-sm:2px;
+    --radius:4px;
+    --radius-md:6px;
+    --radius-lg:8px;
+    --radius-xl:12px;
+    --radius-2xl:16px;
+    --radius-3xl:24px;
+    --radius-full:999px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;scroll-padding-top:96px}
+  body{background-color:var(--bg-deep);color:var(--text-main);font-family:'Manrope', system-ui, sans-serif;min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased;font-feature-settings:'tnum';line-height:1.5}
+  button{font-family:'Manrope',sans-serif}
+  :focus-visible{outline:none;box-shadow: 0 0 0 3px var(--accent), inset 3px 0 0 #F59E0B}
+  button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none;box-shadow: 0 0 0 3px var(--accent), inset 3px 0 0 #F59E0B}
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+  /* ---------- tab warp fx (flat) ---------- */
+  #tab-warp-fx{position:fixed;inset:0;z-index:800;pointer-events:none;opacity:0;background:#000}
+  #tab-warp-fx.trigger{opacity:.6}
+  #tab-warp-beam{position:fixed;top:0;left:0;width:80%;height:100dvh;z-index:801;pointer-events:none;background:rgba(0,242,254,.12);transform:translateX(-120%) skewX(-22deg)}
+  #tab-warp-beam.sweep{animation:animeSweep .5s var(--easing) forwards}
+  @keyframes animeSweep{0%{transform:translateX(-120%) skewX(-22deg);opacity:1}100%{transform:translateX(160%) skewX(-22deg);opacity:0}}
 
-    body {
-      background-color: var(--bg-deep);
-      background-image:
-        radial-gradient(circle at 10% 15%, rgba(236, 72, 153, 0.09) 0%, transparent 38%),
-        radial-gradient(circle at 88% 12%, rgba(0, 242, 254, 0.12) 0%, transparent 42%),
-        radial-gradient(circle at 50% 85%, rgba(168, 85, 247, 0.10) 0%, transparent 45%),
-        linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
-      color: var(--text-main);
-      font-family: var(--font-sans);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+  /* ---------- vault lock screen ---------- */
+  #vault-overlay{position:fixed;inset:0;z-index:9999;background:#181818;display:flex;align-items:center;justify-content:center;padding:20px;transition:opacity .3s var(--easing),transform .5s var(--easing),visibility .5s}
+  #vault-overlay.hidden{opacity:0;transform:scale(1.06);visibility:hidden;pointer-events:none}
+  .vault-box{width:100%;max-width:490px;background:#272727;border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:36px 32px;box-shadow: 0 0 70px rgba(0,242,254,.16),inset 0 0 25px rgba(0,242,254,.04), inset 3px 0 0 #F59E0B;position:relative;overflow:hidden}
+  .vault-chibi-mascot{width:84px;height:84px;margin:0 auto 16px;border-radius:24px;background:#272727;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:40px;box-shadow: 0 0 30px rgba(0,242,254,.3), inset 3px 0 0 #F59E0B;animation:chibiFloat 2.6s cubic-bezier(0.22,1,0.36,1) infinite}
+  @keyframes chibiFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
+  .vault-title{text-align:center;font-size:21px;font-weight:700;letter-spacing:.5px;color:var(--accent);margin-bottom:6px}
+  .vault-sub{text-align:center;font-size:12.5px;color:var(--text-muted);line-height:1.55;margin-bottom:20px}
+  .vault-badges{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:22px}
+  .v-badge{font-size:10.5px;padding:4px 9px;border-radius:99px;background:#272727;border:1px solid rgba(255,255,255,.12);color:var(--text-muted)}
+  .vault-input-wrap{position:relative;margin-bottom:14px}
+  .vault-input{width:100%;padding:14px 44px 14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:#272727;color:#fff;font-size:15px;outline:none;transition:border-color .3s var(--easing),box-shadow .3s var(--easing)}
+  .vault-input:focus{border-color:var(--accent);box-shadow: 0 0 20px rgba(0,242,254,.35), inset 3px 0 0 #F59E0B}
+  .vault-toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px}
+  .vault-btn{width:100%;padding:14px;border:none;border-radius:12px;background:var(--accent);color:#000;font-weight:700;font-size:14.5px;letter-spacing:.6px;cursor:pointer;transition:transform .5s var(--easing),box-shadow .3s var(--easing);box-shadow: 0 6px 26px rgba(0,242,254,.35), inset 3px 0 0 #F59E0B}
+  .vault-btn:hover{transform:translateY(-2px);box-shadow: 0 10px 32px rgba(0,242,254,.5), inset 3px 0 0 #F59E0B}
+  .vault-btn:active{transform:translateY(1px)}
+  .vault-error{margin-top:12px;padding:10px 12px;border-radius:8px;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.35);color:#fda4af;font-size:12.5px;text-align:center;display:none}
 
-    /* ======================== ANIME CYBER WARP TAB SHUTTER ======================== */
-    #tab-warp-fx {
-      position: fixed;
-      inset: 0;
-      z-index: 800;
-      pointer-events: none;
-      opacity: 0;
-      background:
-        radial-gradient(circle at center, rgba(0, 242, 254, 0.22) 0%, rgba(236, 72, 153, 0.14) 45%, transparent 75%);
-      transition: opacity 0.28s ease;
-    }
-    #tab-warp-fx.trigger {
-      opacity: 1;
-    }
-    #tab-warp-beam {
-      position: fixed;
-      top: 0;
-      left: -120%;
-      width: 80%;
-      height: 100vh;
-      z-index: 801;
-      pointer-events: none;
-      background: linear-gradient(90deg, transparent, rgba(0, 242, 254, 0.28), rgba(236, 72, 153, 0.25), transparent);
-      transform: skewX(-22deg);
-    }
-    #tab-warp-beam.sweep {
-      animation: animeSweep 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    @keyframes animeSweep {
-      0% { left: -120%; opacity: 1; }
-      100% { left: 160%; opacity: 0; }
-    }
+  /* ---------- header ---------- */
+  .top-header{position:sticky;top:0;z-index:150;background:rgba(24,27,37,.94);backdrop-filter:blur(18px);padding:11px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  .brand-group{display:flex;align-items:center;gap:13px}
+  .factory-core-icon{width:44px;height:44px;border-radius:16px;background:#272727;border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:23px;box-shadow: 0 0 20px rgba(0,242,254,.15), inset 3px 0 0 #F59E0B}
+  .pulse-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow: 0 0 10px var(--accent), inset 3px 0 0 #F59E0B;display:inline-block;animation:pulseGlow 1.6s var(--easing) infinite}
+  @keyframes pulseGlow{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:.65}}
+  .brand-title{font-size:16.5px;font-weight:700;letter-spacing:.4px;color:var(--text-main);display:flex;align-items:center;gap:9px}
+  .brand-meta{font-size:11.5px;color:var(--text-muted);font-family:'Manrope',sans-serif}
+  .header-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .action-btn{padding:8px 13px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:#272727;color:var(--text-main);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:transform .5s var(--easing),border-color .3s var(--easing),background .3s var(--easing),box-shadow .3s var(--easing)}
+  .action-btn:hover{transform:translateY(-2px);border-color:var(--accent);background:var(--accent-soft);box-shadow: 0 0 20px rgba(0,242,254,.22), inset 3px 0 0 #F59E0B}
+  .action-btn:active{transform:translateY(1px)}
+  .action-btn.primary{background:var(--accent);color:#000;border-color:var(--accent);box-shadow: 0 0 0 3px var(--accent-soft),0 0 24px rgba(0,242,254,.35), inset 3px 0 0 #F59E0B}
+  .action-btn.primary:hover{background:#00e6ff;box-shadow: 0 0 0 3px rgba(0,242,254,.5),0 0 32px rgba(0,242,254,.45), inset 3px 0 0 #F59E0B}
 
-    /* ======================== ZERO-TRUST VAULT LOCK SCREEN ======================== */
-    #vault-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: radial-gradient(circle at center, #0e1730 0%, #03050a 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.45s;
-    }
-    #vault-overlay.hidden {
-      opacity: 0;
-      transform: scale(1.06);
-      visibility: hidden;
-      pointer-events: none;
-    }
-    .vault-box {
-      width: 100%;
-      max-width: 490px;
-      background: rgba(11, 18, 36, 0.94);
-      border: 1px solid rgba(0, 242, 254, 0.4);
-      border-radius: 24px;
-      padding: 36px 32px;
-      box-shadow: 0 0 70px rgba(0, 242, 254, 0.16), 0 0 40px rgba(236, 72, 153, 0.12), inset 0 0 25px rgba(0, 242, 254, 0.06);
-      position: relative;
-      overflow: hidden;
-    }
-    .vault-box::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -50%;
-      width: 200%;
-      height: 4px;
-      background: linear-gradient(90deg, transparent, var(--cyan), var(--pink), var(--emerald), var(--violet), transparent);
-      animation: scanline 3s linear infinite;
-    }
-    @keyframes scanline {
-      0% { transform: translateX(-30%); }
-      100% { transform: translateX(30%); }
-    }
-    .vault-chibi-mascot {
-      width: 84px;
-      height: 84px;
-      margin: 0 auto 16px;
-      border-radius: 22px;
-      background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(236, 72, 153, 0.22));
-      border: 2px solid rgba(0, 242, 254, 0.55);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 40px;
-      box-shadow: 0 0 30px rgba(0, 242, 254, 0.3);
-      animation: chibiFloat 2.6s ease-in-out infinite;
-    }
-    @keyframes chibiFloat {
-      0%, 100% { transform: translateY(0px) rotate(-2deg); }
-      50% { transform: translateY(-7px) rotate(2deg); }
-    }
-    .vault-title {
-      text-align: center;
-      font-size: 21px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      background: linear-gradient(90deg, #fff, var(--cyan), #f472b6, var(--emerald));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 6px;
-    }
-    .vault-sub {
-      text-align: center;
-      font-size: 12.5px;
-      color: var(--text-muted);
-      line-height: 1.55;
-      margin-bottom: 20px;
-    }
-    .vault-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      justify-content: center;
-      margin-bottom: 22px;
-    }
-    .v-badge {
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      padding: 4px 9px;
-      border-radius: 7px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      color: var(--cyan);
-    }
-    .vault-input-wrap {
-      position: relative;
-      margin-bottom: 14px;
-    }
-    .vault-input {
-      width: 100%;
-      padding: 14px 44px 14px 16px;
-      border-radius: 13px;
-      border: 1px solid rgba(56, 189, 248, 0.4);
-      background: rgba(4, 8, 18, 0.92);
-      color: #fff;
-      font-family: var(--font-mono);
-      font-size: 15px;
-      outline: none;
-      transition: all 0.2s;
-    }
-    .vault-input:focus {
-      border-color: var(--cyan);
-      box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
-    }
-    .vault-toggle-pw {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .vault-btn {
-      width: 100%;
-      padding: 14px;
-      border-radius: 13px;
-      border: none;
-      background: linear-gradient(135deg, #00f2fe, #ec4899, #a855f7);
-      background-size: 200% 200%;
-      animation: gradientShift 4s ease infinite;
-      color: #fff;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.45);
-      font-weight: 800;
-      font-size: 14.5px;
-      letter-spacing: 0.6px;
-      cursor: pointer;
-      transition: transform 0.15s, box-shadow 0.2s;
-      box-shadow: 0 6px 26px rgba(0, 242, 254, 0.32);
-    }
-    @keyframes gradientShift {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
-    .vault-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 32px rgba(236, 72, 153, 0.45);
-    }
-    .vault-error {
-      margin-top: 12px;
-      padding: 10px 12px;
-      border-radius: 9px;
-      background: rgba(244, 63, 94, 0.15);
-      border: 1px solid rgba(244, 63, 94, 0.45);
-      color: #fda4af;
-      font-size: 12.5px;
-      text-align: center;
-      display: none;
-    }
+  /* ---------- kpi ribbon ---------- */
+  .kpi-ribbon{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;padding:14px 22px 6px}
+  .kpi-card{background:var(--bg-card);border:none;border-radius:16px;padding:14px 16px;position:relative;overflow:hidden;transition:transform .5s var(--easing),box-shadow .3s var(--easing)}
+  .kpi-card:hover{transform:translateY(-4px);box-shadow: 0 16px 32px rgba(0,242,254,.18), inset 3px 0 0 #F59E0B}
+  .kpi-label{font-size:12px;color:var(--text-muted);letter-spacing:.4px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .kpi-value{font-size:22px;font-weight:700;color:var(--text-main);font-feature-settings:'tnum';margin-bottom:3px}
+  .kpi-sub{font-size:12px;color:var(--text-muted);font-feature-settings:'tnum'}
 
-    /* ======================== MAIN FACTORY HEADER ======================== */
-    .top-header {
-      position: sticky;
-      top: 0;
-      z-index: 150;
-      background: rgba(6, 11, 24, 0.9);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid var(--border-dim);
-      padding: 11px 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .brand-group {
-      display: flex;
-      align-items: center;
-      gap: 13px;
-    }
-    .factory-core-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 13px;
-      background: linear-gradient(135deg, rgba(0, 242, 254, 0.22), rgba(236, 72, 153, 0.22));
-      border: 1px solid var(--cyan);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 23px;
-      box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
-    }
-    .pulse-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--emerald);
-      box-shadow: 0 0 10px var(--emerald);
-      display: inline-block;
-      animation: pulseGlow 1.6s infinite;
-    }
-    @keyframes pulseGlow {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.3); opacity: 0.65; }
-    }
-    .brand-title {
-      font-size: 16.5px;
-      font-weight: 800;
-      letter-spacing: 0.4px;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      background: linear-gradient(90deg, #fff, var(--cyan), #f472b6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .brand-meta {
-      font-size: 11.5px;
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-    }
+  /* ---------- nav tabs ---------- */
+  .nav-tabs{display:flex;gap:9px;padding:10px 22px;overflow-x:auto;;position:relative}
+  .tab-btn{padding:10px 16px;border-radius:12px;border:none;background:#272727;color:var(--text-muted);font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:7px;position:relative;overflow:hidden;transition:transform .5s var(--easing),color .3s var(--easing),background .3s var(--easing),box-shadow .3s var(--easing)}
+  .tab-btn:hover{color:var(--text-main);background:#272727;box-shadow: 0 8px 20px rgba(0,0,0,.35), inset 3px 0 0 #F59E0B;}
+  .tab-btn:active{transform:translateY(1px)}
+  .tab-btn.active{background:var(--accent);color:#000;box-shadow: 0 0 24px rgba(0,242,254,.35),inset 0 0 12px rgba(0,242,254,.15), inset 3px 0 0 #F59E0B;transform:translateY(-2px)}
+  .tab-btn.active::after{content:"";position:absolute;bottom:-2px;left:16%;width:68%;height:3px;border-radius:99px;background:var(--accent)}
 
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .action-btn {
-      padding: 8px 13px;
-      border-radius: 10px;
-      border: 1px solid var(--border-dim);
-      background: rgba(15, 23, 42, 0.88);
-      color: var(--text-main);
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .action-btn:hover {
-      border-color: var(--cyan);
-      background: rgba(25, 38, 70, 0.96);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(0, 242, 254, 0.18);
-    }
-    .action-btn.emerald {
-      border-color: rgba(16, 185, 129, 0.5);
-      background: rgba(16, 185, 129, 0.15);
-      color: #6ee7b7;
-    }
-    .action-btn.pink {
-      border-color: rgba(236, 72, 153, 0.55);
-      background: rgba(236, 72, 153, 0.16);
-      color: #f9a8d4;
-    }
-    .action-btn.danger {
-      border-color: rgba(244, 63, 94, 0.5);
-      background: rgba(244, 63, 94, 0.16);
-      color: #fda4af;
-    }
+  /* ---------- views ---------- */
+  .view-section{display:none;padding:24px 22px 48px;transform-origin:center top}
+  .view-section.active{display:block;animation:tabCyberEnter .5s var(--easing) forwards}
+  @keyframes tabCyberEnter{0%{opacity:0;transform:perspective(1200px) rotateX(6deg) translateY(24px) scale(.97);filter:blur(6px)}60%{filter:blur(0)}100%{opacity:1;transform:perspective(1200px) rotateX(0) translateY(0) scale(1);filter:blur(0)}}
 
-    /* ======================== KPI RIBBON ======================== */
-    .kpi-ribbon {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
-      padding: 14px 22px 6px;
-    }
-    .kpi-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-dim);
-      border-radius: 15px;
-      padding: 13px 15px;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
-    }
-    .kpi-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--border-glow);
-      box-shadow: 0 8px 25px rgba(0, 242, 254, 0.12);
-    }
-    .kpi-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.7px;
-      margin-bottom: 5px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .kpi-value {
-      font-size: 20px;
-      font-weight: 800;
-      font-family: var(--font-mono);
-      margin-bottom: 3px;
-    }
-    .kpi-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-    }
+  /* ---------- 3d world ---------- */
+  .chibi-world-wrapper{position:relative;width:100%;height:650px;border-radius:16px;background:#181818;overflow:hidden;box-shadow: 0 15px 45px rgba(0,0,0,.65), inset 3px 0 0 #F59E0B;margin-bottom:16px}
+  #chibi-3d-canvas{width:100%;height:100%;display:block;cursor:grab}
+  #chibi-3d-canvas:active{cursor:grabbing}
+  #chibi-labels-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .chibi-floating-tag{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;cursor:pointer;user-select:none;transition:transform .5s var(--easing);z-index:20}
+  .chibi-floating-tag:hover{transform:translate(-50%,-106%) scale(1.08);z-index:40}
+  .chibi-tag-card{background:#272727;border:1px solid var(--accent);border-radius:12px;padding:4px 9px;box-shadow: 0 4px 16px rgba(0,0,0,.55), inset 3px 0 0 #F59E0B;text-align:center;min-width:125px;max-width:185px}
+  .chibi-tag-name{font-size:11px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap}
+  .chibi-tag-bubble{font-size:9.5px;color:#bae6fd;font-family:'Manrope',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
 
-    /* ======================== ANIMATED NAVIGATION TABS ======================== */
-    .nav-tabs {
-      display: flex;
-      gap: 9px;
-      padding: 10px 22px;
-      overflow-x: auto;
-      border-bottom: 1px solid rgba(56, 189, 248, 0.14);
-      position: relative;
-    }
-    .tab-btn {
-      padding: 10px 16px;
-      border-radius: 12px;
-      border: 1px solid var(--border-dim);
-      background: rgba(15, 23, 42, 0.78);
-      color: var(--text-muted);
-      font-size: 12.5px;
-      font-weight: 800;
-      cursor: pointer;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .tab-btn:hover {
-      color: #fff;
-      border-color: rgba(0, 242, 254, 0.4);
-      transform: translateY(-2px);
-    }
-    .tab-btn.active {
-      background: linear-gradient(135deg, rgba(0, 242, 254, 0.22), rgba(236, 72, 153, 0.20), rgba(168, 85, 247, 0.20));
-      border-color: var(--cyan);
-      color: #fff;
-      box-shadow: 0 0 24px rgba(0, 242, 254, 0.28), inset 0 0 12px rgba(236, 72, 153, 0.15);
-      transform: translateY(-2px) scale(1.02);
-    }
-    .tab-btn.active::after {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 10%;
-      width: 80%;
-      height: 3px;
-      border-radius: 99px;
-      background: linear-gradient(90deg, var(--cyan), var(--pink), var(--emerald));
-    }
+  .world-hud-top{position:absolute;top:14px;left:16px;right:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;pointer-events:none;z-index:30}
+  .world-hud-box{pointer-events:auto;background:#272727;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:9px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .cam-btn{padding:6px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:#272727;color:#e2e8f0;font-size:11.5px;font-weight:600;cursor:pointer;transition:transform .5s var(--easing),border-color .3s var(--easing),background .3s var(--easing),color .3s var(--easing),box-shadow .3s var(--easing)}
+  .cam-btn:hover,.cam-btn.active{border-color:var(--accent);background:var(--accent-soft);color:var(--text-main);box-shadow: 0 0 12px rgba(0,242,254,.25), inset 3px 0 0 #F59E0B}
 
-    /* ======================== 3D PERSPECTIVE TAB TRANSITIONS ======================== */
-    .view-section {
-      display: none;
-      padding: 18px 22px 38px;
-      transform-origin: center top;
-    }
-    .view-section.active {
-      display: block;
-      animation: tabCyberEnter 0.52s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    @keyframes tabCyberEnter {
-      0% {
-        opacity: 0;
-        transform: perspective(1200px) rotateX(6deg) translateY(24px) scale(0.97);
-        filter: blur(6px);
-      }
-      60% {
-        filter: blur(0px);
-      }
-      100% {
-        opacity: 1;
-        transform: perspective(1200px) rotateX(0deg) translateY(0px) scale(1);
-        filter: blur(0px);
-      }
-    }
+  .chibi-roster-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:10px}
+  .chibi-roster-card{background:#272727;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:transform .5s var(--easing),border-color .3s var(--easing),box-shadow .3s var(--easing)}
+  .chibi-roster-card:hover{transform:translateY(-3px) scale(1.02);border-color:var(--accent);box-shadow: 0 8px 22px rgba(0,242,254,.2), inset 3px 0 0 #F59E0B}
+  .chibi-avatar-circle{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;border:1.5px solid rgba(255,255,255,.3)}
 
-    /* ======================== VIEW 1: 3D ANIME CHIBI FACTORY WORLD ======================== */
-    .chibi-world-wrapper {
-      position: relative;
-      width: 100%;
-      height: 650px;
-      border-radius: 20px;
-      border: 1px solid rgba(0, 242, 254, 0.38);
-      background: radial-gradient(circle at 50% 35%, #111c38 0%, #050814 100%);
-      overflow: hidden;
-      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.65), inset 0 0 50px rgba(0, 242, 254, 0.08);
-      margin-bottom: 16px;
-    }
-    #chibi-3d-canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-      cursor: grab;
-    }
-    #chibi-3d-canvas:active {
-      cursor: grabbing;
-    }
-    #chibi-labels-layer {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-    .chibi-floating-tag {
-      position: absolute;
-      transform: translate(-50%, -100%);
-      pointer-events: auto;
-      cursor: pointer;
-      user-select: none;
-      transition: transform 0.15s ease;
-      z-index: 20;
-    }
-    .chibi-floating-tag:hover {
-      transform: translate(-50%, -106%) scale(1.08);
-      z-index: 40;
-    }
-    .chibi-tag-card {
-      background: rgba(8, 13, 28, 0.88);
-      backdrop-filter: blur(8px);
-      border: 1.5px solid var(--cyan);
-      border-radius: 12px;
-      padding: 4px 9px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.55);
-      text-align: center;
-      min-width: 125px;
-      max-width: 185px;
-    }
-    .chibi-tag-name {
-      font-size: 11px;
-      font-weight: 800;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      white-space: nowrap;
-    }
-    .chibi-tag-bubble {
-      font-family: var(--font-mono);
-      font-size: 9.5px;
-      color: #bae6fd;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-top: 2px;
-    }
+  /* ---------- conveyor floor ---------- */
+  .factory-banner{background:#272727;border-radius:16px;padding:15px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;box-shadow: inset 0 1px 0 rgba(255,255,255,.06), inset 3px 0 0 #F59E0B}
+  .conveyor-pipeline-grid{display:flex;flex-direction:column;gap:20px}
+  .production-line{background:#272727;border-radius:16px;padding:18px 20px;position:relative;overflow:hidden;box-shadow: 0 10px 35px rgba(0,0,0,.45), inset 3px 0 0 #F59E0B}
+  .line-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;padding-bottom:12px}
+  .line-title{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700;color:var(--text-main)}
+  .line-tag{font-size:11px;padding:3px 9px;border-radius:6px;background:var(--accent-soft);border:1px solid rgba(255,255,255,.12);color:var(--accent)}
+  .stations-track{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;position:relative}
+  .station-node{background:#272727;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:14px 15px;position:relative;cursor:pointer;transition:transform .5s var(--easing),border-color .3s var(--easing),box-shadow .3s var(--easing)}
+  .station-node:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow: 0 10px 26px rgba(0,0,0,.55),0 0 18px rgba(0,242,254,.18), inset 3px 0 0 #F59E0B}
+  .station-node:active{transform:translateY(1px)}
+  .station-node::after{content:"\2794";position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:15px;animation:arrowFlow 1.2s var(--easing) infinite}
+  @keyframes arrowFlow{0%,100%{transform:translate(0,-50%);opacity:.5}50%{transform:translate(3px,-50%);opacity:1}}
+  .station-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+  .station-icon-wrap{display:flex;align-items:center;gap:8px}
+  .gear-spin{display:inline-block;animation:spin360 6s cubic-bezier(0.22,1,0.36,1) infinite}
+  @keyframes spin360{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  .station-name{font-size:13.5px;font-weight:700;color:var(--text-main)}
+  .station-role{font-size:11.5px;color:var(--text-muted);margin-bottom:10px;line-height:1.4}
+  .station-bubble{font-size:11px;padding:7px 9px;border-radius:8px;background:rgba(3,7,18,.85);color:#bae6fd;margin-bottom:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .conveyor-belt-bar{height:6px;border-radius:99px;background:#272727;overflow:hidden;position:relative}
+  .conveyor-belt-fill{position:absolute;inset:0;background:var(--accent);border-radius:inherit}
 
-    .world-hud-top {
-      position: absolute;
-      top: 14px;
-      left: 16px;
-      right: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-      pointer-events: none;
-      z-index: 30;
-    }
-    .world-hud-box {
-      pointer-events: auto;
-      background: rgba(8, 14, 29, 0.88);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(0, 242, 254, 0.35);
-      border-radius: 13px;
-      padding: 9px 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .cam-btn {
-      padding: 6px 11px;
-      border-radius: 8px;
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      background: rgba(15, 23, 42, 0.9);
-      color: #e2e8f0;
-      font-size: 11.5px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .cam-btn:hover, .cam-btn.active {
-      border-color: var(--cyan);
-      background: linear-gradient(135deg, rgba(0, 242, 254, 0.24), rgba(236, 72, 153, 0.24));
-      color: #fff;
-      box-shadow: 0 0 12px rgba(0, 242, 254, 0.3);
-    }
+  /* ---------- dag ---------- */
+  .dag-container{background:#272727;border-radius:16px;height:650px;position:relative;overflow:hidden;box-shadow: inset 0 0 50px rgba(0,242,254,.05), inset 3px 0 0 #F59E0B}
+  #dag-canvas{width:100%;height:100%;display:block;cursor:pointer}
+  .dag-legend{position:absolute;top:14px;left:16px;background:#272727;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 14px;font-size:11.5px;display:flex;gap:14px;flex-wrap:wrap}
+  .legend-item{display:flex;align-items:center;gap:6px}
+  .legend-dot{width:10px;height:10px;border-radius:50%}
 
-    /* Chibi Character Roster Dock at Bottom of 3D World */
-    .chibi-roster-bar {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
-      gap: 10px;
-    }
-    .chibi-roster-card {
-      background: linear-gradient(145deg, rgba(16, 24, 46, 0.92), rgba(9, 14, 28, 0.92));
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      border-radius: 14px;
-      padding: 10px 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .chibi-roster-card:hover {
-      transform: translateY(-3px) scale(1.02);
-      border-color: var(--cyan);
-      box-shadow: 0 8px 22px rgba(0, 242, 254, 0.2);
-    }
-    .chibi-avatar-circle {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 21px;
-      flex-shrink: 0;
-      border: 1.5px solid rgba(255,255,255,0.3);
-    }
+  /* ---------- panels & tables ---------- */
+  .two-col-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-bottom:18px}
+  .three-col-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:16px;margin-bottom:18px}
+  .panel-card{background:var(--bg-card);border:none;border-radius:16px;padding:18px;transition:transform .5s var(--easing),box-shadow .3s var(--easing)}
+  .panel-card:hover{transform:translateY(-4px);box-shadow: 0 16px 32px rgba(0,242,254,.18), inset 3px 0 0 #F59E0B}
+  .panel-title{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--text-main)}
+  .data-table{width:100%;border-collapse:collapse;font-size:12px}
+  .data-table th,.data-table td{padding:10px 10px;text-align:left}
+  .data-table th{color:var(--text-muted);font-weight:600}
+  .data-table tr:nth-child(even){background:rgba(255,255,255,.02)}
+  .terminal-box{background:#181818;border:none;border-radius:12px;padding:12px 14px;font-family:'Manrope',sans-serif;font-size:11.5px;line-height:1.55;color:#a7f3d0;max-height:300px;overflow-y:auto}
+  .terminal-line{padding:2px 0;word-break:break-all}
+  .status-pill{font-family:'Manrope',sans-serif;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:99px;display:inline-flex;align-items:center;gap:5px;background:#272727;border:1px solid rgba(255,255,255,.12);color:var(--text-muted);transition:color .3s var(--easing),background .3s var(--easing),border-color .3s var(--easing)}
+  .status-pill.ok{color:var(--accent);border-color:rgba(0,242,254,.4);background:var(--accent-soft)}
+  .status-pill.warn{color:var(--warn);border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.1)}
+  .status-pill.err{color:var(--err);border-color:rgba(244,63,94,.4);background:rgba(244,63,94,.1)}
 
-    /* ======================== VIEW 2: 2.5D CONVEYOR FLOOR ======================== */
-    .factory-banner {
-      background: linear-gradient(90deg, rgba(15, 23, 42, 0.95), rgba(14, 45, 75, 0.7), rgba(38, 16, 55, 0.75));
-      border: 1px solid rgba(0, 242, 254, 0.32);
-      border-radius: 16px;
-      padding: 15px 20px;
-      margin-bottom: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .conveyor-pipeline-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    .production-line {
-      background: rgba(10, 17, 32, 0.92);
-      border: 1px solid rgba(56, 189, 248, 0.24);
-      border-radius: 18px;
-      padding: 18px 20px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.45);
-    }
-    .line-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px dashed rgba(56, 189, 248, 0.22);
-    }
-    .line-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 15px;
-      font-weight: 800;
-    }
-    .line-tag {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      padding: 3px 9px;
-      border-radius: 6px;
-      background: rgba(0, 242, 254, 0.12);
-      border: 1px solid rgba(0, 242, 254, 0.35);
-      color: var(--cyan);
-    }
-    .stations-track {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 18px;
-      position: relative;
-    }
-    .station-node {
-      background: linear-gradient(160deg, rgba(17, 26, 48, 0.95), rgba(9, 14, 28, 0.95));
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      border-radius: 14px;
-      padding: 14px 15px;
-      position: relative;
-      cursor: pointer;
-      transition: transform 0.22s, border-color 0.22s, box-shadow 0.22s;
-    }
-    .station-node:hover {
-      transform: translateY(-4px);
-      border-color: var(--cyan);
-      box-shadow: 0 10px 26px rgba(0, 242, 254, 0.2);
-    }
-    .station-node::after {
-      content: "➔";
-      position: absolute;
-      right: -14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--cyan);
-      font-size: 15px;
-      text-shadow: 0 0 8px var(--cyan);
-      animation: arrowFlow 1.2s infinite ease-in-out;
-    }
-    .station-node:last-child::after {
-      display: none;
-    }
-    @keyframes arrowFlow {
-      0%, 100% { transform: translate(0, -50%); opacity: 0.5; }
-      50% { transform: translate(3px, -50%); opacity: 1; }
-    }
-    .station-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-    .station-icon-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .gear-spin {
-      display: inline-block;
-      animation: spin360 6s linear infinite;
-    }
-    @keyframes spin360 {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-    .station-name {
-      font-size: 13.5px;
-      font-weight: 700;
-      color: #fff;
-    }
-    .station-role {
-      font-size: 11.5px;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-      line-height: 1.4;
-    }
-    .station-bubble {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      padding: 7px 9px;
-      border-radius: 8px;
-      background: rgba(3, 7, 18, 0.85);
-      border-left: 3px solid var(--cyan);
-      color: #bae6fd;
-      margin-bottom: 9px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .conveyor-belt-bar {
-      height: 6px;
-      border-radius: 99px;
-      background: rgba(15, 23, 42, 0.9);
-      overflow: hidden;
-      position: relative;
-    }
-    .conveyor-belt-fill {
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(
-        90deg,
-        transparent,
-        transparent 10px,
-        var(--cyan) 10px,
-        var(--pink) 22px
-      );
-      background-size: 200% 100%;
-      animation: beltMove 1.6s linear infinite;
-    }
-    @keyframes beltMove {
-      0% { background-position: 100% 0; }
-      100% { background-position: 0 0; }
-    }
+  /* ---------- drawer & toast ---------- */
+  #inspector-drawer{position:fixed;top:0;right:0;width:100%;max-width:500px;height:100dvh;z-index:300;background:#272727;border:none;box-shadow: -15px 0 45px rgba(0,0,0,.75), inset 3px 0 0 #F59E0B;padding:22px;overflow-y:auto;transform:translateX(105%);transition:transform .5s var(--easing)}
+  #inspector-drawer.open{transform:translateX(0)}
+  .toast-bar{position:fixed;bottom:22px;right:22px;z-index:950;background:rgba(11,18,35,.96);border:1px solid var(--accent);border-radius:12px;padding:12px 18px;color:#fff;font-size:13px;box-shadow: 0 10px 30px rgba(0,242,254,.28), inset 3px 0 0 #F59E0B;display:none}
 
-    /* ======================== VIEW 3: LANGGRAPH NODE DAG ======================== */
-    .dag-container {
-      background: rgba(7, 12, 24, 0.95);
-      border: 1px solid rgba(0, 242, 254, 0.3);
-      border-radius: 18px;
-      height: 650px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: inset 0 0 50px rgba(0, 242, 254, 0.06);
-    }
-    #dag-canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-      cursor: pointer;
-    }
-    .dag-legend {
-      position: absolute;
-      top: 14px;
-      left: 16px;
-      background: rgba(11, 17, 32, 0.9);
-      border: 1px solid var(--border-dim);
-      border-radius: 12px;
-      padding: 10px 14px;
-      font-size: 11.5px;
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .legend-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-    }
+  /* ---------- reveal / scroll ---------- */
+  .js .reveal{opacity:0;transform:translateY(24px)}
+  .js .reveal.revealed{animation:revealUp .8s var(--easing) both}
+  @keyframes revealUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+  .hero{position:relative;padding:48px 22px 0;overflow:hidden}
+  .hero-inner{max-width:900px;margin:0 auto}
+  .hero-kicker{font-size:14px;font-weight:700;letter-spacing:.18em;color:var(--accent)}
+  .hero-h1{font-size:3.75rem;line-height:1.05;font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:.5rem;max-width:680px}
+  .hero-grad{background:#fff;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .hero-sub{font-size:1.25rem;line-height:1.6;font-weight:500;color:var(--text-main);max-width:680px;margin-top:12px}
+  .hero-cta{display:inline-block;margin-top:20px;padding:14px 22px;border-radius:12px;background:var(--accent);color:#000;font-weight:700;font-size:1.125rem;box-shadow: 0 0 0 3px var(--accent-soft),0 0 30px rgba(0,242,254,.4), inset 3px 0 0 #F59E0B;transition:transform .5s var(--easing),box-shadow .3s var(--easing)}
+  .hero-cta:hover{transform:translateY(-2px);box-shadow: 0 0 0 3px rgba(0,242,254,.55),0 0 40px rgba(0,242,254,.5), inset 3px 0 0 #F59E0B}
+  .hero-cta:active{transform:translateY(1px)}
 
-    /* ======================== PANELS & TABLES ======================== */
-    .two-col-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
-      gap: 18px;
-      margin-bottom: 18px;
-    }
-    .three-col-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
-      gap: 16px;
-      margin-bottom: 18px;
-    }
-    .panel-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-dim);
-      border-radius: 16px;
-      padding: 18px;
-    }
-    .panel-title {
-      font-size: 15px;
-      font-weight: 800;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12.5px;
-    }
-    .data-table th, .data-table td {
-      padding: 10px 10px;
-      text-align: left;
-      border-bottom: 1px solid rgba(56, 189, 248, 0.1);
-    }
-    .data-table th {
-      color: var(--text-muted);
-      font-size: 11px;
-      text-transform: uppercase;
-      font-family: var(--font-mono);
-    }
-    .terminal-box {
-      background: #03060d;
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      line-height: 1.55;
-      color: #a7f3d0;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    .terminal-line {
-      padding: 2px 0;
-      border-bottom: 1px dashed rgba(255, 255, 255, 0.04);
-      word-break: break-all;
-    }
-    .status-pill {
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 99px;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .status-pill.ok {
-      background: rgba(16, 185, 129, 0.16);
-      border: 1px solid rgba(16, 185, 129, 0.45);
-      color: #34d399;
-    }
-    .status-pill.warn {
-      background: rgba(245, 158, 11, 0.16);
-      border: 1px solid rgba(245, 158, 11, 0.45);
-      color: #fbbf24;
-    }
-    .status-pill.err {
-      background: rgba(244, 63, 94, 0.16);
-      border: 1px solid rgba(244, 63, 94, 0.45);
-      color: #fb7185;
-    }
+  /* ---------- counters ---------- */
+  .kpi-value .count-out{font-variant-numeric:tabular-nums}
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{transition:none!important;animation:none!important}
+    html{scroll-behavior:auto}
+    .js .reveal{opacity:1!important;transform:none!important}
+  }
+</style>
 
-    /* ======================== STATION INSPECTOR DRAWER ======================== */
-    #inspector-drawer {
-      position: fixed;
-      top: 0;
-      right: -520px;
-      width: 100%;
-      max-width: 500px;
-      height: 100vh;
-      z-index: 300;
-      background: rgba(8, 13, 26, 0.98);
-      border-left: 1px solid var(--cyan);
-      box-shadow: -15px 0 45px rgba(0, 0, 0, 0.75);
-      padding: 22px;
-      overflow-y: auto;
-      transition: right 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    #inspector-drawer.open {
-      right: 0;
-    }
-    .toast-bar {
-      position: fixed;
-      bottom: 22px;
-      right: 22px;
-      z-index: 950;
-      background: rgba(11, 18, 35, 0.96);
-      border: 1px solid var(--cyan);
-      border-radius: 12px;
-      padding: 12px 18px;
-      color: #fff;
-      font-size: 13px;
-      box-shadow: 0 10px 30px rgba(0, 242, 254, 0.28);
-      display: none;
-    }
-  </style>
 </head>
 <body>
 
@@ -993,10 +255,10 @@
     </div>
 
     <div class="header-actions">
-      <button class="action-btn pink" onclick="triggerChibiOverdrive()">
+      <button class="action-btn primary" onclick="triggerChibiOverdrive()">
         💃 Kích Hoạt Chibi Overdrive (Tăng Tốc 3x)
       </button>
-      <button class="action-btn emerald" onclick="triggerFactoryAction('heal_daemons')">
+      <button class="action-btn" onclick="triggerFactoryAction('heal_daemons')">
         ⚡ Tự Động Hồi Sinh & Kiểm Tra 24/7
       </button>
       <button class="action-btn" onclick="triggerFactoryAction('ping_ai_routers')">
@@ -1011,9 +273,20 @@
     </div>
   </header>
 
-  <!-- ==================== REAL-TIME KPI RIBBON ==================== -->
+  
+  <!-- ==================== HERO ==================== -->
+  <section class="hero">
+    <div class="hero-inner reveal">
+      <p class="hero-kicker">Trung Tâm Điều Hành Đa Tác Nhân AI 24/7</p>
+      <h1 class="hero-h1"><span class="hero-grad">Nhà Máy AI 3D Anime Chibi 24/7</span></h1>
+      <p class="hero-sub">Cổng kết nối xưởng máy 3D, xưởng trade crypto futures, 3 quán F&amp;B và hệ thống vault zero-trusted — tất cả của Nguyễn Tân Khanh trong một trang.</p>
+      <a class="hero-cta" href="#view-chibi3d">Vào Nhà Máy 3D <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+<!-- ==================== REAL-TIME KPI RIBBON ==================== -->
   <section class="kpi-ribbon">
-    <div class="kpi-card">
+    <div class="kpi-card reveal" style="animation-delay:0ms">
       <div class="kpi-label">
         <span>🤖 HERMES GATEWAY & SWARM</span>
         <span id="kpi-hermes-badge" class="status-pill ok">ONLINE</span>
@@ -1022,7 +295,7 @@
       <div class="kpi-sub" id="kpi-hermes-sub">@alicewordbot • Qwen4-Max 1M + Solar-Mini4</div>
     </div>
 
-    <div class="kpi-card">
+    <div class="kpi-card reveal" style="animation-delay:80ms">
       <div class="kpi-label">
         <span>📈 XƯỞNG TRADE FUTURES v11.0</span>
         <span id="kpi-trade-badge" class="status-pill ok">PORT 49199</span>
@@ -1031,25 +304,25 @@
       <div class="kpi-sub" id="kpi-trade-sub">Tổng vốn: $577.31 • 2 Ví (Anh Khánh & Ví Trí 🐷)</div>
     </div>
 
-    <div class="kpi-card">
+    <div class="kpi-card reveal" style="animation-delay:160ms">
       <div class="kpi-label">
         <span>⚡ TRẠM ĐIỆN OMNIROUTE + 9ROUTER</span>
         <span id="kpi-router-badge" class="status-pill ok">20129 / 20128</span>
       </div>
-      <div class="kpi-value" id="kpi-router-val">595 Models</div>
+      <div class="kpi-value" id="kpi-router-val"><span data-count="595">0</span> Models</div>
       <div class="kpi-sub" id="kpi-router-sub">45 Auto-Combos • 3x GCP Gemini Free Pool</div>
     </div>
 
-    <div class="kpi-card">
+    <div class="kpi-card reveal" style="animation-delay:240ms">
       <div class="kpi-label">
         <span>🍱 DÂY CHUYỀN 3 QUÁN F&B & POS</span>
         <span id="kpi-fnb-badge" class="status-pill ok">9 AGENCIES</span>
       </div>
-      <div class="kpi-value" id="kpi-fnb-orders">52 Đơn Ghi Sổ</div>
+      <div class="kpi-value" id="kpi-fnb-orders"><span data-count="52">0</span> Đơn Ghi Sổ</div>
       <div class="kpi-sub">Cafe Đông Thạnh • Cơm Tấm • Food Station 7A</div>
     </div>
 
-    <div class="kpi-card">
+    <div class="kpi-card reveal" style="animation-delay:320ms">
       <div class="kpi-label">
         <span>🛡️ PHÁO ĐÀI BẢO MẬT OWASP</span>
         <span id="kpi-mode-badge" class="status-pill ok">ZERO-TRUST</span>
@@ -1086,7 +359,7 @@
     <div class="chibi-world-wrapper" id="chibi-world-wrapper">
       <div class="world-hud-top">
         <div class="world-hud-box">
-          <span style="font-size:12.5px; font-weight:800; color:var(--cyan);">🎥 GÓC MÁY CAMERA 3D:</span>
+          <span style="font-size:12.5px; font-weight:700; color:var(--accent);">🎥 GÓC MÁY CAMERA 3D:</span>
           <button class="cam-btn active" onclick="setCameraPreset('overview', this)">🌐 Toàn Cảnh Nhà Máy</button>
           <button class="cam-btn" onclick="setCameraPreset('power', this)">⚡ Trạm Điện OmniRoute & GCP</button>
           <button class="cam-btn" onclick="setCameraPreset('hermes', this)">👑 Trung Tâm Hermes & Cowork</button>
@@ -1094,7 +367,7 @@
           <button class="cam-btn" onclick="setCameraPreset('fnb', this)">🍱 Xưởng 3 Quán F&B & 9 Agency</button>
         </div>
         <div class="world-hud-box">
-          <span style="font-family:var(--font-mono); font-size:11.5px; color:#f9a8d4;">
+          <span style="font-family:'Manrope'; font-size:11.5px; color:#f9a8d4;">
             ✨ Kéo chuột để Xoay 360° • Cuộn để Thu/Phóng • Nhấp vào Nhân Vật Chibi để Theo Dõi
           </span>
         </div>
@@ -1104,9 +377,9 @@
       <div id="chibi-labels-layer"></div>
     </div>
 
-    <div style="margin-bottom:8px; font-size:13.5px; font-weight:800; color:var(--cyan); display:flex; justify-content:space-between; align-items:center;">
+    <div style="margin-bottom:8px; font-size:13.5px; font-weight:700; color:var(--accent); display:flex; justify-content:space-between; align-items:center;">
       <span>🎎 ĐỘI NGŨ 12 NHÂN VẬT 3D ANIME CHIBI ĐANG VẬN HÀNH TRONG NHÀ MÁY (NHẤP ĐỂ CAMERA ĐI THEO NHÂN VẬT):</span>
-      <span style="font-family:var(--font-mono); font-size:11.5px; color:var(--emerald);" id="last-sync-time">Đang đồng bộ...</span>
+      <span style="font-family:'Manrope'; font-size:11.5px; color:var(--emerald);" id="last-sync-time">Đang đồng bộ...</span>
     </div>
     <div class="chibi-roster-bar" id="chibi-roster-bar"></div>
   </section>
@@ -1115,7 +388,7 @@
   <main id="view-floor" class="view-section">
     <div class="factory-banner">
       <div>
-        <div style="font-size: 15px; font-weight: 800; color: var(--cyan);">
+        <div style="font-size: 15px; font-weight: 700; color: var(--accent);">
           ⚙️ DÂY CHUYỀN BĂNG CHUYỀN 2.5D & TRẠM MÁY VI MẠCH (AGENTVERSE / CHATDEV / LANGGRAPH STUDIO)
         </div>
         <div style="font-size: 12.5px; color: var(--text-muted); margin-top: 3px;">
@@ -1148,7 +421,7 @@
   <section id="view-dag" class="view-section">
     <div class="factory-banner">
       <div>
-        <div style="font-size: 15px; font-weight: 800; color: var(--cyan);">
+        <div style="font-size: 15px; font-weight: 700; color: var(--accent);">
           🕸️ SƠ ĐỒ MẠCH ĐIỆN TỬ MULTI-AGENT DAG (16 NODES • 18 LUỒNG XUNG BEZIER)
         </div>
         <div style="font-size: 12.5px; color: var(--text-muted); margin-top: 3px;">
@@ -1298,7 +571,7 @@
   <!-- ==================== DEEP STATION INSPECTOR DRAWER ==================== -->
   <aside id="inspector-drawer">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-      <div style="font-size:16px; font-weight:800; color:var(--cyan);" id="insp-title">Chi Tiết Trạm Máy</div>
+      <div style="font-size:16px; font-weight:700; color:var(--accent);" id="insp-title">Chi Tiết Trạm Máy</div>
       <button class="action-btn" onclick="closeInspector()">✕ Đóng</button>
     </div>
     <div id="insp-body" style="font-size:13px; line-height:1.6; color:var(--text-main);"></div>
@@ -1323,7 +596,7 @@
     function showToast(msg, isErr = false) {
       const el = document.getElementById("toast-bar");
       el.textContent = msg;
-      el.style.borderColor = isErr ? "var(--rose)" : "var(--cyan)";
+      el.style.borderColor = isErr ? "var(--rose)" : "var(--accent)";
       el.style.display = "block";
       setTimeout(() => { el.style.display = "none"; }, 4200);
     }
@@ -2218,7 +1491,7 @@
               ${bp.emoji}
             </div>
             <div style="overflow:hidden;">
-              <div style="font-size:12px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+              <div style="font-size:12px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                 ${escapeHtml(bp.name)}
               </div>
               <div style="font-size:10.5px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
@@ -2319,6 +1592,105 @@
     }
 
     window.addEventListener("resize", resizeChibi3D);
+
+  // ============ SCROLL REVEAL (IntersectionObserver, once, staggered) ============
+  var revealObserver = null;
+  var revealDone = null;
+  function initRevealObserver(){
+    if(revealObserver) return;
+    revealDone = new Set();
+    revealObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting && !revealDone.has(e.target)){
+          revealDone.add(e.target);
+          e.target.classList.add('revealed');
+          revealObserver.unobserve(e.target);
+          e.target.addEventListener('animationend', function onEnd(){
+            e.target.classList.remove('reveal','revealed');
+            e.target.style.animationDelay = '';
+            e.target.removeEventListener('animationend', onEnd);
+          });
+        }
+      });
+    }, { rootMargin:'0px 0px -40% 0px', threshold:0 });
+  }
+  function observeReveals(){
+    initRevealObserver();
+    var els = document.querySelectorAll('.reveal:not(.revealed)');
+    for(var i=0;i<els.length;i++){
+      if(els[i].dataset.ro) continue;
+      els[i].dataset.ro = '1';
+      revealObserver.observe(els[i]);
+    }
+  }
+
+  // ============ REVEAL for dynamically rendered cards (once per view) ============
+  function applyReveal(){
+    var views = document.querySelectorAll('.view-section');
+    for(var v=0;v<views.length;v++){
+      var view = views[v];
+      if(view.dataset.revealed === '1') continue;
+      var cards = view.querySelectorAll('.station-node, .panel-card, .chibi-roster-card');
+      if(!cards.length) continue;
+      view.dataset.revealed = '1';
+      for(var i=0;i<cards.length;i++){
+        if(cards[i].classList.contains('reveal')) continue;
+        cards[i].classList.add('reveal');
+        cards[i].style.animationDelay = (i * 70) + 'ms';
+      }
+    }
+    observeReveals();
+  }
+
+  // ============ COUNTER STATS (KPI numbers count up on unlock) ============
+  function bootCounters(){
+    var els = document.querySelectorAll('[data-count]');
+    for(var i=0;i<els.length;i++){
+      var el = els[i];
+      var target = parseInt(el.getAttribute('data-count'), 10);
+      if(isNaN(target)) continue;
+      var duration = 1200;
+      var start = performance.now();
+      (function tick(now){
+        var t = Math.min(1, (now - start) / duration);
+        var e = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(target * e);
+        if(t < 1) requestAnimationFrame(tick);
+      })(start);
+    }
+  }
+  (function(){
+    var vaultEl = document.getElementById('vault-overlay');
+    if(!vaultEl){ bootCounters(); return; }
+    if(vaultEl.classList.contains('hidden')){ bootCounters(); return; }
+    var vmo = new MutationObserver(function(){
+      if(vaultEl.classList.contains('hidden')){ vmo.disconnect(); bootCounters(); }
+    });
+    vmo.observe(vaultEl, { attributes:true, attributeFilter:['class'] });
+  })();
+
+  function switchTab(tabId, btnEl){
+    var fx = document.getElementById('tab-warp-fx');
+    var beam = document.getElementById('tab-warp-beam');
+    fx.classList.add('trigger');
+    beam.classList.remove('sweep');
+    void beam.offsetWidth;
+    beam.classList.add('sweep');
+    setTimeout(function(){ fx.classList.remove('trigger'); }, 320);
+
+    var views = document.querySelectorAll('.view-section');
+    for(var i=0;i<views.length;i++) views[i].classList.remove('active');
+    var tabs = document.querySelectorAll('.tab-btn');
+    for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('active');
+    var target = document.getElementById('view-' + tabId);
+    if(target) target.classList.add('active');
+    if(btnEl) btnEl.classList.add('active');
+    if(tabId === 'dag') setTimeout(resizeDagCanvas, 50);
+    else if(tabId === 'chibi3d') setTimeout(resizeChibi3D, 50);
+    applyReveal();
+  }
+
+  observeReveals();
 
     function animateChibiFactory3D(nowMs) {
       requestAnimationFrame(animateChibiFactory3D);
@@ -2508,6 +1880,7 @@
       renderTradeView(tr);
       renderFnbView(fn);
       renderSecurityView(sc, hm.active_crons || []);
+      applyReveal();
     }
 
     function renderFactoryFloor(d) {
@@ -2729,7 +2102,7 @@
       document.getElementById("insp-title").textContent = "🔍 " + title;
       document.getElementById("insp-body").innerHTML = `
         <div style="margin-bottom:12px; color:var(--text-muted);">${escapeHtml(role)}</div>
-        <div style="font-size:11.5px; font-weight:700; color:var(--cyan); margin-bottom:6px;">DỮ LIỆU VI MẠCH & TRẠNG THÁI TRỰC TIẾP:</div>
+        <div style="font-size:11.5px; font-weight:700; color:var(--accent); margin-bottom:6px;">DỮ LIỆU VI MẠCH & TRẠNG THÁI TRỰC TIẾP:</div>
         <pre class="terminal-box" style="max-height:72vh; white-space:pre-wrap;">${escapeHtml(detailText)}</pre>
       `;
       document.getElementById("inspector-drawer").classList.add("open");
@@ -2752,8 +2125,8 @@
             <span>🪙 ${escapeHtml(c.symbol)}</span>
             <span class="status-pill ${c.trend_1h === 'BULLISH' ? 'ok' : 'warn'}">1H: ${escapeHtml(c.trend_1h)}</span>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-family:var(--font-mono); font-size:12px;">
-            <div>Tín hiệu 15m: <b style="color:var(--cyan);">${escapeHtml(c.signal_15m)}</b></div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-family:'Manrope'; font-size:12px;">
+            <div>Tín hiệu 15m: <b style="color:var(--accent);">${escapeHtml(c.signal_15m)}</b></div>
             <div>WaveTrend WT1: <b>${c.wt1}</b></div>
             <div>Whale Flow: <b style="color:${c.flow_score >= 0 ? 'var(--emerald)' : 'var(--rose)'};">${c.flow_score} (${escapeHtml(c.flow_bias)})</b></div>
             <div>Fear & Greed: <b>${c.fng_val} (${escapeHtml(c.fng_label)})</b></div>
@@ -2767,11 +2140,11 @@
       accTbody.innerHTML = (tr.accounts || []).map(a => `
         <tr>
           <td><b>${escapeHtml(a.name)}</b></td>
-          <td style="font-family:var(--font-mono); color:var(--text-muted);">${escapeHtml(a.api_key_masked)}</td>
-          <td style="font-family:var(--font-mono); font-weight:700; color:${a.daily_realized_pnl >= 0 ? 'var(--emerald)' : 'var(--rose)'};">
+          <td style="font-family:'Manrope'; color:var(--text-muted);">${escapeHtml(a.api_key_masked)}</td>
+          <td style="font-family:'Manrope'; font-weight:700; color:${a.daily_realized_pnl >= 0 ? 'var(--emerald)' : 'var(--rose)'};">
             ${a.daily_realized_pnl >= 0 ? '+' : ''}$${a.daily_realized_pnl} USDT
           </td>
-          <td style="font-family:var(--font-mono);">${a.daily_entries} lệnh</td>
+          <td style="font-family:'Manrope';">${a.daily_entries} lệnh</td>
           <td><span class="status-pill ${a.circuit_breaker ? 'err' : 'ok'}">${a.circuit_breaker ? 'TRIGGERED' : 'SAFE'}</span></td>
         </tr>
       `).join("");
@@ -2779,8 +2152,8 @@
       document.getElementById("trade-lessons-count").textContent = `${tr.self_learning?.total_lessons || 0} Luật Chống Lỗ`;
       const lessonsList = document.getElementById("trade-lessons-list");
       lessonsList.innerHTML = (tr.self_learning?.recent_rules || []).map(r => `
-        <div style="padding:10px 12px; border-radius:10px; background:rgba(3,7,18,0.8); border-left:3px solid var(--amber); font-size:12px;">
-          <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); color:var(--amber); margin-bottom:4px;">
+        <div style="padding:10px 12px; border-radius:8px; background:rgba(3,7,18,0.8); border:none; font-size:12px;">
+          <div style="display:flex; justify-content:space-between; font-family:'Manrope'; color:var(--amber); margin-bottom:4px;">
             <span>[${escapeHtml(r.symbol)}] ${escapeHtml(r.id)}</span>
             <span>Mẫu lỗ: -$${r.loss_amount} (${escapeHtml(r.timestamp)})</span>
           </div>
@@ -2794,16 +2167,16 @@
         const ctx = t.context || {};
         return `
           <tr>
-            <td style="font-family:var(--font-mono);">${escapeHtml(t.timestamp)}</td>
+            <td style="font-family:'Manrope';">${escapeHtml(t.timestamp)}</td>
             <td><b>${escapeHtml(t.symbol)}</b></td>
             <td><span class="status-pill ${t.side === 'BUY' ? 'ok' : 'warn'}">${escapeHtml(t.side)}</span></td>
-            <td style="font-family:var(--font-mono);">${t.entry_price} ➔ ${t.exit_price}</td>
-            <td style="font-family:var(--font-mono); font-weight:700; color:${pnl >= 0 ? 'var(--emerald)' : 'var(--rose)'};">
+            <td style="font-family:'Manrope';">${t.entry_price} ➔ ${t.exit_price}</td>
+            <td style="font-family:'Manrope'; font-weight:700; color:${pnl >= 0 ? 'var(--emerald)' : 'var(--rose)'};">
               ${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}
             </td>
-            <td style="font-family:var(--font-mono);">${Number(t.roi || 0).toFixed(1)}%</td>
-            <td style="font-family:var(--font-mono); font-size:11px;">${escapeHtml(t.reason)}</td>
-            <td style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">
+            <td style="font-family:'Manrope';">${Number(t.roi || 0).toFixed(1)}%</td>
+            <td style="font-family:'Manrope'; font-size:11px;">${escapeHtml(t.reason)}</td>
+            <td style="font-family:'Manrope'; font-size:11px; color:var(--text-muted);">
               1H:${escapeHtml(ctx.htf_trend)} | WT1:${ctx.wt1} | Flow:${ctx.flow_score} | F&G:${ctx.fng_val}
             </td>
           </tr>
@@ -2823,10 +2196,10 @@
             📍 ${escapeHtml(s.address)}<br/>
             📞 Hotline: <b>${escapeHtml(s.hotline)}</b> • Trạng thái: <b style="color:var(--emerald);">${escapeHtml(s.status)}</b>
           </div>
-          <div style="font-size:11.5px; font-weight:700; color:var(--cyan); margin-bottom:6px;">GHI NHỚ CHIẾN LƯỢC TỪ AI AGENCY:</div>
+          <div style="font-size:11.5px; font-weight:700; color:var(--accent); margin-bottom:6px;">GHI NHỚ CHIẾN LƯỢC TỪ AI AGENCY:</div>
           <div style="display:flex; flex-direction:column; gap:7px;">
             ${(s.memories || []).map(m => `
-              <div style="padding:8px 10px; border-radius:8px; background:rgba(3,7,18,0.8); border-left:2px solid var(--cyan); font-size:11.5px;">
+              <div style="padding:8px 10px; border-radius:8px; background:rgba(3,7,18,0.8); border:none; font-size:11.5px;">
                 <b style="color:var(--emerald);">${escapeHtml(m.agent)}:</b> ${escapeHtml(m.insight)}
               </div>
             `).join("")}
@@ -2861,10 +2234,10 @@
       const cronTbody = document.getElementById("cron-jobs-tbody");
       cronTbody.innerHTML = crons.map(c => `
         <tr>
-          <td style="font-family:var(--font-mono); color:var(--cyan);">${escapeHtml(c.id)}</td>
+          <td style="font-family:'Manrope'; color:var(--accent);">${escapeHtml(c.id)}</td>
           <td><b>${escapeHtml(c.name)}</b><br/><span style="font-size:11px; color:var(--text-muted);">${escapeHtml(c.script)}</span></td>
-          <td style="font-family:var(--font-mono);">${escapeHtml(c.schedule)}</td>
-          <td style="font-family:var(--font-mono);">${c.completed} lần</td>
+          <td style="font-family:'Manrope';">${escapeHtml(c.schedule)}</td>
+          <td style="font-family:'Manrope';">${c.completed} lần</td>
           <td><span class="status-pill ok">${escapeHtml(c.last_status)}</span></td>
         </tr>
       `).join("");
@@ -2872,10 +2245,10 @@
       const auditTbody = document.getElementById("security-audit-tbody");
       auditTbody.innerHTML = (sc.audit_logs || []).map(a => `
         <tr>
-          <td style="font-family:var(--font-mono);">${escapeHtml(a.time)}</td>
+          <td style="font-family:'Manrope';">${escapeHtml(a.time)}</td>
           <td><span class="status-pill ${a.severity === 'INFO' ? 'ok' : (a.severity === 'WARN' ? 'warn' : 'err')}">${escapeHtml(a.severity)}</span></td>
-          <td style="font-family:var(--font-mono); font-weight:700;">${escapeHtml(a.event)}</td>
-          <td style="font-family:var(--font-mono);">${escapeHtml(a.ip)}</td>
+          <td style="font-family:'Manrope'; font-weight:700;">${escapeHtml(a.event)}</td>
+          <td style="font-family:'Manrope';">${escapeHtml(a.ip)}</td>
           <td>${escapeHtml(a.detail)}</td>
         </tr>
       `).join("");
@@ -3060,5 +2433,9 @@
       }
     })();
   </script>
+<script>
+/* fail-safe: khong de noi dung bi an neu scroll-reveal khong kich hoat */
+setTimeout(function(){document.querySelectorAll('.reveal,[class*="reveal"]').forEach(function(el){el.classList.add('visible','is-visible','in-view','revealed');});},1800);
+</script>
 </body>
 </html>
