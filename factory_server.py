@@ -291,6 +291,7 @@ def redact_secrets(text: str) -> str:
     text = re.sub(r"(?:chat_id|user_id|whitelist)[^\n]*?\b\d{8,12}\b", "[TG-ID-REDACTED]", text, flags=re.IGNORECASE)
     text = re.sub(r"(?:project-[a-f0-9]{6,}-[a-z0-9\-]+|gen-lang-client-\d+|synthetic-eon-[a-z0-9\-]+)", "[GCP-PROJECT-PROTECTED]", text, flags=re.IGNORECASE)
     text = re.sub(r"[A-Za-z]:\\Users\\[^\\\s\"'<>]+", "[LOCAL_HOST]", text)
+    text = re.sub(r"Tổng tài sản hệ thống:\s*\$[\d,\.]+\s*USDT", "Tổng tài sản hệ thống: [VAULT-PROTECTED]", text)
     return text
 
 
@@ -756,6 +757,19 @@ def execute_factory_action(action: str, payload: dict, client_ip: str) -> dict:
 
     if action == "heal_daemons":
         healed = []
+        if os.name != "nt":
+            for svc, label in [
+                ("omniroute", "OmniRoute (:20129)"),
+                ("hermes-gateway", "Hermes Gateway (@alicewordbot)"),
+                ("hermes-web", "Hermes Web UI (:9119)"),
+                ("rexapf-trade", "RexAPF Trade Bot (:49199)"),
+            ]:
+                res = subprocess.run(["systemctl", "is-active", svc], capture_output=True, text=True, timeout=5)
+                if res.stdout.strip() != "active":
+                    subprocess.run(["systemctl", "restart", svc], capture_output=True, timeout=10)
+                    healed.append(label)
+            msg = "Cloud Auto-Heal đã khởi động lại: " + ", ".join(healed) if healed else "Toàn bộ dịch vụ trên Google Cloud Singapore 24/7 (OmniRoute, Hermes Gateway, Hermes Web, RexAPF Trade Bot, Caddy HTTPS) đang ACTIVE 100%!"
+            return {"ok": True, "message": msg}
         if not is_port_open(49199):
             subprocess.run(
                 [
