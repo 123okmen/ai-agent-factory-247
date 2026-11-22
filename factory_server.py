@@ -54,8 +54,18 @@ PORT = 8099
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 AUDIT_LOG_PATH = os.path.join(BASE_DIR, "security_audit.log")
 
-# Đường dẫn hệ thống thực tế của Nguyễn Tân Khanh
-HERMES_DIR = r"C:\Users\pc\AppData\Local\hermes"
+# Đường dẫn hệ thống thực tế của Nguyễn Tân Khanh (Tự động hỗ trợ Windows & Ubuntu Cloud VM 24/7)
+if os.name == "nt":
+    HERMES_DIR = os.environ.get("HERMES_HOME", r"C:\Users\pc\AppData\Local\hermes")
+    TRADE_BOT_DIR = os.environ.get("TRADE_BOT_DIR", r"c:\Users\pc\Desktop\Cong viec\Plan\crypto-trading-bot")
+    VIRTUAL_OFFICE_DIR = os.environ.get("VIRTUAL_OFFICE_DIR", r"c:\Users\pc\Desktop\Cong viec\AI_Virtual_Office_247")
+    ORDERS_TRACKER_JSON = os.environ.get("ORDERS_TRACKER_JSON", r"C:\Users\pc\Desktop\Plan\Don_Hang_Txt\da_thong_bao_orders.json")
+else:
+    HERMES_DIR = os.environ.get("HERMES_HOME", "/opt/ai-factory/hermes")
+    TRADE_BOT_DIR = os.environ.get("TRADE_BOT_DIR", "/opt/ai-factory/crypto-trading-bot")
+    VIRTUAL_OFFICE_DIR = os.environ.get("VIRTUAL_OFFICE_DIR", "/opt/ai-factory/virtual-office")
+    ORDERS_TRACKER_JSON = os.environ.get("ORDERS_TRACKER_JSON", "/opt/ai-factory/data/da_thong_bao_orders.json")
+
 HERMES_STATE_JSON = os.path.join(HERMES_DIR, "gateway_state.json")
 HERMES_CRON_JSON = os.path.join(HERMES_DIR, "cron", "jobs.json")
 HERMES_AGENT_LOG = os.path.join(HERMES_DIR, "logs", "agent.log")
@@ -64,18 +74,21 @@ HERMES_ERRORS_LOG = os.path.join(HERMES_DIR, "logs", "errors.log")
 HERMES_STATE_DB = os.path.join(HERMES_DIR, "state.db")
 WATCHDOG_SCRIPT = os.path.join(HERMES_DIR, "scripts", "watchdog_don_hang.py")
 
-TRADE_BOT_DIR = r"c:\Users\pc\Desktop\Cong viec\Plan\crypto-trading-bot"
 TRADE_STATE_JSON = os.path.join(TRADE_BOT_DIR, "wave_bot_state.json")
 TRADE_LESSONS_JSON = os.path.join(TRADE_BOT_DIR, "trade_lessons.json")
 TRADE_HISTORY_JSON = os.path.join(TRADE_BOT_DIR, "trade_history.json")
 TRADE_ACCOUNTS_JSON = os.path.join(TRADE_BOT_DIR, "accounts.json")
 TRADE_BOT_LOG = os.path.join(TRADE_BOT_DIR, "wave_trend_news_bot.log")
 
-VIRTUAL_OFFICE_DIR = r"c:\Users\pc\Desktop\Cong viec\AI_Virtual_Office_247"
 OFFICE_MEMORY_JSON = os.path.join(VIRTUAL_OFFICE_DIR, "office_memory_247.json")
 OFFICE_LOG_PATH = os.path.join(VIRTUAL_OFFICE_DIR, "office_activity_247.log")
-ORDERS_TRACKER_JSON = r"C:\Users\pc\Desktop\Plan\Don_Hang_Txt\da_thong_bao_orders.json"
 SAM_MIX_STATE_JSON = os.path.join(HERMES_DIR, "sam_mix_watch_state.json")
+
+ALLOWED_CORS_ORIGINS = {
+    "https://123okmen.github.io",
+    "http://localhost:8099",
+    "http://127.0.0.1:8099",
+}
 
 # ==============================================================================
 # CẤU HÌNH BẢO MẬT TỐI ĐA (PBKDF2-HMAC-SHA256 + SESSION VAULT + BRUTE-FORCE GUARD)
@@ -864,7 +877,14 @@ class FactoryRequestHandler(SimpleHTTPRequestHandler):
         return None
 
     def end_headers(self):
-        """Luôn đính kèm OWASP Security Headers trên MỌI phản hồi HTTP."""
+        """Luôn đính kèm OWASP Security Headers & Strict CORS trên MỌI phản hồi HTTP."""
+        origin = self.headers.get("Origin", "").strip()
+        if origin in ALLOWED_CORS_ORIGINS:
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Vary", "Origin")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Factory-Token, X-CSRF-Token")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+            self.send_header("Access-Control-Max-Age", "600")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Referrer-Policy", "no-referrer")
@@ -877,12 +897,19 @@ class FactoryRequestHandler(SimpleHTTPRequestHandler):
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
             "font-src 'self' https://fonts.gstatic.com data:; "
             "img-src 'self' data: blob: https:; "
-            "connect-src 'self'; "
+            "connect-src 'self' https://136.85.54.204.sslip.io http://localhost:8099 http://127.0.0.1:8099; "
             "frame-ancestors 'none'; base-uri 'self';"
         )
         super().end_headers()
 
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self.end_headers()
+
     def get_client_ip(self) -> str:
+        xff = self.headers.get("X-Forwarded-For", "").strip()
+        if xff:
+            return xff.split(",")[0].strip()
         return self.client_address[0] if self.client_address else "127.0.0.1"
 
     def extract_session_token(self) -> str:
@@ -921,6 +948,15 @@ class FactoryRequestHandler(SimpleHTTPRequestHandler):
         if any(path.lower().endswith(ext) for ext in blocked_exts) or "/." in path or "\\." in path:
             write_audit_log("BLOCKED_FILE_PROBE", self.get_client_ip(), f"Path={path}", "WARN")
             self.send_json(403, {"error": "403 Forbidden — Access to internal factory files is strictly prohibited."})
+            return
+
+        if path == "/api/health":
+            self.send_json(200, {
+                "ok": True,
+                "mode": "gcp-cloud-247" if os.name != "nt" else "local-247",
+                "region": "asia-southeast1" if os.name != "nt" else "local-pc",
+                "uptime_seconds": int(time.time() - SERVER_BOOT_TIME)
+            })
             return
 
         if path == "/api/auth/status":

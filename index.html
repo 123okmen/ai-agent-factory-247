@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="referrer" content="no-referrer" />
   <meta name="robots" content="noindex, nofollow" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' http://localhost:8099 http://127.0.0.1:8099; base-uri 'self'; form-action 'self';" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://136.85.54.204.sslip.io http://localhost:8099 http://127.0.0.1:8099; base-uri 'self'; form-action 'self';" />
   <title>AI AGENT FACTORY 24/7 — NGUYỄN TÂN KHANH ENTERPRISE COMMAND CENTER</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1446,6 +1446,10 @@
     //    và giải mã trực tiếp kho dữ liệu AES/SHA256-CTR (encrypted_vault.json)
     //    Đảm bảo KHÔNG BAO GIỜ có mật khẩu rõ hay dữ liệu lộ trên GitHub!
     // ============================================================================
+    const CLOUD_LIVE_API = "https://136.85.54.204.sslip.io";
+    const IS_GH_PAGES = location.hostname.endsWith("github.io");
+    const API_BASE = IS_GH_PAGES ? CLOUD_LIVE_API : "";
+
     let SESSION_TOKEN = sessionStorage.getItem("factory_token") || "";
     let CSRF_TOKEN = sessionStorage.getItem("factory_csrf") || "";
     let IS_STATIC_CLOUD_MODE = false;
@@ -1642,10 +1646,10 @@
       btn.disabled = true;
 
       try {
-        // Thử kết nối Server Python Local (:8099) trước
+        // Thử kết nối Live Engine (GCP Singapore 24/7 khi mở GitHub Pages, hoặc Local :8099)
         let serverHandled = false;
         try {
-          const resp = await fetch("/api/auth/login", {
+          const resp = await fetch(API_BASE + "/api/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ password: candidatePw })
@@ -1663,8 +1667,11 @@
               pwInput.value = "";
               document.getElementById("vault-overlay").classList.add("hidden");
               const hudMode = document.getElementById("hud-mode-pill");
-              if (hudMode) hudMode.textContent = "LIVE LOCAL ENGINE :8099";
-              showToast("🔓 Xác thực Server-Side thành công! Chào mừng Nguyễn Tân Khanh.");
+              if (hudMode) hudMode.textContent = IS_GH_PAGES ? "LIVE GCP CLOUD 24/7 (SINGAPORE)" : "LIVE ENGINE :8099";
+              document.getElementById("kpi-mode-badge").textContent = IS_GH_PAGES ? "GCP LIVE 24/7" : "ZERO-TRUST";
+              showToast(IS_GH_PAGES
+                ? "🔓 Kết nối LIVE Google Cloud Singapore 24/7 thành công! Chào mừng Nguyễn Tân Khanh."
+                : "🔓 Xác thực Server-Side thành công! Chào mừng Nguyễn Tân Khanh.");
               resetIdleAutoLock();
               await fetchFactoryTelemetry();
               startPolling();
@@ -1677,7 +1684,7 @@
             }
           }
         } catch (_) {
-          // Chuyển sang chế độ WebCrypto Cloud Vault (GitHub Pages)
+          // Dự phòng chế độ WebCrypto Cloud Vault (encrypted_vault.json)
         }
 
         if (!serverHandled) {
@@ -1717,7 +1724,7 @@
     async function handleLogout(showNotice = false, customMsg = "") {
       if (!IS_STATIC_CLOUD_MODE && SESSION_TOKEN) {
         try {
-          await fetch("/api/auth/logout", {
+          await fetch(API_BASE + "/api/auth/logout", {
             method: "POST",
             headers: { "X-Factory-Token": SESSION_TOKEN }
           });
@@ -1785,7 +1792,7 @@
       }
       showToast("⚙️ Đang thực thi lệnh điều khiển: " + action + "...");
       try {
-        const resp = await fetch("/api/factory/action", {
+        const resp = await fetch(API_BASE + "/api/factory/action", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -1813,7 +1820,7 @@
     async function fetchFactoryTelemetry() {
       if (IS_STATIC_CLOUD_MODE) return;
       try {
-        const resp = await fetch("/api/factory/telemetry", {
+        const resp = await fetch(API_BASE + "/api/factory/telemetry", {
           headers: { "X-Factory-Token": SESSION_TOKEN }
         });
         if (resp.status === 401) {
