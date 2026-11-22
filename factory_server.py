@@ -288,7 +288,7 @@ def redact_secrets(text: str) -> str:
     text = re.sub(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}", "[EMAIL-REDACTED]", text)
     text = re.sub(r"(?:\+84|0)[35789]\d{8}|\b0\d{2,3}[-.\s]\d{3}[-.\s]\d{3,4}\b", "[PHONE-REDACTED]", text)
     text = re.sub(r"-100\d{8,14}", "[TG-GROUP-REDACTED]", text)
-    text = re.sub(r"(?:chat_id|user_id|whitelist)[^\n]*?\b\d{8,12}\b", "[TG-ID-REDACTED]", text, flags=re.IGNORECASE)
+    text = re.sub(r"\b\d{9,11}\b", "[TG-ID-REDACTED]", text)
     text = re.sub(r"(?:project-[a-f0-9]{6,}-[a-z0-9\-]+|gen-lang-client-\d+|synthetic-eon-[a-z0-9\-]+)", "[GCP-PROJECT-PROTECTED]", text, flags=re.IGNORECASE)
     text = re.sub(r"[A-Za-z]:\\Users\\[^\\\s\"'<>]+", "[LOCAL_HOST]", text)
     text = re.sub(r"Tổng tài sản hệ thống:\s*\$[\d,\.]+\s*USDT", "Tổng tài sản hệ thống: [VAULT-PROTECTED]", text)
@@ -700,6 +700,16 @@ def get_security_telemetry() -> dict:
     }
 
 
+def _deep_redact(obj):
+    if isinstance(obj, dict):
+        return {k: _deep_redact(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_deep_redact(v) for v in obj]
+    if isinstance(obj, str):
+        return redact_secrets(obj)
+    return obj
+
+
 def build_full_factory_telemetry() -> dict:
     hermes = get_hermes_telemetry()
     trade = get_trade_factory_telemetry()
@@ -707,17 +717,23 @@ def build_full_factory_telemetry() -> dict:
     fnb = get_fnb_and_agency_telemetry()
     sec = get_security_telemetry()
 
+    fourth_node = (
+        {"id": "ninerouter", "name": "9Router Engine", "detail": "Fast Fallback • :20128", "online": bool(routers.get("nine_router", {}).get("online"))}
+        if os.name == "nt"
+        else {"id": "caddy_tls", "name": "Caddy HTTPS TLS", "detail": "Singapore SSL • :443", "online": True}
+    )
+
     live_subsystems = [
         {"id": "hermes_gw", "name": "Hermes Gateway", "detail": "@alicewordbot • Solar-Mini4", "online": bool(hermes.get("online"))},
         {"id": "hermes_web", "name": "Hermes Web UI", "detail": "Dashboard :9119", "online": bool(hermes.get("web_dashboard", {}).get("online"))},
         {"id": "omniroute", "name": "OmniRoute v3.8", "detail": "595 Models • :20129", "online": bool(routers.get("omniroute", {}).get("online"))},
-        {"id": "ninerouter", "name": "9Router Engine", "detail": "Fast Fallback • :20128", "online": bool(routers.get("nine_router", {}).get("online"))},
+        fourth_node,
         {"id": "trade_bot", "name": "RexAPF Trade v11", "detail": "10s Loop • :49199", "online": bool(trade.get("online"))},
         {"id": "cloud_run", "name": "Cloud Run F&B", "detail": "24/7 Watchdog GCP", "online": True},
         {"id": "arch_3d", "name": "3D Arch & Render", "detail": "Blender/SketchUp MCP", "online": True}
     ]
 
-    return {
+    return _deep_redact({
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "owner": {
             "name": "Nguyễn Tân Khanh",
@@ -729,7 +745,7 @@ def build_full_factory_telemetry() -> dict:
         "power_plant": routers,
         "fnb_factory": fnb,
         "security": sec
-    }
+    })
 
 
 def _load_local_hermes_env_key(var_name: str, default_val: str = "") -> str:
