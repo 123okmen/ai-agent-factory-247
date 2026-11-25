@@ -1108,9 +1108,10 @@ class FactoryRequestHandler(SimpleHTTPRequestHandler):
             self.send_header("Access-Control-Max-Age", "600")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("X-Frame-Options", "DENY")
-        self.send_header("Referrer-Policy", "no-referrer")
-        self.send_header("Cross-Origin-Opener-Policy", "same-origin")
         req_path = (self.path or "").split("?", 1)[0]
+        # YouTube embeds require strict-origin-when-cross-origin (no-referrer causes YouTube Error 153)
+        self.send_header("Referrer-Policy", "strict-origin-when-cross-origin" if req_path.startswith("/gym") else "no-referrer")
+        self.send_header("Cross-Origin-Opener-Policy", "same-origin")
         if req_path.startswith("/flix"):
             # PUCHFLIX Watch Party needs camera/mic on same-origin + HLS/PeerJS/PhimAPI/embed players
             self.send_header("Permissions-Policy", "camera=(self), microphone=(self), geolocation=(), payment=()")
