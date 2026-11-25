@@ -1110,17 +1110,48 @@ class FactoryRequestHandler(SimpleHTTPRequestHandler):
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Referrer-Policy", "no-referrer")
         self.send_header("Cross-Origin-Opener-Policy", "same-origin")
-        self.send_header("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()")
-        self.send_header(
-            "Content-Security-Policy",
-            "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline'; "
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-            "font-src 'self' https://fonts.gstatic.com data:; "
-            "img-src 'self' data: blob: https:; "
-            "connect-src 'self' https://136.85.54.204.sslip.io http://localhost:8099 http://127.0.0.1:8099; "
-            "frame-ancestors 'none'; base-uri 'self';"
-        )
+        req_path = (self.path or "").split("?", 1)[0]
+        if req_path.startswith("/flix"):
+            # PUCHFLIX Watch Party needs camera/mic on same-origin + HLS/PeerJS/PhimAPI/embed players
+            self.send_header("Permissions-Policy", "camera=(self), microphone=(self), geolocation=(), payment=()")
+            self.send_header(
+                "Content-Security-Policy",
+                "default-src 'self'; "
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://unpkg.com; "
+                "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; "
+                "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com data:; "
+                "img-src 'self' data: blob: https:; "
+                "media-src 'self' blob: https:; "
+                "worker-src 'self' blob:; "
+                "connect-src 'self' https: wss:; "
+                "frame-src 'self' https:; "
+                "frame-ancestors 'none'; base-uri 'self';"
+            )
+        elif req_path.startswith("/gym"):
+            # Quyền Fitness Landing Page: 100% self-contained CSS/JS + Google Fonts
+            self.send_header("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()")
+            self.send_header(
+                "Content-Security-Policy",
+                "default-src 'self'; "
+                "script-src 'self' 'unsafe-inline'; "
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+                "font-src 'self' https://fonts.gstatic.com data:; "
+                "img-src 'self' data: blob: https:; "
+                "connect-src 'self'; "
+                "frame-ancestors 'none'; base-uri 'self';"
+            )
+        else:
+            self.send_header("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()")
+            self.send_header(
+                "Content-Security-Policy",
+                "default-src 'self'; "
+                "script-src 'self' 'unsafe-inline'; "
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+                "font-src 'self' https://fonts.gstatic.com data:; "
+                "img-src 'self' data: blob: https:; "
+                "connect-src 'self' https://136.85.54.204.sslip.io http://localhost:8099 http://127.0.0.1:8099; "
+                "frame-ancestors 'none'; base-uri 'self';"
+            )
         super().end_headers()
 
     def do_OPTIONS(self):
