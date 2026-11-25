@@ -1049,6 +1049,68 @@
       font-size: 11px;
       color: #6ee7b7;
     }
+
+    /* ======================== VIRTUAL PC MANAGER (TAB 7) ======================== */
+    .vps-gauge-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .vps-gauge-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-dim);
+      border-radius: 16px;
+      padding: 16px 18px;
+      backdrop-filter: blur(12px);
+    }
+    .vps-gauge-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .vps-gauge-val {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+    .vps-bar-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 99px;
+      background: rgba(148, 163, 184, 0.16);
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .vps-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--cyan), var(--emerald));
+      transition: width 0.4s ease;
+    }
+    .vps-bar-fill.warn { background: linear-gradient(90deg, var(--amber), #fb923c); }
+    .vps-bar-fill.err { background: linear-gradient(90deg, var(--rose), #ef4444); }
+    .vps-mini-btn {
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .vps-mini-btn:hover { background: rgba(0, 242, 254, 0.18); border-color: var(--cyan); }
+    .vps-mini-btn.ok { border-color: rgba(16, 185, 129, 0.45); color: #6ee7b7; }
+    .vps-mini-btn.danger { border-color: rgba(244, 63, 94, 0.45); color: #fda4af; }
+    .vps-mini-btn.warn { border-color: rgba(245, 158, 11, 0.45); color: #fcd34d; }
   </style>
 </head>
 <body>
@@ -1193,6 +1255,9 @@
     </button>
     <button class="tab-btn" data-view="security" onclick="switchTab('security', this)">
       🛡️ 6. BẢO MẬT ZERO-TRUST & AUDIT
+    </button>
+    <button class="tab-btn" data-view="vps" onclick="switchTab('vps', this)">
+      🖥️ 7. QUẢN LÝ PC ẢO (VPS SINGAPORE 24/7)
     </button>
   </nav>
 
@@ -1424,6 +1489,125 @@
         </thead>
         <tbody id="security-audit-tbody"></tbody>
       </table>
+    </div>
+  </section>
+
+  <!-- ==================== VIEW 7: VIRTUAL PC MANAGER (SINGAPORE VPS 24/7) ==================== -->
+  <section id="view-vps" class="view-section">
+    <div class="factory-banner" style="flex-wrap:wrap; gap:12px;">
+      <div>
+        <div style="font-size: 16px; font-weight: 800; color: var(--cyan);" id="vps-host-title">
+          🖥️ TRÌNH QUẢN LÝ PC ẢO 24/7 — GOOGLE CLOUD SINGAPORE (ai-agent-factory-vm-247)
+        </div>
+        <div style="font-size: 12.5px; color: var(--text-muted); margin-top: 4px;" id="vps-host-meta">
+          Khu vực: asia-southeast1-a • IP Tĩnh: 136.85.54.204 • Dự phòng tự động Cloud ⇄ PC đang bật
+        </div>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <button class="action-btn emerald" onclick="triggerFactoryAction('heal_daemons')">
+          ⚡ Tự Hồi Sinh 6 Dịch Vụ
+        </button>
+        <button class="action-btn" onclick="triggerFactoryAction('vps_clean_cache')">
+          🧹 Dọn Cache & Log VPS
+        </button>
+        <a href="https://console.cloud.google.com/compute/instances" target="_blank" rel="noopener noreferrer" class="action-btn" style="text-decoration:none;">
+          ☁️ Google Cloud Console ↗
+        </a>
+      </div>
+    </div>
+
+    <div class="vps-gauge-grid">
+      <div class="vps-gauge-card">
+        <div class="vps-gauge-head">
+          <span>⚡ TẢI CPU (LOAD AVERAGE)</span>
+          <span class="status-pill ok" id="vps-cpu-cores">2 vCPU</span>
+        </div>
+        <div class="vps-gauge-val" id="vps-cpu-val">--%</div>
+        <div class="vps-bar-track"><div class="vps-bar-fill" id="vps-cpu-bar" style="width:0%"></div></div>
+        <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);" id="vps-load-sub">Load: -- / -- / --</div>
+      </div>
+
+      <div class="vps-gauge-card">
+        <div class="vps-gauge-head">
+          <span>🧠 BỘ NHỚ RAM VPS</span>
+          <span class="status-pill ok" id="vps-ram-pct-pill">--%</span>
+        </div>
+        <div class="vps-gauge-val" id="vps-ram-val">-- / -- MB</div>
+        <div class="vps-bar-track"><div class="vps-bar-fill" id="vps-ram-bar" style="width:0%"></div></div>
+        <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);" id="vps-swap-sub">Swap chống OOM: -- / 2047 MB</div>
+      </div>
+
+      <div class="vps-gauge-card">
+        <div class="vps-gauge-head">
+          <span>💾 Ổ CỨNG SSD (/)</span>
+          <span class="status-pill ok" id="vps-disk-pct-pill">--%</span>
+        </div>
+        <div class="vps-gauge-val" id="vps-disk-val">-- / -- GB</div>
+        <div class="vps-bar-track"><div class="vps-bar-fill" id="vps-disk-bar" style="width:0%"></div></div>
+        <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);" id="vps-disk-sub">Còn trống: -- GB</div>
+      </div>
+
+      <div class="vps-gauge-card">
+        <div class="vps-gauge-head">
+          <span>⏱️ THỜI GIAN CHẠY LIÊN TỤC</span>
+          <span class="status-pill ok">24/7 LIVE</span>
+        </div>
+        <div class="vps-gauge-val" id="vps-uptime-val">--</div>
+        <div style="font-family:var(--font-mono); font-size:11px; color:var(--emerald); margin-top:10px;" id="vps-os-sub">Ubuntu 24.04 LTS • systemd Auto-Heal</div>
+      </div>
+    </div>
+
+    <div class="panel-card" style="margin-bottom: 18px;">
+      <div class="panel-title">
+        <span>🎛️ BẢNG ĐIỀU KHIỂN 6 DỊCH VỤ CHẠY 24/7 TRÊN PC ẢO (1-CLICK START / RESTART / STOP / LOG)</span>
+        <span class="status-pill ok" id="vps-svc-summary">6/6 ACTIVE</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Dịch vụ</th>
+              <th>Mô tả</th>
+              <th>Trạng thái</th>
+              <th>PID / Restarts</th>
+              <th>RAM</th>
+              <th>Điều khiển nhanh</th>
+            </tr>
+          </thead>
+          <tbody id="vps-services-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="two-col-grid">
+      <div class="panel-card">
+        <div class="panel-title">
+          <span id="vps-log-title">📟 NHẬT KÝ TRỰC TIẾP DỊCH VỤ (NHẤP "XEM LOG" BÊN TRÊN)</span>
+          <span class="status-pill ok">ZERO-PII LIVE</span>
+        </div>
+        <div class="terminal-box" id="vps-live-log-box" style="min-height:240px; max-height:320px;">
+          Chọn bất kỳ dịch vụ nào ở bảng trên và bấm "📄 Log" để xem nhật ký trực tiếp từ VPS Singapore...
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-title">
+          <span>📊 TOP TIẾN TRÌNH ĐANG CHẠY TRÊN PC ẢO</span>
+          <span class="status-pill ok">REAL-TIME</span>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>PID</th>
+              <th>Tiến trình</th>
+              <th>CPU%</th>
+              <th>RAM%</th>
+              <th>RSS (MB)</th>
+            </tr>
+          </thead>
+          <tbody id="vps-procs-tbody"></tbody>
+        </table>
+      </div>
     </div>
   </section>
 
@@ -2780,6 +2964,139 @@
       renderTradeView(tr);
       renderFnbView(fn);
       renderSecurityView(sc, hm.active_crons || []);
+      renderVpsView(d.virtual_pc || {});
+    }
+
+    function formatUptimeVi(sec) {
+      sec = Math.max(0, Number(sec || 0));
+      const d = Math.floor(sec / 86400);
+      const h = Math.floor((sec % 86400) / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      if (d > 0) return `${d}d ${h}h ${m}m`;
+      return `${h}h ${m}m`;
+    }
+
+    function setGaugeBar(elId, pct) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      const p = Math.max(0, Math.min(100, Number(pct || 0)));
+      el.style.width = p + "%";
+      el.className = "vps-bar-fill" + (p >= 85 ? " err" : (p >= 65 ? " warn" : ""));
+    }
+
+    function renderVpsView(vpc) {
+      if (!vpc || !vpc.host_label) return;
+      const titleEl = document.getElementById("vps-host-title");
+      if (titleEl) titleEl.textContent = `🖥️ TRÌNH QUẢN LÝ PC ẢO 24/7 — ${vpc.host_label}`;
+      const metaEl = document.getElementById("vps-host-meta");
+      if (metaEl) metaEl.textContent = `${vpc.region || "Singapore"} • ${vpc.ip_display || "136.85.54.204"} • Active-Standby Failover Ready`;
+
+      const cpuCoresEl = document.getElementById("vps-cpu-cores");
+      if (cpuCoresEl) cpuCoresEl.textContent = `${vpc.cpu_cores || 2} vCPU`;
+      const cpuValEl = document.getElementById("vps-cpu-val");
+      if (cpuValEl) cpuValEl.textContent = `${vpc.cpu_pct ?? 0}%`;
+      setGaugeBar("vps-cpu-bar", vpc.cpu_pct || 0);
+      const loadSubEl = document.getElementById("vps-load-sub");
+      if (loadSubEl) loadSubEl.textContent = `Load Avg: ${vpc.load_1m ?? 0} (1m) • ${vpc.load_5m ?? 0} (5m) • ${vpc.load_15m ?? 0} (15m)`;
+
+      const ramPill = document.getElementById("vps-ram-pct-pill");
+      if (ramPill) ramPill.textContent = `${vpc.ram_pct ?? 0}%`;
+      const ramVal = document.getElementById("vps-ram-val");
+      if (ramVal) ramVal.textContent = `${vpc.ram_used_mb ?? 0} / ${vpc.ram_total_mb ?? 3908} MB`;
+      setGaugeBar("vps-ram-bar", vpc.ram_pct || 0);
+      const swapSub = document.getElementById("vps-swap-sub");
+      if (swapSub) swapSub.textContent = `Swap chống OOM: ${vpc.swap_used_mb ?? 0} / ${vpc.swap_total_mb ?? 2047} MB`;
+
+      const diskPill = document.getElementById("vps-disk-pct-pill");
+      if (diskPill) diskPill.textContent = `${vpc.disk_pct ?? 0}%`;
+      const diskVal = document.getElementById("vps-disk-val");
+      if (diskVal) diskVal.textContent = `${vpc.disk_used_gb ?? 0} / ${vpc.disk_total_gb ?? 29} GB`;
+      setGaugeBar("vps-disk-bar", vpc.disk_pct || 0);
+      const diskSub = document.getElementById("vps-disk-sub");
+      if (diskSub) diskSub.textContent = `Còn trống: ${vpc.disk_free_gb ?? 0} GB SSD`;
+
+      const upEl = document.getElementById("vps-uptime-val");
+      if (upEl) upEl.textContent = formatUptimeVi(vpc.uptime_sec);
+      const osEl = document.getElementById("vps-os-sub");
+      if (osEl) osEl.textContent = vpc.os || "Ubuntu 24.04 LTS • systemd Auto-Heal";
+
+      const svcs = vpc.services || [];
+      const activeCnt = svcs.filter(s => s.state === "active").length;
+      const sumEl = document.getElementById("vps-svc-summary");
+      if (sumEl) {
+        sumEl.textContent = `${activeCnt}/${svcs.length} ACTIVE`;
+        sumEl.className = "status-pill " + (activeCnt === svcs.length ? "ok" : "warn");
+      }
+
+      const tbody = document.getElementById("vps-services-tbody");
+      if (tbody) {
+        tbody.innerHTML = svcs.map(s => `
+          <tr>
+            <td><b>${escapeHtml(s.name)}</b><br/><span style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-muted);">${escapeHtml(s.id)}.service</span></td>
+            <td style="font-size:12px; color:var(--text-muted);">${escapeHtml(s.desc)}</td>
+            <td><span class="status-pill ${s.state === 'active' ? 'ok' : 'err'}">${escapeHtml((s.state || 'unknown').toUpperCase())}</span></td>
+            <td style="font-family:var(--font-mono); font-size:11.5px;">PID ${s.pid || 0} • ${s.restarts || 0} rst</td>
+            <td style="font-family:var(--font-mono); font-size:11.5px;">${s.mem_mb || 0} MB</td>
+            <td>
+              <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                <button class="vps-mini-btn warn" onclick="controlVpsService('${escapeHtml(s.id)}','restart')">🔄 Restart</button>
+                <button class="vps-mini-btn ok" onclick="controlVpsService('${escapeHtml(s.id)}','start')">▶ Start</button>
+                <button class="vps-mini-btn danger" onclick="controlVpsService('${escapeHtml(s.id)}','stop')">⏹ Stop</button>
+                <button class="vps-mini-btn" onclick="controlVpsService('${escapeHtml(s.id)}','logs')">📄 Log</button>
+              </div>
+            </td>
+          </tr>
+        `).join("");
+      }
+
+      const pTbody = document.getElementById("vps-procs-tbody");
+      if (pTbody) {
+        pTbody.innerHTML = (vpc.top_processes || []).map(p => `
+          <tr>
+            <td style="font-family:var(--font-mono); color:var(--cyan);">${escapeHtml(p.pid)}</td>
+            <td><b>${escapeHtml(p.cmd)}</b></td>
+            <td style="font-family:var(--font-mono);">${escapeHtml(p.cpu)}%</td>
+            <td style="font-family:var(--font-mono);">${escapeHtml(p.mem)}%</td>
+            <td style="font-family:var(--font-mono);">${p.rss_mb} MB</td>
+          </tr>
+        `).join("") || `<tr><td colspan="5" style="color:var(--text-muted); text-align:center;">Đang chờ dữ liệu tiến trình trực tiếp từ VPS Singapore...</td></tr>`;
+      }
+    }
+
+    async function controlVpsService(serviceId, op) {
+      if (IS_STATIC_CLOUD_MODE) {
+        showToast("⚠️ Vui lòng kết nối trực tiếp VPS Singapore HTTPS để điều khiển dịch vụ!", true);
+        return;
+      }
+      if (op === "stop" && !confirm(`Bạn có chắc muốn DỪNG dịch vụ ${serviceId} trên VPS Singapore?`)) return;
+      showToast(`⚙️ Đang gửi lệnh ${op.toUpperCase()} tới ${serviceId}...`);
+      try {
+        const resp = await fetch(API_BASE + "/api/factory/action", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Factory-Token": SESSION_TOKEN,
+            "X-CSRF-Token": CSRF_TOKEN
+          },
+          body: JSON.stringify({ action: "vps_service_ctrl", service: serviceId, op })
+        });
+        if (resp.status === 401) { handleLogout(); return; }
+        const data = await resp.json();
+        showToast(data.message || "Hoàn tất!", !data.ok);
+        if (op === "logs" && data.ok) {
+          const titleEl = document.getElementById("vps-log-title");
+          if (titleEl) titleEl.textContent = `📟 NHẬT KÝ TRỰC TIẾP: ${serviceId}.service (40 DÒNG MỚI NHẤT)`;
+          const box = document.getElementById("vps-live-log-box");
+          if (box) {
+            box.innerHTML = (data.logs || []).map(l => `<div class="terminal-line">${escapeHtml(l)}</div>`).join("") || "Chưa có dòng log nào.";
+            box.scrollTop = box.scrollHeight;
+          }
+        } else {
+          setTimeout(fetchFactoryTelemetry, 1200);
+        }
+      } catch (err) {
+        showToast("Lỗi kết nối VPS: " + err.message, true);
+      }
     }
 
     function startLiveCloudTicker(d) {
@@ -3352,7 +3669,7 @@
 
     (async function bootCheck() {
       const hash = (window.location.hash || "").replace(/^#view-/, "");
-      const validTabs = ["chibi3d", "floor", "dag", "trade", "fnb", "security"];
+      const validTabs = ["chibi3d", "floor", "dag", "trade", "fnb", "security", "vps"];
       if (validTabs.includes(hash)) {
         switchTab(hash);
       }

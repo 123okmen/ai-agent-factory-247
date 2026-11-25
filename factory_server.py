@@ -33,6 +33,7 @@ import json
 import time
 import hmac
 import socket
+import shutil
 import hashlib
 import secrets
 import sqlite3
@@ -700,6 +701,155 @@ def get_security_telemetry() -> dict:
     }
 
 
+VPS_WHITELIST_SERVICES = [
+    ("hermes-gateway", "Hermes Gateway (@alicewordbot)", "Telegram Bot & 5 Cronjobs 24/7"),
+    ("hermes-web", "Hermes Web Dashboard", "Giao diện quản trị nội bộ (:9119)"),
+    ("omniroute", "OmniRoute AI Gateway", "595 Models • Gemini 3.x • 3 Combos (:20129)"),
+    ("rexapf-trade", "RexAPF Trade Bot v11.0", "Crypto Futures 10s Loop (:49199)"),
+    ("ai-factory-api", "AI Factory Command API", "Backend Zero-PII & Telemetry (:8099)"),
+    ("caddy", "Caddy HTTPS TLS", "Reverse Proxy SSL Let's Encrypt (:443)"),
+]
+
+
+def get_virtual_pc_telemetry() -> dict:
+    if os.name == "nt":
+        total_d, used_d, free_d = shutil.disk_usage(BASE_DIR)
+        return {
+            "mode": "LOCAL_PC_STANDBY",
+            "host_label": "Local Windows PC (Standby Failover)",
+            "region": "Localhost (Backup cho VPS Singapore)",
+            "os": "Windows 11 / Local Engine",
+            "ip_display": "127.0.0.1 (Cloud Primary: 136.85.54.204)",
+            "uptime_sec": int(time.time() - SERVER_BOOT_TIME),
+            "cpu_cores": os.cpu_count() or 4,
+            "load_1m": 0.0,
+            "load_5m": 0.0,
+            "load_15m": 0.0,
+            "cpu_pct": 0.0,
+            "ram_total_mb": 16384,
+            "ram_used_mb": 0,
+            "ram_pct": 0.0,
+            "swap_total_mb": 8192,
+            "swap_used_mb": 0,
+            "disk_total_gb": round(total_d / (1024 ** 3), 1),
+            "disk_used_gb": round(used_d / (1024 ** 3), 1),
+            "disk_free_gb": round(free_d / (1024 ** 3), 1),
+            "disk_pct": round((used_d / total_d) * 100, 1) if total_d else 0.0,
+            "services": [
+                {"id": sid, "name": label, "desc": desc, "state": "active", "pid": 0, "restarts": 0, "mem_mb": 0}
+                for sid, label, desc in VPS_WHITELIST_SERVICES
+            ],
+            "top_processes": []
+        }
+
+    # Linux Ubuntu Cloud VPS (Singapore asia-southeast1)
+    cores = os.cpu_count() or 2
+    try:
+        l1, l5, l15 = os.getloadavg()
+    except Exception:
+        l1, l5, l15 = 0.0, 0.0, 0.0
+    cpu_pct = min(100.0, round((l1 / max(1, cores)) * 100.0, 1))
+
+    uptime_sec = 0
+    try:
+        with open("/proc/uptime", "r", encoding="utf-8") as f:
+            uptime_sec = int(float(f.read().split()[0]))
+    except Exception:
+        uptime_sec = int(time.time() - SERVER_BOOT_TIME)
+
+    mem_info = {}
+    try:
+        with open("/proc/meminfo", "r", encoding="utf-8") as f:
+            for line in f:
+                parts = line.split()
+                if len(parts) >= 2:
+                    mem_info[parts[0].rstrip(":")] = int(parts[1])  # kB
+    except Exception:
+        pass
+
+    ram_total_mb = round(mem_info.get("MemTotal", 0) / 1024)
+    ram_avail_mb = round(mem_info.get("MemAvailable", mem_info.get("MemFree", 0)) / 1024)
+    ram_used_mb = max(0, ram_total_mb - ram_avail_mb)
+    ram_pct = round((ram_used_mb / ram_total_mb) * 100.0, 1) if ram_total_mb else 0.0
+
+    swap_total_mb = round(mem_info.get("SwapTotal", 0) / 1024)
+    swap_free_mb = round(mem_info.get("SwapFree", 0) / 1024)
+    swap_used_mb = max(0, swap_total_mb - swap_free_mb)
+
+    total_d, used_d, free_d = shutil.disk_usage("/")
+    disk_total_gb = round(total_d / (1024 ** 3), 1)
+    disk_used_gb = round(used_d / (1024 ** 3), 1)
+    disk_free_gb = round(free_d / (1024 ** 3), 1)
+    disk_pct = round((used_d / total_d) * 100.0, 1) if total_d else 0.0
+
+    services = []
+    for sid, label, desc in VPS_WHITELIST_SERVICES:
+        st_info = {"id": sid, "name": label, "desc": desc, "state": "unknown", "pid": 0, "restarts": 0, "mem_mb": 0}
+        try:
+            proc = subprocess.run(
+                ["systemctl", "show", sid, "-p", "ActiveState,MainPID,NRestarts,MemoryCurrent"],
+                capture_output=True, text=True, timeout=3
+            )
+            for line in (proc.stdout or "").splitlines():
+                if "=" in line:
+                    k, v = line.split("=", 1)
+                    if k == "ActiveState":
+                        st_info["state"] = v.strip()
+                    elif k == "MainPID" and v.strip().isdigit():
+                        st_info["pid"] = int(v.strip())
+                    elif k == "NRestarts" and v.strip().isdigit():
+                        st_info["restarts"] = int(v.strip())
+                    elif k == "MemoryCurrent" and v.strip().isdigit():
+                        st_info["mem_mb"] = round(int(v.strip()) / (1024 * 1024), 1)
+        except Exception:
+            pass
+        services.append(st_info)
+
+    top_procs = []
+    try:
+        proc = subprocess.run(
+            ["ps", "-eo", "pid,pcpu,pmem,rss,comm", "--sort=-rss"],
+            capture_output=True, text=True, timeout=3
+        )
+        for line in (proc.stdout or "").splitlines()[1:9]:
+            parts = line.split(None, 4)
+            if len(parts) == 5:
+                top_procs.append({
+                    "pid": parts[0],
+                    "cpu": parts[1],
+                    "mem": parts[2],
+                    "rss_mb": round(int(parts[3]) / 1024, 1) if parts[3].isdigit() else 0,
+                    "cmd": parts[4]
+                })
+    except Exception:
+        pass
+
+    return {
+        "mode": "GCP_SINGAPORE_247",
+        "host_label": "ai-agent-factory-vm-247 (e2-medium)",
+        "region": "Google Cloud Singapore (asia-southeast1-a)",
+        "os": "Ubuntu 24.04 LTS • systemd Auto-Heal",
+        "ip_display": "136.85.54.204 (HTTPS: 136.85.54.204.sslip.io)",
+        "uptime_sec": uptime_sec,
+        "cpu_cores": cores,
+        "load_1m": round(l1, 2),
+        "load_5m": round(l5, 2),
+        "load_15m": round(l15, 2),
+        "cpu_pct": cpu_pct,
+        "ram_total_mb": ram_total_mb,
+        "ram_used_mb": ram_used_mb,
+        "ram_pct": ram_pct,
+        "swap_total_mb": swap_total_mb,
+        "swap_used_mb": swap_used_mb,
+        "disk_total_gb": disk_total_gb,
+        "disk_used_gb": disk_used_gb,
+        "disk_free_gb": disk_free_gb,
+        "disk_pct": disk_pct,
+        "services": services,
+        "top_processes": top_procs
+    }
+
+
 def _deep_redact(obj):
     if isinstance(obj, dict):
         return {k: _deep_redact(v) for k, v in obj.items()}
@@ -740,6 +890,7 @@ def build_full_factory_telemetry() -> dict:
             "edition": "Zero-Trust Enterprise Command Center 2026"
         },
         "live_subsystems": live_subsystems,
+        "virtual_pc": get_virtual_pc_telemetry(),
         "hermes": hermes,
         "trade_factory": trade,
         "power_plant": routers,
@@ -880,6 +1031,46 @@ def execute_factory_action(action: str, payload: dict, client_ip: str) -> dict:
             return {"ok": True, "message": msg}
         except Exception as e:
             return {"ok": False, "message": f"Lỗi quét đồng bộ đơn hàng: {e}"}
+
+    elif action == "vps_service_ctrl":
+        allowed_svcs = {s[0] for s in VPS_WHITELIST_SERVICES}
+        allowed_ops = {"start", "stop", "restart", "reload", "logs"}
+        svc = str(payload.get("service", "")).strip()
+        op = str(payload.get("op", "")).strip()
+        if svc not in allowed_svcs or op not in allowed_ops:
+            return {"ok": False, "message": "Dịch vụ hoặc thao tác không nằm trong danh sách cho phép!"}
+        if os.name == "nt":
+            return {"ok": True, "message": f"[Local Mode] Thao tác {op} cho {svc} chỉ áp dụng trực tiếp trên VPS Linux Singapore."}
+        try:
+            if op == "logs":
+                proc = subprocess.run(
+                    ["journalctl", "-u", svc, "-n", "40", "--no-pager"],
+                    capture_output=True, text=True, timeout=8, errors="replace"
+                )
+                lines = [redact_secrets(l) for l in (proc.stdout or "").splitlines() if l.strip()]
+                return {"ok": True, "service": svc, "logs": lines[-40:], "message": f"Đã tải {len(lines)} dòng nhật ký trực tiếp của {svc}"}
+            if svc == "ai-factory-api" and op in ("restart", "stop"):
+                subprocess.Popen(["bash", "-c", f"sleep 1 && systemctl {op} {svc}"])
+                return {"ok": True, "message": f"Đang thực thi {op} cho {svc} (tự kết nối lại sau 2 giây)..."}
+            subprocess.run(["systemctl", op, svc], capture_output=True, text=True, timeout=15)
+            st = subprocess.run(["systemctl", "is-active", svc], capture_output=True, text=True, timeout=4).stdout.strip()
+            write_audit_log("VPS_SERVICE_CTRL", client_ip, f"service={svc} op={op} state={st}", "INFO")
+            return {"ok": True, "message": f"Đã thực thi '{op.upper()}' cho {svc} -> Trạng thái: {st.upper()}"}
+        except Exception as e:
+            return {"ok": False, "message": f"Lỗi điều khiển {svc}: {e}"}
+
+    elif action == "vps_clean_cache":
+        if os.name == "nt":
+            return {"ok": True, "message": "Đang ở chế độ Local PC Standby."}
+        try:
+            subprocess.run(["journalctl", "--vacuum-time=3d"], capture_output=True, text=True, timeout=10)
+            subprocess.run(["bash", "-c", "rm -f /tmp/*.sh /tmp/*.py /tmp/*.json /tmp/*.md /tmp/*.tar.gz 2>/dev/null || true"], timeout=8)
+            _, _, free_b = shutil.disk_usage("/")
+            free_gb = round(free_b / (1024 ** 3), 1)
+            write_audit_log("VPS_CLEAN_CACHE", client_ip, f"DiskFree={free_gb}GB", "INFO")
+            return {"ok": True, "message": f"🧹 Đã dọn sạch journald log cũ (>3 ngày) & file tạm /tmp trên VPS! Ổ đĩa trống: {free_gb} GB."}
+        except Exception as e:
+            return {"ok": False, "message": f"Lỗi dọn cache VPS: {e}"}
 
     elif action == "panic_lock":
         with SECURITY_LOCK:
