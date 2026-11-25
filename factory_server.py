@@ -1128,7 +1128,7 @@ class FactoryRequestHandler(SimpleHTTPRequestHandler):
                 "frame-ancestors 'none'; base-uri 'self';"
             )
         elif req_path.startswith("/gym"):
-            # Quyền Fitness Landing Page: 100% self-contained CSS/JS + Google Fonts
+            # Quyền Fitness Landing Page: 100% self-contained CSS/JS + Google Fonts + YouTube Embeds
             self.send_header("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()")
             self.send_header(
                 "Content-Security-Policy",
@@ -1137,6 +1137,7 @@ class FactoryRequestHandler(SimpleHTTPRequestHandler):
                 "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
                 "font-src 'self' https://fonts.gstatic.com data:; "
                 "img-src 'self' data: blob: https:; "
+                "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; "
                 "connect-src 'self'; "
                 "frame-ancestors 'none'; base-uri 'self';"
             )
