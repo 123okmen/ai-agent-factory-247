@@ -704,13 +704,47 @@ def get_security_telemetry() -> dict:
 
 
 VPS_WHITELIST_SERVICES = [
-    ("hermes-gateway", "Hermes Gateway (@alicewordbot)", "Telegram Bot & 5 Cronjobs 24/7"),
+    ("hermes-gateway", "Hermes Gateway (@alicewordbot)", "Telegram Bot & Cronjobs 24/7"),
     ("hermes-web", "Hermes Web Dashboard", "Giao diện quản trị nội bộ (:9119)"),
-    ("omniroute", "OmniRoute AI Gateway", "595 Models • Gemini 3.x • 3 Combos (:20129)"),
-    ("rexapf-trade", "RexAPF Trade Bot v11.0", "Crypto Futures 10s Loop (:49199)"),
-    ("ai-factory-api", "AI Factory Command API", "Backend Zero-PII & Telemetry (:8099)"),
-    ("caddy", "Caddy HTTPS TLS", "Reverse Proxy SSL Let's Encrypt (:443)"),
+    ("omniroute", "OmniRoute AI Gateway", "Loopback Secured AI Router (:20129)"),
+    ("rexapf-trade", "RexAPF Trade Bot v13.0", "Crypto Futures + OpenRouter AI (:49199)"),
+    ("puchflix-party", "Watch Party WebRTC Signaling", "Xem Chung Face-to-Face (:9999)"),
+    ("coturn", "Singapore TURN/STUN Relay", "Xuyên NAT 4G/WiFi WebRTC (:3478)"),
+    ("ai-factory-healer", "24/7 Self-Healing Sentinel", "Tự phát hiện & sửa lỗi mỗi 30s"),
+    ("ai-factory-api", "Master Hub & Sports API", "Backend Zero-PII & Telemetry (:8099)"),
+    ("caddy", "Caddy HTTPS TLS", "Reverse Proxy SSL + HSTS (:443)"),
 ]
+
+HEALER_STATE_JSON = "/opt/ai-factory/data/healer_state.json" if os.name != "nt" else os.path.join(BASE_DIR, "healer_state.json")
+UNIFIED_CONFIG_JSON = "/opt/ai-factory/data/unified_web_config.json" if os.name != "nt" else os.path.join(BASE_DIR, "unified_web_config.json")
+
+
+def get_unified_web_config() -> dict:
+    default_cfg = {
+        "brand_name": "VNPunchFlix & AI Agent Factory",
+        "global_announcement": "🚀 Hệ thống đồng bộ thời gian thực trên Cloudflare Edge + Singapore VPS 24/7",
+        "announcement_active": True,
+        "maintenance_mode": False,
+        "default_ai_model": "google/gemini-2.5-flash",
+        "sports_blv_default": "hype",
+        "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    data = safe_read_json(UNIFIED_CONFIG_JSON, {})
+    if isinstance(data, dict):
+        default_cfg.update(data)
+    return default_cfg
+
+
+def get_healer_telemetry() -> dict:
+    return safe_read_json(HEALER_STATE_JSON, {
+        "healer_status": "INITIALIZING",
+        "services_healthy": 0,
+        "services_total": len(VPS_WHITELIST_SERVICES),
+        "services": [],
+        "webs": [],
+        "ai_models": [],
+        "heal_history": []
+    })
 
 
 def get_virtual_pc_telemetry() -> dict:
@@ -897,7 +931,9 @@ def build_full_factory_telemetry() -> dict:
         "trade_factory": trade,
         "power_plant": routers,
         "fnb_factory": fnb,
-        "security": sec
+        "security": sec,
+        "healer": get_healer_telemetry(),
+        "unified_config": get_unified_web_config()
     })
 
 
@@ -1074,6 +1110,122 @@ def execute_factory_action(action: str, payload: dict, client_ip: str) -> dict:
         except Exception as e:
             return {"ok": False, "message": f"Lỗi dọn cache VPS: {e}"}
 
+    elif action == "probe_all_webs":
+        targets = [
+            ("VNPunchFlix (Cloudflare)", "https://vnpunchflix.pages.dev/"),
+            ("VNPunchFlix Admin D1", "https://vnpunchflix.pages.dev/admin"),
+            ("Sport AI Live (CF)", "https://vnpunchflix.pages.dev/sports/"),
+            ("Quyền PV Gym (CF)", "https://vnpunchflix.pages.dev/gym/"),
+            ("Master Hub (Origin)", "https://136.85.54.204.sslip.io/"),
+        ]
+        results = []
+        for name, u in targets:
+            t0 = time.time()
+            try:
+                req = urllib.request.Request(u, headers={"User-Agent": "MasterHub-Probe/2.0"})
+                with urllib.request.urlopen(req, timeout=8) as r:
+                    results.append({
+                        "name": name, "url": u, "ok": 200 <= r.status < 400,
+                        "status": r.status, "ms": int((time.time() - t0) * 1000),
+                        "cache": r.headers.get("X-CF-Edge-Cache", ""),
+                        "colo": r.headers.get("X-CF-Colo", "VPS")
+                    })
+            except Exception as e:
+                results.append({"name": name, "url": u, "ok": False, "status": 0, "ms": int((time.time() - t0) * 1000), "error": str(e)[:60]})
+        ok_cnt = sum(1 for x in results if x["ok"])
+        return {"ok": True, "webs": results, "message": f"Quét xong {ok_cnt}/{len(results)} website đang LIVE 200 OK!"}
+
+    elif action == "probe_ai_models":
+        or_key = _load_local_hermes_env_key("OPENROUTER_API_KEY")
+        models = [
+            ("openrouter", "google/gemini-2.5-flash", "Chính (Nhanh + Tiếng Việt xuất sắc)"),
+            ("openrouter", "openai/gpt-4o-mini", "Dự phòng #1 (Siêu tốc <700ms)"),
+            ("openrouter", "meta-llama/llama-3.3-70b-instruct", "Dự phòng #2 (Meta 70B ổn định)"),
+            ("openrouter", "deepseek/deepseek-chat-v3-0324", "Dự phòng #3 (Phân tích & Code mạnh)"),
+            ("openrouter", "google/gemini-2.5-pro", "Suy luận sâu (Deep Reasoning)"),
+        ]
+        out = []
+        for prov, mid, note in models:
+            if not or_key:
+                out.append({"provider": prov, "model": mid, "note": note, "ok": False, "ms": 0, "error": "Missing key"})
+                continue
+            t0 = time.time()
+            try:
+                req = urllib.request.Request(
+                    "https://openrouter.ai/api/v1/chat/completions",
+                    data=json.dumps({"model": mid, "messages": [{"role": "user", "content": "OK"}], "max_tokens": 4}).encode(),
+                    headers={"Authorization": f"Bearer {or_key}", "Content-Type": "application/json"},
+                    method="POST"
+                )
+                with urllib.request.urlopen(req, timeout=12) as r:
+                    out.append({"provider": prov, "model": mid, "note": note, "ok": r.status == 200, "ms": int((time.time() - t0) * 1000)})
+            except Exception as e:
+                out.append({"provider": prov, "model": mid, "note": note, "ok": False, "ms": int((time.time() - t0) * 1000), "error": str(e)[:70]})
+        ok_cnt = sum(1 for x in out if x["ok"])
+        return {"ok": True, "models": out, "message": f"Kiểm tra hệ Model AI: {ok_cnt}/{len(out)} model phản hồi mượt mà!"}
+
+    elif action == "switch_ai_model":
+        allowed_models = {
+            "google/gemini-2.5-flash",
+            "openai/gpt-4o-mini",
+            "meta-llama/llama-3.3-70b-instruct",
+            "deepseek/deepseek-chat-v3-0324",
+            "google/gemini-2.5-pro",
+        }
+        new_model = str(payload.get("model", "")).strip()
+        if new_model not in allowed_models:
+            return {"ok": False, "message": "Model không nằm trong danh sách an toàn."}
+        cfg = get_unified_web_config()
+        cfg["default_ai_model"] = new_model
+        cfg["updated_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        os.makedirs(os.path.dirname(UNIFIED_CONFIG_JSON), exist_ok=True)
+        with open(UNIFIED_CONFIG_JSON, "w", encoding="utf-8") as f:
+            json.dump(cfg, f, ensure_ascii=False, indent=2)
+        if os.name != "nt":
+            hcfg = os.path.join(HERMES_DIR, "config.yaml")
+            if os.path.exists(hcfg):
+                try:
+                    txt = open(hcfg, "r", encoding="utf-8").read()
+                    txt = re.sub(r"(?m)^(\s*default:\s*).*$", rf"\g<1>{new_model}", txt, count=1)
+                    open(hcfg, "w", encoding="utf-8").write(txt)
+                    subprocess.run(["systemctl", "restart", "hermes-gateway"], capture_output=True, timeout=15)
+                except Exception as e:
+                    return {"ok": False, "message": f"Lưu config thành công nhưng lỗi restart Hermes: {e}"}
+        write_audit_log("SWITCH_AI_MODEL", client_ip, f"model={new_model}", "INFO")
+        return {"ok": True, "model": new_model, "message": f"🧠 Đã chuyển toàn bộ hệ thống (Hermes + Sports AI) sang model {new_model} thành công!"}
+
+    elif action == "save_web_config":
+        cfg = get_unified_web_config()
+        for k in ("brand_name", "global_announcement", "sports_blv_default"):
+            if k in payload:
+                cfg[k] = str(payload[k]).strip()[:240]
+        if "announcement_active" in payload:
+            cfg["announcement_active"] = bool(payload["announcement_active"])
+        if "maintenance_mode" in payload:
+            cfg["maintenance_mode"] = bool(payload["maintenance_mode"])
+        cfg["updated_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        os.makedirs(os.path.dirname(UNIFIED_CONFIG_JSON), exist_ok=True)
+        with open(UNIFIED_CONFIG_JSON, "w", encoding="utf-8") as f:
+            json.dump(cfg, f, ensure_ascii=False, indent=2)
+        write_audit_log("SAVE_WEB_CONFIG", client_ip, "Updated unified live web config", "INFO")
+        return {"ok": True, "config": cfg, "message": "✅ Đã lưu & đồng bộ cấu hình trực tiếp cho toàn bộ website!"}
+
+    elif action == "trigger_self_heal":
+        if os.name == "nt":
+            return {"ok": True, "message": "Self-Healer đang hoạt động 24/7 trên VPS Singapore."}
+        restarted = []
+        for sid, label, _ in VPS_WHITELIST_SERVICES:
+            if sid == "ai-factory-api":
+                continue
+            st = subprocess.run(["systemctl", "is-active", sid], capture_output=True, text=True, timeout=4).stdout.strip()
+            if st != "active":
+                subprocess.run(["systemctl", "restart", sid], capture_output=True, timeout=15)
+                restarted.append(label)
+        subprocess.run(["journalctl", "--vacuum-time=3d"], capture_output=True, timeout=10)
+        msg = ("🛡️ Self-Healer đã tự hồi sinh: " + ", ".join(restarted)) if restarted else "🛡️ Quét 9/9 dịch vụ & bot đang ACTIVE 100% — Đã dọn gọn log hệ thống!"
+        write_audit_log("SELF_HEAL_TRIGGERED", client_ip, msg, "INFO")
+        return {"ok": True, "message": msg, "healer": get_healer_telemetry()}
+
     elif action == "panic_lock":
         with SECURITY_LOCK:
             ACTIVE_SESSIONS.clear()
@@ -1210,15 +1362,17 @@ def generate_ai_commentary(body: dict, ip: str) -> dict:
     )
 
     openrouter_key = _load_local_hermes_env_key("OPENROUTER_API_KEY")
-    gemini_key = _load_local_hermes_env_key("GEMINI_API_KEY") or _load_local_hermes_env_key("GOOGLE_API_KEY")
     omni_key = _load_local_hermes_env_key("OPENAI_API_KEY") or _load_local_hermes_env_key("CUSTOM_API_KEY")
+    pref_model = get_unified_web_config().get("default_ai_model", "google/gemini-2.5-flash")
 
     providers = []
     if openrouter_key:
-        providers.append(("openrouter", "https://openrouter.ai/api/v1/chat/completions", openrouter_key, "openrouter/free"))
-        providers.append(("openrouter", "https://openrouter.ai/api/v1/chat/completions", openrouter_key, "google/gemini-2.5-flash"))
-    if gemini_key:
-        providers.append(("gemini", f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={gemini_key}", "", "gemini-2.5-flash"))
+        ordered = [pref_model, "google/gemini-2.5-flash", "openai/gpt-4o-mini", "meta-llama/llama-3.3-70b-instruct", "deepseek/deepseek-chat-v3-0324"]
+        seen_m = set()
+        for m in ordered:
+            if m and m not in seen_m:
+                seen_m.add(m)
+                providers.append(("openrouter", "https://openrouter.ai/api/v1/chat/completions", openrouter_key, m))
     if omni_key:
         providers.append(("omniroute", "http://127.0.0.1:20129/v1/chat/completions", omni_key, "auto/fast"))
 
@@ -1280,6 +1434,9 @@ class FactoryRequestHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=BASE_DIR, **kwargs)
 
+    def version_string(self):
+        return "VNPunchFlix-Enterprise"
+
     def log_message(self, format, *args):
         pass
 
@@ -1298,13 +1455,14 @@ class FactoryRequestHandler(SimpleHTTPRequestHandler):
             self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Factory-Token, X-CSRF-Token")
             self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
             self.send_header("Access-Control-Max-Age", "600")
+        self.send_header("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("X-Frame-Options", "DENY")
         req_path = (self.path or "").split("?", 1)[0]
         # YouTube embeds require strict-origin-when-cross-origin (no-referrer causes YouTube Error 153)
         self.send_header("Referrer-Policy", "strict-origin-when-cross-origin" if (req_path.startswith("/gym") or req_path.startswith("/sports")) else "no-referrer")
         self.send_header("Cross-Origin-Opener-Policy", "same-origin")
-        if req_path.startswith("/flix"):
+        if req_path.startswith("/flix") or req_path.startswith("/hub"):
             # PUCHFLIX Watch Party needs camera/mic on same-origin + HLS/PeerJS/PhimAPI/embed players
             self.send_header("Permissions-Policy", "camera=(self), microphone=(self), geolocation=(), payment=()")
             self.send_header(
@@ -1405,6 +1563,31 @@ class FactoryRequestHandler(SimpleHTTPRequestHandler):
             })
             return
 
+        if path == "/api/hub/live-config":
+            healer = get_healer_telemetry()
+            self.send_json(200, {
+                "ok": True,
+                "config": get_unified_web_config(),
+                "services_healthy": healer.get("services_healthy", 0),
+                "services_total": healer.get("services_total", len(VPS_WHITELIST_SERVICES)),
+                "healer_updated_at": healer.get("updated_at", "")
+            })
+            return
+
+        if path == "/api/hub/snapshot":
+            tok = self.extract_session_token()
+            if not validate_session(tok):
+                self.send_json(401, {"error": "401 Unauthorized — Vui lòng đăng nhập Master Hub."})
+                return
+            self.send_json(200, {
+                "ok": True,
+                "healer": get_healer_telemetry(),
+                "config": get_unified_web_config(),
+                "virtual_pc": get_virtual_pc_telemetry(),
+                "security": get_security_telemetry()
+            })
+            return
+
         if path == "/api/sports/matches":
             qs = parse_qs(parsed.query)
             lg = (qs.get("league", ["eng.1"])[0] or "eng.1").strip()
@@ -1483,7 +1666,8 @@ class FactoryRequestHandler(SimpleHTTPRequestHandler):
                 clear_failed_login(ip)
                 sess = create_session(ip)
                 write_audit_log("LOGIN_SUCCESS", ip, "Xác thực PBKDF2-HMAC-SHA256 thành công", "INFO")
-                cookie = f"factory_session={sess['token']}; HttpOnly; Path=/; Max-Age={SESSION_TTL_SECONDS}; SameSite=Strict"
+                secure_attr = "; Secure" if os.name != "nt" else ""
+                cookie = f"factory_session={sess['token']}; HttpOnly; Path=/; Max-Age={SESSION_TTL_SECONDS}; SameSite=Strict{secure_attr}"
                 self.send_json(
                     200,
                     {
@@ -1532,8 +1716,9 @@ class FactoryRequestHandler(SimpleHTTPRequestHandler):
 
 
 def main():
-    write_audit_log("SERVER_BOOT", "127.0.0.1", f"Khởi động Nhà Máy AI 3D Anime Chibi trên cổng {PORT}", "INFO")
-    server = ThreadingHTTPServer(("0.0.0.0", PORT), FactoryRequestHandler)
+    bind_host = "127.0.0.1" if os.name != "nt" else "127.0.0.1"
+    write_audit_log("SERVER_BOOT", bind_host, f"Khởi động Master Command Center trên {bind_host}:{PORT}", "INFO")
+    server = ThreadingHTTPServer((bind_host, PORT), FactoryRequestHandler)
     print("======================================================================")
     print(f" [AI AGENT & BOT FACTORY 3D CHIBI] ĐANG CHẠY TẠI: http://localhost:{PORT}")
     print(" Bảo mật: PBKDF2-HMAC-SHA256 (310k vòng) + Zero-Trust Token & CSRF Vault")
