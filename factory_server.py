@@ -1211,33 +1211,44 @@ def generate_ai_commentary(body: dict, ip: str) -> dict:
     if not api_key:
         return {"ok": False, "error": "Chưa cấu hình khóa OmniRoute trên máy chủ."}
 
-    payload = json.dumps({
-        "model": "gemini/gemini-3-flash-preview",
-        "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": 260,
-        "temperature": 0.85
-    }).encode("utf-8")
+    candidate_models = [
+        "auto/fast",
+        "trade-council",
+        "fnb-ops",
+        "gemini/gemini-3.1-pro-preview",
+        "gemini/gemini-3-flash-preview",
+    ]
+    last_err = "Không có model khả dụng"
+    for model_id in candidate_models:
+        payload = json.dumps({
+            "model": model_id,
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": 260,
+            "temperature": 0.85
+        }).encode("utf-8")
+        try:
+            req = urllib.request.Request(
+                "http://127.0.0.1:20129/v1/chat/completions",
+                data=payload,
+                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=16) as r:
+                res = json.loads(r.read().decode("utf-8", errors="ignore"))
+            text = (res.get("choices", [{}])[0].get("message", {}).get("content") or "").strip()
+            if text:
+                return {
+                    "ok": True,
+                    "commentary": text,
+                    "model": res.get("model", model_id),
+                    "timestamp": datetime.now().strftime("%H:%M:%S")
+                }
+            last_err = f"{model_id}: phản hồi rỗng"
+        except Exception as e:
+            last_err = f"{model_id}: {str(e)[:90]}"
+            continue
 
-    try:
-        req = urllib.request.Request(
-            "http://127.0.0.1:20129/v1/chat/completions",
-            data=payload,
-            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-            method="POST"
-        )
-        with urllib.request.urlopen(req, timeout=18) as r:
-            res = json.loads(r.read().decode("utf-8", errors="ignore"))
-        text = (res.get("choices", [{}])[0].get("message", {}).get("content") or "").strip()
-        if not text:
-            return {"ok": False, "error": "AI chưa trả về lời bình luận, hãy thử lại."}
-        return {
-            "ok": True,
-            "commentary": text,
-            "model": res.get("model", "gemini-3-flash-preview"),
-            "timestamp": datetime.now().strftime("%H:%M:%S")
-        }
-    except Exception as e:
-        return {"ok": False, "error": f"Lỗi gọi BLV AI: {str(e)[:120]}"}
+    return {"ok": False, "error": f"Lỗi gọi BLV AI: {last_err}"}
 
 
 # ==============================================================================
