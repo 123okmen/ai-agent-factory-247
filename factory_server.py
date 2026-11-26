@@ -1207,19 +1207,16 @@ def generate_ai_commentary(body: dict, ip: str) -> dict:
         f"Hãy viết 1 đoạn tường thuật bình luận trực tiếp ngắn gọn (2 đến 4 câu, thuần Việt, tự nhiên, không dùng markdown đậm/tiêu đề) để đọc trực tiếp cho khán giả nghe!"
     )
 
-    groq_key = _load_local_hermes_env_key("GROQ_API_KEY")
-    gemini_key = _load_local_hermes_env_key("GEMINI_API_KEY") or _load_local_hermes_env_key("GOOGLE_API_KEY")
     openrouter_key = _load_local_hermes_env_key("OPENROUTER_API_KEY")
+    gemini_key = _load_local_hermes_env_key("GEMINI_API_KEY") or _load_local_hermes_env_key("GOOGLE_API_KEY")
     omni_key = _load_local_hermes_env_key("OPENAI_API_KEY") or _load_local_hermes_env_key("CUSTOM_API_KEY")
 
     providers = []
-    if groq_key:
-        providers.append(("groq", "https://api.groq.com/openai/v1/chat/completions", groq_key, "llama-3.3-70b-versatile"))
-        providers.append(("groq", "https://api.groq.com/openai/v1/chat/completions", groq_key, "llama-3.1-8b-instant"))
+    if openrouter_key:
+        providers.append(("openrouter", "https://openrouter.ai/api/v1/chat/completions", openrouter_key, "openrouter/free"))
+        providers.append(("openrouter", "https://openrouter.ai/api/v1/chat/completions", openrouter_key, "google/gemini-2.5-flash"))
     if gemini_key:
         providers.append(("gemini", f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={gemini_key}", "", "gemini-2.5-flash"))
-    if openrouter_key:
-        providers.append(("openrouter", "https://openrouter.ai/api/v1/chat/completions", openrouter_key, "google/gemini-2.0-flash-001"))
     if omni_key:
         providers.append(("omniroute", "http://127.0.0.1:20129/v1/chat/completions", omni_key, "auto/fast"))
 
