@@ -87,6 +87,8 @@ SAM_MIX_STATE_JSON = os.path.join(HERMES_DIR, "sam_mix_watch_state.json")
 
 ALLOWED_CORS_ORIGINS = {
     "https://123okmen.github.io",
+    "https://vnpunchflix.pages.dev",
+    "https://live.vnpunchflix.workers.dev",
     "http://localhost:8099",
     "http://127.0.0.1:8099",
 }
