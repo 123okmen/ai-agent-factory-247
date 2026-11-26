@@ -1207,45 +1207,68 @@ def generate_ai_commentary(body: dict, ip: str) -> dict:
         f"Hãy viết 1 đoạn tường thuật bình luận trực tiếp ngắn gọn (2 đến 4 câu, thuần Việt, tự nhiên, không dùng markdown đậm/tiêu đề) để đọc trực tiếp cho khán giả nghe!"
     )
 
-    api_key = _load_local_hermes_env_key("OPENAI_API_KEY") or _load_local_hermes_env_key("CUSTOM_API_KEY")
-    if not api_key:
-        return {"ok": False, "error": "Chưa cấu hình khóa OmniRoute trên máy chủ."}
+    groq_key = _load_local_hermes_env_key("GROQ_API_KEY")
+    gemini_key = _load_local_hermes_env_key("GEMINI_API_KEY") or _load_local_hermes_env_key("GOOGLE_API_KEY")
+    openrouter_key = _load_local_hermes_env_key("OPENROUTER_API_KEY")
+    omni_key = _load_local_hermes_env_key("OPENAI_API_KEY") or _load_local_hermes_env_key("CUSTOM_API_KEY")
 
-    candidate_models = [
-        "auto/fast",
-        "trade-council",
-        "fnb-ops",
-        "gemini/gemini-3.1-pro-preview",
-        "gemini/gemini-3-flash-preview",
-    ]
-    last_err = "Không có model khả dụng"
-    for model_id in candidate_models:
-        payload = json.dumps({
-            "model": model_id,
-            "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": 260,
-            "temperature": 0.85
-        }).encode("utf-8")
+    providers = []
+    if groq_key:
+        providers.append(("groq", "https://api.groq.com/openai/v1/chat/completions", groq_key, "llama-3.3-70b-versatile"))
+        providers.append(("groq", "https://api.groq.com/openai/v1/chat/completions", groq_key, "llama-3.1-8b-instant"))
+    if gemini_key:
+        providers.append(("gemini", f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={gemini_key}", "", "gemini-2.5-flash"))
+    if openrouter_key:
+        providers.append(("openrouter", "https://openrouter.ai/api/v1/chat/completions", openrouter_key, "google/gemini-2.0-flash-001"))
+    if omni_key:
+        providers.append(("omniroute", "http://127.0.0.1:20129/v1/chat/completions", omni_key, "auto/fast"))
+
+    if not providers:
+        return {"ok": False, "error": "Chưa cấu hình khóa AI trên máy chủ."}
+
+    last_err = "Không có nhà cung cấp AI khả dụng"
+    for ptype, url, key, model_id in providers:
         try:
-            req = urllib.request.Request(
-                "http://127.0.0.1:20129/v1/chat/completions",
-                data=payload,
-                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-                method="POST"
-            )
-            with urllib.request.urlopen(req, timeout=16) as r:
+            if ptype == "gemini":
+                payload = json.dumps({
+                    "contents": [{"parts": [{"text": prompt}]}],
+                    "generationConfig": {"maxOutputTokens": 260, "temperature": 0.85}
+                }).encode("utf-8")
+                headers = {"Content-Type": "application/json"}
+            else:
+                payload = json.dumps({
+                    "model": model_id,
+                    "messages": [{"role": "user", "content": prompt}],
+                    "max_tokens": 260,
+                    "temperature": 0.85
+                }).encode("utf-8")
+                headers = {
+                    "Authorization": f"Bearer {key}",
+                    "Content-Type": "application/json",
+                    "User-Agent": "Mozilla/5.0 SportsCenter-AI/1.0"
+                }
+
+            req = urllib.request.Request(url, data=payload, headers=headers, method="POST")
+            with urllib.request.urlopen(req, timeout=14) as r:
                 res = json.loads(r.read().decode("utf-8", errors="ignore"))
-            text = (res.get("choices", [{}])[0].get("message", {}).get("content") or "").strip()
+
+            if ptype == "gemini":
+                cands = res.get("candidates", [])
+                parts = (cands[0].get("content", {}).get("parts", []) if cands else [])
+                text = (parts[0].get("text", "") if parts else "").strip()
+            else:
+                text = (res.get("choices", [{}])[0].get("message", {}).get("content") or "").strip()
+
             if text:
                 return {
                     "ok": True,
                     "commentary": text,
-                    "model": res.get("model", model_id),
+                    "model": f"{ptype}/{model_id}",
                     "timestamp": datetime.now().strftime("%H:%M:%S")
                 }
-            last_err = f"{model_id}: phản hồi rỗng"
+            last_err = f"{ptype}/{model_id}: phản hồi rỗng"
         except Exception as e:
-            last_err = f"{model_id}: {str(e)[:90]}"
+            last_err = f"{ptype}/{model_id}: {str(e)[:80]}"
             continue
 
     return {"ok": False, "error": f"Lỗi gọi BLV AI: {last_err}"}
