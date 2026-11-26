@@ -43,7 +43,7 @@ import urllib.request
 import urllib.error
 from datetime import datetime
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -1082,6 +1082,165 @@ def execute_factory_action(action: str, payload: dict, client_ip: str) -> dict:
 
 
 # ==============================================================================
+# LIVE SPORTS DATA (ESPN PUBLIC API) & REAL-TIME AI COMMENTATOR (OMNIROUTE)
+# ==============================================================================
+SPORTS_CACHE = {}      # league -> {"ts": float, "data": dict}
+SPORTS_AI_LIMIT = {}   # ip -> last_ts
+SPORTS_LEAGUES = {
+    "eng.1": ("soccer", "eng.1", "Ngoại Hạng Anh (Premier League)"),
+    "uefa.champions": ("soccer", "uefa.champions", "UEFA Champions League"),
+    "esp.1": ("soccer", "esp.1", "La Liga (Tây Ban Nha)"),
+    "ita.1": ("soccer", "ita.1", "Serie A (Ý)"),
+    "ger.1": ("soccer", "ger.1", "Bundesliga (Đức)"),
+    "fra.1": ("soccer", "fra.1", "Ligue 1 (Pháp)"),
+    "nba": ("basketball", "nba", "NBA Basketball"),
+}
+
+
+def fetch_espn_scoreboard(league_key: str) -> dict:
+    if league_key not in SPORTS_LEAGUES:
+        league_key = "eng.1"
+    now = time.time()
+    cached = SPORTS_CACHE.get(league_key)
+    if cached and (now - cached["ts"] < 25):
+        return cached["data"]
+
+    sport, slug, label = SPORTS_LEAGUES[league_key]
+    url = f"https://site.api.espn.com/apis/site/v2/sports/{sport}/{slug}/scoreboard"
+    matches = []
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 SportsCenter-AI/1.0"})
+        with urllib.request.urlopen(req, timeout=8) as r:
+            raw = json.loads(r.read().decode("utf-8", errors="ignore"))
+        for ev in raw.get("events", [])[:20]:
+            comps = ev.get("competitions", [])
+            if not comps:
+                continue
+            c = comps[0]
+            competitors = c.get("competitors", [])
+            if len(competitors) < 2:
+                continue
+            home = next((x for x in competitors if x.get("homeAway") == "home"), competitors[0])
+            away = next((x for x in competitors if x.get("homeAway") == "away"), competitors[1])
+            st = ev.get("status", {})
+            st_type = st.get("type", {})
+            state = st_type.get("state", "pre")  # pre, in, post
+            clock = st_type.get("shortDetail") or st.get("displayClock") or ""
+            venue = (c.get("venue") or {}).get("fullName", "")
+            details = []
+            for d in c.get("details", [])[-8:]:
+                txt = (d.get("type") or {}).get("text", "")
+                clk = (d.get("clock") or {}).get("displayValue", "")
+                athletes = [a.get("athlete", {}).get("shortName", "") for a in d.get("athletesInvolved", []) if a.get("athlete")]
+                who = ", ".join([a for a in athletes if a])
+                if txt or who:
+                    details.append(f"{clk} {txt}: {who}".strip(": "))
+            matches.append({
+                "id": str(ev.get("id", "")),
+                "league": label,
+                "league_key": league_key,
+                "name": ev.get("name", ""),
+                "date": ev.get("date", ""),
+                "state": state,
+                "state_label": "TRỰC TIẾP" if state == "in" else ("KẾT THÚC" if state == "post" else "SẮP ĐẤU"),
+                "clock": clock,
+                "venue": venue,
+                "home": {
+                    "name": (home.get("team") or {}).get("displayName", "Home"),
+                    "abbr": (home.get("team") or {}).get("abbreviation", "HOM"),
+                    "logo": (home.get("team") or {}).get("logo", ""),
+                    "score": str(home.get("score", "0"))
+                },
+                "away": {
+                    "name": (away.get("team") or {}).get("displayName", "Away"),
+                    "abbr": (away.get("team") or {}).get("abbreviation", "AWY"),
+                    "logo": (away.get("team") or {}).get("logo", ""),
+                    "score": str(away.get("score", "0"))
+                },
+                "events": details
+            })
+    except Exception as e:
+        return {"ok": False, "league": label, "matches": [], "error": str(e)[:120]}
+
+    res = {
+        "ok": True,
+        "league": label,
+        "league_key": league_key,
+        "updated_at": datetime.now().strftime("%H:%M:%S"),
+        "matches": matches
+    }
+    SPORTS_CACHE[league_key] = {"ts": now, "data": res}
+    return res
+
+
+def generate_ai_commentary(body: dict, ip: str) -> dict:
+    now = time.time()
+    last = SPORTS_AI_LIMIT.get(ip, 0)
+    if now - last < 3.5:
+        return {"ok": False, "error": "Vui lòng đợi 3 giây giữa các lượt bình luận AI."}
+    SPORTS_AI_LIMIT[ip] = now
+
+    home = str(body.get("home", "Đội Chủ Nhà"))[:60]
+    away = str(body.get("away", "Đội Khách"))[:60]
+    sh = str(body.get("score_home", "0"))[:6]
+    sa = str(body.get("score_away", "0"))[:6]
+    clock = str(body.get("clock", ""))[:40]
+    state = str(body.get("state_label", "TRỰC TIẾP"))[:30]
+    league = str(body.get("league", "Bóng đá"))[:60]
+    events = body.get("events", [])
+    ev_str = " | ".join(str(x)[:80] for x in (events[:6] if isinstance(events, list) else [])) or "Hai đội đang giằng co quyết liệt"
+    style = str(body.get("style", "hype"))
+
+    style_prompts = {
+        "hype": "Phong cách Bình luận viên truyền hình Việt Nam siêu sôi động, giàu cảm xúc, hào hứng như đang tường thuật trực tiếp tại sân vận động.",
+        "tactical": "Phong cách chuyên gia phân tích chiến thuật bóng đá sắc sảo: nhấn mạnh thế trận, nhịp độ pressing, điểm nóng và kịch bản bước ngoặt.",
+        "funny": "Phong cách bình luận viên duyên dáng, hài hước, dí dỏm đời thường nhưng vẫn bám sát diễn biến thực tế trận đấu."
+    }
+    persona = style_prompts.get(style, style_prompts["hype"])
+    prompt = (
+        f"Bạn là Bình Luận Viên Thể Thao AI Live bằng tiếng Việt.\n"
+        f"{persona}\n"
+        f"Giải đấu: {league}\n"
+        f"Trận đấu: {home} ({sh}) - ({sa}) {away}\n"
+        f"Trạng thái/Thời gian: {state} ({clock})\n"
+        f"Diễn biến gần nhất: {ev_str}\n"
+        f"Hãy viết 1 đoạn tường thuật bình luận trực tiếp ngắn gọn (2 đến 4 câu, thuần Việt, tự nhiên, không dùng markdown đậm/tiêu đề) để đọc trực tiếp cho khán giả nghe!"
+    )
+
+    api_key = _load_local_hermes_env_key("OPENAI_API_KEY") or _load_local_hermes_env_key("CUSTOM_API_KEY")
+    if not api_key:
+        return {"ok": False, "error": "Chưa cấu hình khóa OmniRoute trên máy chủ."}
+
+    payload = json.dumps({
+        "model": "gemini/gemini-3-flash-preview",
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": 260,
+        "temperature": 0.85
+    }).encode("utf-8")
+
+    try:
+        req = urllib.request.Request(
+            "http://127.0.0.1:20129/v1/chat/completions",
+            data=payload,
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=18) as r:
+            res = json.loads(r.read().decode("utf-8", errors="ignore"))
+        text = (res.get("choices", [{}])[0].get("message", {}).get("content") or "").strip()
+        if not text:
+            return {"ok": False, "error": "AI chưa trả về lời bình luận, hãy thử lại."}
+        return {
+            "ok": True,
+            "commentary": text,
+            "model": res.get("model", "gemini-3-flash-preview"),
+            "timestamp": datetime.now().strftime("%H:%M:%S")
+        }
+    except Exception as e:
+        return {"ok": False, "error": f"Lỗi gọi BLV AI: {str(e)[:120]}"}
+
+
+# ==============================================================================
 # HTTP REQUEST HANDLER VỚI BẢO MẬT OWASP MAXIMUM
 # ==============================================================================
 class FactoryRequestHandler(SimpleHTTPRequestHandler):
@@ -1110,7 +1269,7 @@ class FactoryRequestHandler(SimpleHTTPRequestHandler):
         self.send_header("X-Frame-Options", "DENY")
         req_path = (self.path or "").split("?", 1)[0]
         # YouTube embeds require strict-origin-when-cross-origin (no-referrer causes YouTube Error 153)
-        self.send_header("Referrer-Policy", "strict-origin-when-cross-origin" if req_path.startswith("/gym") else "no-referrer")
+        self.send_header("Referrer-Policy", "strict-origin-when-cross-origin" if (req_path.startswith("/gym") or req_path.startswith("/sports")) else "no-referrer")
         self.send_header("Cross-Origin-Opener-Policy", "same-origin")
         if req_path.startswith("/flix"):
             # PUCHFLIX Watch Party needs camera/mic on same-origin + HLS/PeerJS/PhimAPI/embed players
@@ -1128,8 +1287,8 @@ class FactoryRequestHandler(SimpleHTTPRequestHandler):
                 "frame-src 'self' https:; "
                 "frame-ancestors 'none'; base-uri 'self';"
             )
-        elif req_path.startswith("/gym"):
-            # Quyền Fitness Landing Page: 100% self-contained CSS/JS + Google Fonts + YouTube Embeds
+        elif req_path.startswith("/gym") or req_path.startswith("/sports"):
+            # Self-contained CSS/JS + Google Fonts + Official YouTube Embeds + ESPN Logos
             self.send_header("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()")
             self.send_header(
                 "Content-Security-Policy",
@@ -1213,6 +1372,12 @@ class FactoryRequestHandler(SimpleHTTPRequestHandler):
             })
             return
 
+        if path == "/api/sports/matches":
+            qs = parse_qs(parsed.query)
+            lg = (qs.get("league", ["eng.1"])[0] or "eng.1").strip()
+            self.send_json(200, fetch_espn_scoreboard(lg))
+            return
+
         if path == "/api/auth/status":
             tok = self.extract_session_token()
             sess = get_valid_session(tok)
@@ -1264,6 +1429,11 @@ class FactoryRequestHandler(SimpleHTTPRequestHandler):
             body = json.loads(raw_body) if raw_body else {}
         except Exception:
             body = {}
+
+        if path == "/api/sports/commentate":
+            res = generate_ai_commentary(body, ip)
+            self.send_json(200 if res.get("ok") else 429, res)
+            return
 
         if path == "/api/auth/login":
             allowed, wait_sec = check_rate_limit(ip)
