@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" style="color-scheme: dark;">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -51,6 +51,17 @@
       font-family: var(--font-sans);
       min-height: 100vh;
       overflow-x: hidden;
+    }
+    body.vault-locked {
+      overflow: hidden !important;
+      height: 100vh !important;
+    }
+    body.vault-locked > header,
+    body.vault-locked > section,
+    body.vault-locked > nav,
+    body.vault-locked > main,
+    body.vault-locked > footer {
+      display: none !important;
     }
 
     /* ======================== ANIME CYBER WARP TAB SHUTTER ======================== */
@@ -1113,7 +1124,7 @@
     .vps-mini-btn.warn { border-color: rgba(245, 158, 11, 0.45); color: #fcd34d; }
   </style>
 </head>
-<body>
+<body class="vault-locked">
 
   <!-- ==================== ANIME CYBER WARP TAB TRANSITION FX ==================== -->
   <div id="tab-warp-fx"></div>
@@ -1151,6 +1162,10 @@
         </button>
       </form>
       <div id="vault-error" class="vault-error"></div>
+      <div style="margin-top:16px; padding-top:14px; border-top:1px solid rgba(56,189,248,0.16); display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+        <a href="/hub/" style="color:#c4b5fd; text-decoration:none; font-size:12px; font-weight:700; padding:6px 12px; border-radius:10px; background:rgba(139,92,246,0.15); border:1px solid rgba(139,92,246,0.35);">🛰️ Master Hub</a>
+        <a href="https://vnpunchflix.pages.dev/" style="color:#93c5fd; text-decoration:none; font-size:12px; font-weight:700; padding:6px 12px; border-radius:10px; background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.3);">🎬 VNPunchFlix</a>
+      </div>
     </div>
   </div>
 
@@ -1195,16 +1210,16 @@
         <span>🤖 HERMES GATEWAY & WEB UI</span>
         <span id="kpi-hermes-badge" class="status-pill ok">ONLINE</span>
       </div>
-      <div class="kpi-value" id="kpi-hermes-val">ONLINE • :9119</div>
-      <div class="kpi-sub" id="kpi-hermes-sub">@alicewordbot • Solar-Mini4 (~1.38s) + 4 Fallbacks</div>
+      <div class="kpi-value" id="kpi-hermes-val">LOCKED</div>
+      <div class="kpi-sub" id="kpi-hermes-sub">Đang chờ xác thực phiên...</div>
     </div>
 
     <div class="kpi-card">
       <div class="kpi-label">
-        <span>📈 XƯỞNG TRADE FUTURES v11.0</span>
-        <span id="kpi-trade-badge" class="status-pill ok">PORT 49199</span>
+        <span>📈 XƯỞNG TRADE FUTURES</span>
+        <span id="kpi-trade-badge" class="status-pill ok">PROTECTED</span>
       </div>
-      <div class="kpi-value" id="kpi-trade-pnl" style="color: var(--emerald);">ACTIVE 10s</div>
+      <div class="kpi-value" id="kpi-trade-pnl" style="color: var(--emerald);">LOCKED</div>
       <div class="kpi-sub" id="kpi-trade-sub">Multi-Vault Protected • SelfLearning Risk Guard</div>
     </div>
 
@@ -1850,6 +1865,8 @@
               sessionStorage.setItem("factory_csrf", CSRF_TOKEN);
               pwInput.value = "";
               document.getElementById("vault-overlay").classList.add("hidden");
+              document.body.classList.remove("vault-locked");
+              setTimeout(() => window.dispatchEvent(new Event("resize")), 80);
               const hudMode = document.getElementById("hud-mode-pill");
               if (hudMode) hudMode.textContent = IS_GH_PAGES ? "LIVE GCP CLOUD 24/7 (SINGAPORE)" : "LIVE ENGINE :8099";
               document.getElementById("kpi-mode-badge").textContent = IS_GH_PAGES ? "GCP LIVE 24/7" : "ZERO-TRUST";
@@ -1879,6 +1896,8 @@
             SESSION_TOKEN = "webcrypto_verified_session";
             pwInput.value = "";
             document.getElementById("vault-overlay").classList.add("hidden");
+            document.body.classList.remove("vault-locked");
+            setTimeout(() => window.dispatchEvent(new Event("resize")), 80);
             document.getElementById("kpi-mode-badge").textContent = "CLOUD VAULT";
             const hudMode = document.getElementById("hud-mode-pill");
             if (hudMode) hudMode.textContent = "LIVE CLOUD TELEMETRY • ZERO-PII";
@@ -1923,6 +1942,7 @@
       if (idleTimer) clearTimeout(idleTimer);
       if (liveTickerTimer) clearInterval(liveTickerTimer);
       document.getElementById("vault-overlay").classList.remove("hidden");
+      document.body.classList.add("vault-locked");
       if (showNotice) showToast(customMsg || "🔒 Đã khóa Nhà máy & hủy Token phiên làm việc.");
     }
 
@@ -2009,11 +2029,13 @@
         });
         if (resp.status === 401) {
           document.getElementById("vault-overlay").classList.remove("hidden");
+      document.body.classList.add("vault-locked");
           return;
         }
         const data = await resp.json();
         LATEST_DATA = data;
         document.getElementById("vault-overlay").classList.add("hidden");
+        document.body.classList.remove("vault-locked");
         renderAllViews(data);
       } catch (err) {
         console.error("Telemetry error:", err);
