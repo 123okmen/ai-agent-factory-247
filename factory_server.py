@@ -1399,15 +1399,14 @@ def generate_ai_commentary(body: dict, ip: str) -> dict:
 
     providers = []
     if openrouter_key:
-        # Tier 1: Paid fast models (if credit available) -> Tier 2: Verified 0-cost OpenRouter Free cascade!
+        # Tier 1: Paid fast models (skipped for 10m if 402 cached) -> Tier 2: Fastest verified 0-cost OpenRouter Free first!
         ordered = [
             pref_model,
             "google/gemini-2.5-flash",
             "openai/gpt-4o-mini",
+            "baidu/ernie-5.5-flash-preview:free",
             "openrouter/free",
-            "google/gemma-4-31b-it:free",
-            "google/gemma-4-26b-a4b-it:free",
-            "baidu/ernie-5.5-flash-preview:free"
+            "google/gemma-4-26b-a4b-it:free"
         ]
         seen_m = set()
         for m in ordered:
@@ -1415,7 +1414,7 @@ def generate_ai_commentary(body: dict, ip: str) -> dict:
                 seen_m.add(m)
                 providers.append(("openrouter", "https://openrouter.ai/api/v1/chat/completions", openrouter_key, m))
 
-    skip_paid_402 = False
+    skip_paid_402 = time.time() < SPORTS_AI_LIMIT.get("__paid_402_until__", 0)
     for ptype, url, key, model_id in providers:
         is_free_model = model_id == "openrouter/free" or model_id.endswith(":free")
         if skip_paid_402 and not is_free_model:
@@ -1433,7 +1432,7 @@ def generate_ai_commentary(body: dict, ip: str) -> dict:
                 "User-Agent": "Mozilla/5.0 SportsCenter-AI/2.0"
             }
             req = urllib.request.Request(url, data=payload, headers=headers, method="POST")
-            with urllib.request.urlopen(req, timeout=14) as r:
+            with urllib.request.urlopen(req, timeout=7) as r:
                 res = json.loads(r.read().decode("utf-8", errors="ignore"))
 
             text = (res.get("choices", [{}])[0].get("message", {}).get("content") or "").strip()
@@ -1448,6 +1447,7 @@ def generate_ai_commentary(body: dict, ip: str) -> dict:
         except urllib.error.HTTPError as he:
             if he.code == 402 and not is_free_model:
                 skip_paid_402 = True
+                SPORTS_AI_LIMIT["__paid_402_until__"] = time.time() + 600
             continue
         except Exception:
             continue
