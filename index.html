@@ -1865,7 +1865,7 @@
               pwInput.value = "";
               document.getElementById("vault-overlay").classList.add("hidden");
               document.body.classList.remove("vault-locked");
-              setTimeout(() => window.dispatchEvent(new Event("resize")), 80);
+              setTimeout(() => { resizeChibi3D(); resizeDagCanvas(); window.dispatchEvent(new Event("resize")); }, 80);
               const hudMode = document.getElementById("hud-mode-pill");
               if (hudMode) hudMode.textContent = IS_GH_PAGES ? "LIVE GCP CLOUD 24/7 (SINGAPORE)" : "LIVE ENGINE :8099";
               document.getElementById("kpi-mode-badge").textContent = IS_GH_PAGES ? "GCP LIVE 24/7" : "ZERO-TRUST";
@@ -2035,6 +2035,7 @@
         LATEST_DATA = data;
         document.getElementById("vault-overlay").classList.add("hidden");
         document.body.classList.remove("vault-locked");
+        setTimeout(() => { resizeChibi3D(); resizeDagCanvas(); }, 60);
         renderAllViews(data);
       } catch (err) {
         console.error("Telemetry error:", err);
@@ -2918,27 +2919,36 @@
         `).join("");
       }
 
-      // Update KPI Ribbon
+      // Update KPI Ribbon (100% Live Ground Truth)
       const hmBadge = document.getElementById("kpi-hermes-badge");
       hmBadge.textContent = hm.online ? "ONLINE" : "DEGRADED";
       hmBadge.className = "status-pill " + (hm.online ? "ok" : "err");
-      document.getElementById("kpi-hermes-val").textContent = `ONLINE • ${hm.stats?.total_messages || 0} Msgs`;
+      document.getElementById("kpi-hermes-val").textContent = `${hm.online ? "ONLINE" : "CHECK"} • ${hm.stats?.total_messages || 0} Msgs`;
+      const hmSub = document.getElementById("kpi-hermes-sub");
+      if (hmSub) hmSub.textContent = `@alicewordbot • ${hm.models?.primary || "openrouter/free"} • ${hm.stats?.total_sessions || 0} Sessions`;
 
       const trBadge = document.getElementById("kpi-trade-badge");
-      trBadge.textContent = tr.online ? "ONLINE :49199" : "OFFLINE";
+      trBadge.textContent = tr.online ? "LIVE 10s" : "OFFLINE";
       trBadge.className = "status-pill " + (tr.online ? "ok" : "err");
       const pnlVal = Number(tr.daily_realized_pnl || 0);
       const pnlEl = document.getElementById("kpi-trade-pnl");
       pnlEl.textContent = (pnlVal >= 0 ? "+" : "") + "$" + pnlVal.toFixed(2) + " USDT";
       pnlEl.style.color = pnlVal >= 0 ? "var(--emerald)" : "var(--rose)";
+      const sentInfo = tr.news_sentiment && tr.news_sentiment.score ? ` • Tin tức: ${tr.news_sentiment.score}` : "";
       document.getElementById("kpi-trade-sub").textContent =
-        `${tr.last_heartbeat || "10s Loop"} • F&G: ${tr.fear_and_greed?.value || 32} (${tr.fear_and_greed?.label || "Fear"})`;
+        `${tr.last_heartbeat || "10s Loop"} • F&G: ${tr.fear_and_greed?.value ?? "--"} (${tr.fear_and_greed?.label || "Live"})${sentInfo}`;
 
       const omniOk = pp.omniroute?.online;
       const nineOk = pp.nine_router?.online;
+      const isCloudVps = (d.virtual_pc && d.virtual_pc.mode === "GCP_SINGAPORE_247");
       const rtBadge = document.getElementById("kpi-router-badge");
-      rtBadge.textContent = (omniOk && nineOk) ? "DUAL ACTIVE" : (omniOk ? "OMNI ONLY" : "CHECK");
-      rtBadge.className = "status-pill " + ((omniOk && nineOk) ? "ok" : "warn");
+      if (isCloudVps) {
+        rtBadge.textContent = omniOk ? "CLOUD ACTIVE" : "CHECK";
+        rtBadge.className = "status-pill " + (omniOk ? "ok" : "err");
+      } else {
+        rtBadge.textContent = (omniOk && nineOk) ? "DUAL ACTIVE" : (omniOk ? "OMNI ONLY" : "CHECK");
+        rtBadge.className = "status-pill " + ((omniOk && nineOk) ? "ok" : "warn");
+      }
 
       document.getElementById("kpi-fnb-orders").textContent = `${fn.total_synced_orders || 0} Đơn POS • 4 Quán`;
       document.getElementById("kpi-sec-sub").textContent = `Owner: Nguyễn Tân Khanh • Zero-PII • Uptime ${Math.floor((sc.uptime_seconds || 0) / 60)}m`;
@@ -2955,20 +2965,20 @@
         tickerEl.textContent = "▸ " + lastLog;
       }
 
-      // Update 3D Chibi Floating Speech Bubbles with Live Data
+      // Update 3D Chibi Floating Speech Bubbles with Real Live Data
       const bubUpdates = {
-        qwen4_brain: `1M Context Reasoning • ${hm.stats?.total_sessions || 0} Sessions`,
-        alice_tele: `@alicewordbot (${hm.telegram?.state || "connected"}) • Solar-Mini4 ~1.38s`,
-        omniroute_chan: `OmniRoute :20129 (${pp.omniroute?.total_models || 595} Models • Gemini 3.x)`,
+        qwen4_brain: `OpenRouter Live Cascade • ${hm.stats?.total_sessions || 0} Sessions`,
+        alice_tele: `@alicewordbot (${hm.telegram?.state || "connected"}) • ${hm.models?.primary || "Live"}`,
+        omniroute_chan: `OmniRoute :20129 (${pp.omniroute?.online ? "ONLINE" : "CHECK"} • ${pp.omniroute?.total_models || 595} Models)`,
         rtk_caveman: "RTK + Caveman 12-Stage • Nén 60-85% Token",
-        deepseek_9router: `9Router :20128 (${pp.nine_router?.online ? "ONLINE" : "STANDBY"}) • 511ms`,
-        solar_cowork: "Primary: upstage/solar-mini4:free + 4 Verified Fallbacks",
-        watchdog_bot: `Bảo vệ ${hm.stats?.active_cron_jobs || 5} Cronjobs + Cloud Run 24/7`,
-        rexapf_sniper: `${tr.last_heartbeat || "Quét 10s/lần"} • Latency ${tr.cycle_latency_sec || 0.71}s`,
-        whale_detective: `Fear & Greed: ${tr.fear_and_greed?.value || 32} (${tr.fear_and_greed?.label || "Fear"})`,
-        gemini_arbiter: `PnL Hôm nay: ${pnlVal >= 0 ? '+' : ''}$${pnlVal.toFixed(2)} • ${tr.self_learning?.total_lessons || 23} Luật Chống Lỗ`,
-        tuyetmai_pos: `Cloud Run F&B 24/7 • ${fn.total_synced_orders || 52} đơn POS đồng bộ`,
-        baongoc_agency: "Blender/SketchUp MCP + Gemini 3 Pro Image 4K & 9 Agency"
+        deepseek_9router: isCloudVps ? `Caddy HTTPS + Cloudflare Edge (LIVE)` : `9Router :20128 (${pp.nine_router?.online ? "ONLINE" : "STANDBY"})`,
+        solar_cowork: `Model chính: ${hm.models?.primary || "openrouter/free"}`,
+        watchdog_bot: `Self-Healer 24/7 • ${hm.stats?.active_cron_jobs || 2} Cronjobs + Cloud Run`,
+        rexapf_sniper: `${tr.last_heartbeat || "Quét 10s/lần"} • ${tr.coins?.length || 0} Coin Live (${tr.cycle_latency_sec || 0.7}s)`,
+        whale_detective: `Fear & Greed: ${tr.fear_and_greed?.value ?? "--"} (${tr.fear_and_greed?.label || "Live"}) • Tin: ${tr.news_sentiment?.score ?? 0}`,
+        gemini_arbiter: `PnL Hôm nay: ${pnlVal >= 0 ? '+' : ''}$${pnlVal.toFixed(2)} • ${tr.self_learning?.total_lessons || 0} Luật Chống Lỗ`,
+        tuyetmai_pos: `Cloud Run F&B 24/7 • ${fn.total_synced_orders || 0} đơn POS đồng bộ`,
+        baongoc_agency: `VPS CPU ${d.virtual_pc?.cpu_pct ?? 0}% • RAM ${d.virtual_pc?.ram_pct ?? 0}% • Disk ${d.virtual_pc?.disk_free_gb ?? 0}GB`
       };
       Object.entries(bubUpdates).forEach(([cid, text]) => {
         const el = document.getElementById("chibi-bub-" + cid);
@@ -3374,27 +3384,29 @@
 
     function renderTradeView(tr) {
       const coinsGrid = document.getElementById("trade-coins-cards");
-      const coins = tr.coins && tr.coins.length ? tr.coins : [
-        { symbol: "BTCUSDT", signal_15m: "NEUTRAL", wt1: -36.5, trend_1h: "BEARISH", flow_score: -30, flow_bias: "BEARISH", fng_val: 32, fng_label: "Fear", news_score: 0 },
-        { symbol: "BNBUSDT", signal_15m: "NEUTRAL", wt1: -34.0, trend_1h: "BEARISH", flow_score: -25, flow_bias: "BEARISH", fng_val: 32, fng_label: "Fear", news_score: 0 },
-        { symbol: "SOLUSDT", signal_15m: "NEUTRAL", wt1: -50.8, trend_1h: "BEARISH", flow_score: -25, flow_bias: "BEARISH", fng_val: 32, fng_label: "Fear", news_score: 0 }
-      ];
-      coinsGrid.innerHTML = coins.map(c => `
-        <div class="panel-card">
-          <div class="panel-title">
-            <span>🪙 ${escapeHtml(c.symbol)}</span>
-            <span class="status-pill ${c.trend_1h === 'BULLISH' ? 'ok' : 'warn'}">1H: ${escapeHtml(c.trend_1h)}</span>
-          </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-family:var(--font-mono); font-size:12px;">
-            <div>Tín hiệu 15m: <b style="color:var(--cyan);">${escapeHtml(c.signal_15m)}</b></div>
-            <div>WaveTrend WT1: <b>${c.wt1}</b></div>
-            <div>Whale Flow: <b style="color:${c.flow_score >= 0 ? 'var(--emerald)' : 'var(--rose)'};">${c.flow_score} (${escapeHtml(c.flow_bias)})</b></div>
-            <div>Fear & Greed: <b>${c.fng_val} (${escapeHtml(c.fng_label)})</b></div>
-            <div>News Score: <b>${c.news_score}</b></div>
-            <div>Cập nhật: <b>${escapeHtml(c.updated_at || 'Live 10s')}</b></div>
-          </div>
-        </div>
-      `).join("");
+      const coins = (tr.coins && tr.coins.length) ? tr.coins : [];
+      if (!coins.length) {
+        coinsGrid.innerHTML = `<div class="panel-card" style="grid-column:1/-1; color:var(--text-muted); text-align:center;">⏳ Đang chờ chu kỳ quét 10s tiếp theo từ RexAPF Trade Bot v13.0...</div>`;
+      } else {
+        coinsGrid.innerHTML = coins.map(c => {
+          const pillCls = c.trend_1h === "BULLISH" ? "ok" : (c.trend_1h === "BEARISH" ? "err" : "warn");
+          const sigColor = String(c.signal_15m || "").startsWith("BUY") ? "var(--emerald)" : (String(c.signal_15m || "").startsWith("SELL") ? "var(--rose)" : "var(--cyan)");
+          return `
+          <div class="panel-card">
+            <div class="panel-title">
+              <span>🪙 ${escapeHtml(c.symbol)} ${c.price ? `<small style="color:var(--cyan); font-weight:700; margin-left:6px;">${escapeHtml(c.price)}</small>` : ""}</span>
+              <span class="status-pill ${pillCls}">${escapeHtml(c.trend_1h)}</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-family:var(--font-mono); font-size:12px;">
+              <div>Tín hiệu: <b style="color:${sigColor};">${escapeHtml(c.signal_15m)}</b></div>
+              <div>Hội đồng: <b>${escapeHtml(c.flow_bias || c.wt1)}</b></div>
+              <div>Fear & Greed: <b>${c.fng_val ?? "--"} (${escapeHtml(c.fng_label || "Live")})</b></div>
+              <div>Tâm lý Tin: <b style="color:${Number(c.news_score || 0) >= 0 ? 'var(--emerald)' : 'var(--rose)'};">${c.news_score ?? 0}</b></div>
+              <div style="grid-column:1/-1; color:var(--text-muted); font-size:11px;">⏱️ Quét lúc: <b style="color:var(--text-main);">${escapeHtml(c.updated_at || "Live")}</b>${c.council ? " • " + escapeHtml(c.council) : ""}</div>
+            </div>
+          </div>`;
+        }).join("");
+      }
 
       const accTbody = document.getElementById("trade-accounts-tbody");
       accTbody.innerHTML = (tr.accounts || []).map(a => `

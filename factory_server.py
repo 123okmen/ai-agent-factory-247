@@ -41,9 +41,52 @@ import threading
 import subprocess
 import urllib.request
 import urllib.error
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
+
+VN_TZ = timezone(timedelta(hours=7))
+FNG_CACHE = {"ts": 0.0, "value": 45, "label": "Neutral"}
+
+
+def now_vn() -> datetime:
+    return datetime.now(VN_TZ)
+
+
+def utc_str_to_vn_hms(ts_str: str) -> str:
+    try:
+        dt = datetime.strptime(ts_str.strip(), "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+        return dt.astimezone(VN_TZ).strftime("%H:%M:%S ICT")
+    except Exception:
+        return ts_str
+
+
+def is_systemd_active(unit: str) -> bool:
+    if os.name == "nt":
+        return False
+    try:
+        r = subprocess.run(["systemctl", "is-active", unit], capture_output=True, text=True, timeout=2)
+        return r.stdout.strip() == "active"
+    except Exception:
+        return False
+
+
+def get_live_fear_and_greed() -> dict:
+    now = time.time()
+    if now - FNG_CACHE["ts"] < 600 and FNG_CACHE["ts"] > 0:
+        return {"value": FNG_CACHE["value"], "label": FNG_CACHE["label"]}
+    try:
+        req = urllib.request.Request("https://api.alternative.me/fng/?limit=1", headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=2.5) as resp:
+            d = json.loads(resp.read().decode("utf-8", errors="ignore"))
+            item = (d.get("data") or [{}])[0]
+            val = int(item.get("value", FNG_CACHE["value"]))
+            lbl = str(item.get("value_classification", FNG_CACHE["label"]))
+            FNG_CACHE.update({"ts": now, "value": val, "label": lbl})
+    except Exception:
+        if FNG_CACHE["ts"] == 0:
+            FNG_CACHE["ts"] = now - 540
+    return {"value": FNG_CACHE["value"], "label": FNG_CACHE["label"]}
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -373,16 +416,28 @@ def get_hermes_telemetry() -> dict:
                 pid_alive = True
             except Exception:
                 pid_alive = False
-    is_running = (gw.get("gateway_state") == "running" and tg_state == "connected") or pid_alive or web_dash_alive
+    is_running = is_systemd_active("hermes-gateway") if os.name != "nt" else ((gw.get("gateway_state") == "running" and tg_state == "connected") or pid_alive or web_dash_alive)
     if is_running and tg_state == "disconnected":
         tg_state = "connected"
+
+    active_hermes_model = "openrouter/free"
+    hcfg_path = os.path.join(HERMES_DIR, "config.yaml")
+    if os.path.exists(hcfg_path):
+        try:
+            for ln in open(hcfg_path, "r", encoding="utf-8", errors="ignore"):
+                m = re.match(r"^\s*default:\s*(\S+)", ln)
+                if m:
+                    active_hermes_model = m.group(1).strip().strip('"').strip("'")
+                    break
+        except Exception:
+            pass
 
     return {
         "online": is_running,
         "pid": live_pid,
         "version": gw.get("code_version", "0.23.1"),
-        "gateway_state": gw.get("gateway_state", "running"),
-        "updated_at": gw.get("updated_at"),
+        "gateway_state": "running" if is_running else gw.get("gateway_state", "stopped"),
+        "updated_at": now_vn().strftime("%Y-%m-%d %H:%M:%S ICT"),
         "web_dashboard": {
             "online": web_dash_alive,
             "port": 9119,
@@ -399,14 +454,14 @@ def get_hermes_telemetry() -> dict:
             "bridge_port": 3000
         },
         "models": {
-            "primary": "nous / upstage/solar-mini4:free (~1.38s Ultra-Fast Primary)",
-            "cowork_delegate": "omniroute / auto/fast (Subagent Swarm)",
+            "primary": f"openrouter / {active_hermes_model} (Live 24/7)",
+            "cowork_delegate": "openrouter / baidu/ernie-5.5-flash-preview:free (~2s)",
             "fallback_chain": [
-                "1. nous / upstage/solar-mini4:free (Primary • ~1.38s)",
-                "2. nous / qwen/qwen4-max:free (1M Context Deep Reasoning)",
-                "3. nous / tencent/hy4-flash:free (High-Speed Backup)",
-                "4. omniroute / auto/fast (Multi-Provider Auto-Route)",
-                "5. omniroute / gemini/gemini-3.1-pro-preview (Paid Tier Pro)"
+                f"1. openrouter / {active_hermes_model} (Primary Live)",
+                "2. openrouter / google/gemma-4-31b-it:free (Free Tier Backup)",
+                "3. openrouter / baidu/ernie-5.5-flash-preview:free (VN Fast Backup)",
+                "4. openrouter / google/gemini-2.5-flash (Paid Tier Flash)",
+                "5. openrouter / openai/gpt-4o-mini (Paid Tier Mini)"
             ]
         },
         "stats": {
@@ -423,40 +478,121 @@ def get_hermes_telemetry() -> dict:
 
 
 def get_trade_factory_telemetry() -> dict:
-    port_alive = is_port_open(49199)
+    # NEVER TCP-probe :49199 on Linux (single-instance lock socket with backlog=1); use systemd ground truth!
+    port_alive = is_systemd_active("rexapf-trade") if os.name != "nt" else is_port_open(49199)
     state = safe_read_json(TRADE_STATE_JSON, {})
     lessons_data = safe_read_json(TRADE_LESSONS_JSON, {"loss_patterns": []})
     history_data = safe_read_json(TRADE_HISTORY_JSON, [])
     accounts_raw = safe_read_json(TRADE_ACCOUNTS_JSON, [])
     raw_logs = tail_file(TRADE_BOT_LOG, 350, max_bytes=196608)
 
+    live_fng = get_live_fear_and_greed()
     coin_metrics = {}
     last_cycle_latency = 0.71
+    last_cycle_start = None
     last_heartbeat = ""
-    fng_value = 32
-    fng_label = "Fear"
-    total_equity_usdt = 577.27
+    fng_value = live_fng["value"]
+    fng_label = live_fng["label"]
+    news_score_live = 0.0
+    news_sentiment_label = "Đang theo dõi"
+    total_equity_usdt = 0.0
     open_positions_count = 0
 
-    coin_pattern = re.compile(
-        r"\[(BTCUSDT|BNBUSDT|SOLUSDT|ETHUSDT|XRPUSDT)\]\s+15m:\s+([A-Z_]+)\s+\(WT1=([-\d\.]+)\)\s+\|\s+1H:\s+([A-Z_]+)\s+\|\s+Flow:\s+([-\d\.]+)\s+\(([A-Z_]+)\)\s+\|\s+F&G:\s+(\d+)\s+\(([^)]+)\)\s+\|\s+News:\s+([-\d\.]+)"
+    # Legacy v11 format + Live v13 format parsers
+    coin_pattern_v11 = re.compile(
+        r"\[([A-Z0-9]+USDT)\]\s+15m:\s+([A-Z_]+)\s+\(WT1=([-\d\.]+)\)\s+\|\s+1H:\s+([A-Z_]+)\s+\|\s+Flow:\s+([-\d\.]+)\s+\(([A-Z_]+)\)\s+\|\s+F&G:\s+(\d+)\s+\(([^)]+)\)\s+\|\s+News:\s+([-\d\.]+)"
     )
+    coin_pattern_v13_sig = re.compile(
+        r"\[([A-Z0-9]+USDT)\]\s+Giá:\s*\$([\d,\.]+)\s*\|\s*Hội đồng:\s*(.+?)\s*->\s*(BUY|SELL|HOLD)\s*\(Đòn bẩy:\s*(x\d+)\)"
+    )
+    coin_pattern_v13_skip = re.compile(
+        r"\[([A-Z0-9]+USDT)\]\s+Bỏ qua.*?\(Độ tin cậy\s*([\d\.]+)%"
+    )
+    sentiment_pattern = re.compile(r"Chỉ số tâm lý tin tức:\s*([^\(]+?)(?:\s*\([^)]*\))?\s*\(Điểm:\s*([-\d\.]+)\)")
     heartbeat_pattern = re.compile(r"HEARTBEAT.*Chu kỳ quét #(\d+)")
-    equity_pattern = re.compile(r"Tổng tài sản hệ thống:\s*\$([\d\.]+)\s*USDT\s*\|\s*Vị thế đang mở:\s*(\d+)")
+    equity_pattern = re.compile(r"Tổng tài sản hệ thống:\s*\$([\d,\.]+)\s*USDT\s*\|\s*Vị thế đang mở:\s*(\d+)")
 
     for line in raw_logs:
+        ts_match = re.match(r"^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})", line)
+        ts_vn = utc_str_to_vn_hms(ts_match.group(1)) if ts_match else "Live"
+
+        if "Khởi chạy chu kỳ phân tích" in line and ts_match:
+            try:
+                last_cycle_start = datetime.strptime(ts_match.group(1), "%Y-%m-%d %H:%M:%S")
+            except Exception:
+                pass
+
+        sent_m = sentiment_pattern.search(line)
+        if sent_m:
+            news_sentiment_label = sent_m.group(1).strip()
+            try:
+                news_score_live = float(sent_m.group(2))
+            except Exception:
+                pass
+
         eq_m = equity_pattern.search(line)
         if eq_m:
-            total_equity_usdt = float(eq_m.group(1))
-            open_positions_count = int(eq_m.group(2))
-        m = coin_pattern.search(line)
+            try:
+                total_equity_usdt = float(eq_m.group(1).replace(",", ""))
+                open_positions_count = int(eq_m.group(2))
+            except Exception:
+                pass
+
+        m13 = coin_pattern_v13_sig.search(line)
+        if m13:
+            sym, price_str, council_txt, side, lev = m13.groups()
+            is_strong = "3/3" in council_txt or "TUYỆT ĐỐI" in council_txt
+            coin_metrics[sym] = {
+                "symbol": sym,
+                "price": "$" + price_str,
+                "signal_15m": f"{side} ({lev})",
+                "wt1": lev,
+                "trend_1h": "BULLISH" if side == "BUY" else "BEARISH",
+                "flow_score": 3 if is_strong else 2,
+                "flow_bias": "3/3 AGENT" if is_strong else "2/3 AGENT",
+                "fng_val": fng_value,
+                "fng_label": fng_label,
+                "news_score": news_score_live,
+                "council": council_txt.strip()[:42],
+                "updated_at": ts_vn
+            }
+            if last_cycle_start and ts_match:
+                try:
+                    dt_now = datetime.strptime(ts_match.group(1), "%Y-%m-%d %H:%M:%S")
+                    diff_s = (dt_now - last_cycle_start).total_seconds()
+                    if 0.05 <= diff_s <= 15:
+                        last_cycle_latency = round(diff_s, 2)
+                except Exception:
+                    pass
+            continue
+
+        mskip = coin_pattern_v13_skip.search(line)
+        if mskip:
+            sym, conf = mskip.groups()
+            coin_metrics[sym] = {
+                "symbol": sym,
+                "price": "Quét Live",
+                "signal_15m": f"CHỜ ({conf}%)",
+                "wt1": f"{conf}%",
+                "trend_1h": "NEUTRAL",
+                "flow_score": 0,
+                "flow_bias": "CHƯA ĐỦ TÍN CẬY",
+                "fng_val": fng_value,
+                "fng_label": fng_label,
+                "news_score": news_score_live,
+                "council": "Chờ tín hiệu >= 60%",
+                "updated_at": ts_vn
+            }
+            continue
+
+        m = coin_pattern_v11.search(line)
         if m:
             sym = m.group(1)
             fng_value = int(m.group(7))
             fng_label = m.group(8)
-            ts_match = re.match(r"^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})", line)
             coin_metrics[sym] = {
                 "symbol": sym,
+                "price": "Live",
                 "signal_15m": m.group(2),
                 "wt1": float(m.group(3)),
                 "trend_1h": m.group(4),
@@ -465,7 +601,7 @@ def get_trade_factory_telemetry() -> dict:
                 "fng_val": int(m.group(7)),
                 "fng_label": m.group(8),
                 "news_score": float(m.group(9)),
-                "updated_at": ts_match.group(1) if ts_match else "Live"
+                "updated_at": ts_vn
             }
         hb = heartbeat_pattern.search(line)
         if hb:
@@ -506,11 +642,12 @@ def get_trade_factory_telemetry() -> dict:
     return {
         "online": port_alive,
         "singleton_port": 49199,
-        "engine_version": "RexAPF v11.0 (5-Agent Quantitative Council + Gemini Arbiter)",
+        "engine_version": "RexAPF v13.0 (Multi-Agent Quantitative Council + OpenRouter AI)",
         "loop_interval_sec": 10,
         "cycle_latency_sec": last_cycle_latency,
         "vault_status": "PROTECTED (ZERO-PII)",
         "open_positions_count": open_positions_count,
+        "news_sentiment": {"score": news_score_live, "label": news_sentiment_label},
         "last_heartbeat": last_heartbeat or "Active 10s Loop",
         "daily_realized_pnl": round(float(state.get("daily_realized_pnl", 0.0)), 2),
         "circuit_breaker": state.get("circuit_breaker_triggered", False),
@@ -913,18 +1050,19 @@ def build_full_factory_telemetry() -> dict:
         else {"id": "caddy_tls", "name": "Caddy HTTPS TLS", "detail": "Singapore SSL • :443", "online": True}
     )
 
+    primary_m = (hermes.get("models", {}).get("primary") or "openrouter/free").split(" ")[-2] if " / " in (hermes.get("models", {}).get("primary") or "") else "openrouter/free"
     live_subsystems = [
-        {"id": "hermes_gw", "name": "Hermes Gateway", "detail": "@alicewordbot • Solar-Mini4", "online": bool(hermes.get("online"))},
-        {"id": "hermes_web", "name": "Hermes Web UI", "detail": "Dashboard :9119", "online": bool(hermes.get("web_dashboard", {}).get("online"))},
+        {"id": "hermes_gw", "name": "Hermes Gateway", "detail": f"@alicewordbot • {primary_m}", "online": bool(hermes.get("online"))},
+        {"id": "hermes_web", "name": "Hermes Web UI", "detail": "Dashboard :9119 (Loopback)", "online": bool(hermes.get("web_dashboard", {}).get("online"))},
         {"id": "omniroute", "name": "OmniRoute v3.8", "detail": "595 Models • :20129", "online": bool(routers.get("omniroute", {}).get("online"))},
         fourth_node,
-        {"id": "trade_bot", "name": "RexAPF Trade v11", "detail": "10s Loop • :49199", "online": bool(trade.get("online"))},
-        {"id": "cloud_run", "name": "Cloud Run F&B", "detail": "24/7 Watchdog GCP", "online": True},
-        {"id": "arch_3d", "name": "3D Arch & Render", "detail": "Blender/SketchUp MCP", "online": True}
+        {"id": "trade_bot", "name": "RexAPF Trade v13", "detail": f"10s Loop • Mở: {trade.get('open_positions_count', 0)}", "online": bool(trade.get("online"))},
+        {"id": "healer_247", "name": "Self-Healer 24/7", "detail": "Auto-Recover VPS Services", "online": is_systemd_active("ai-factory-healer") if os.name != "nt" else True},
+        {"id": "cloud_run", "name": "Cloud Run F&B", "detail": "24/7 Watchdog GCP", "online": True}
     ]
 
     return _deep_redact({
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "timestamp": now_vn().strftime("%Y-%m-%d %H:%M:%S ICT"),
         "owner": {
             "name": "Nguyễn Tân Khanh",
             "edition": "Zero-Trust Enterprise Command Center 2026"
