@@ -639,6 +639,26 @@ def get_trade_factory_telemetry() -> dict:
     wins = sum(1 for t in history_data if isinstance(t, dict) and float(t.get("pnl", 0)) > 0)
     total_closed = len(history_data) if isinstance(history_data, list) else 0
 
+    # Real multi-vault daily PnL: sum active accounts (fixes stale legacy root daily_realized_pnl!)
+    acc_state_map = state.get("accounts", {})
+    if isinstance(acc_state_map, dict) and acc_state_map:
+        real_daily_pnl = round(sum(float(v.get("daily_realized_pnl", 0.0) or 0.0) for v in acc_state_map.values() if isinstance(v, dict)), 2)
+        open_syms = []
+        for v in acc_state_map.values():
+            if isinstance(v, dict) and isinstance(v.get("high_watermarks"), dict):
+                open_syms.extend(list(v["high_watermarks"].keys()))
+    else:
+        real_daily_pnl = round(float(state.get("daily_realized_pnl", 0.0) or 0.0), 2)
+        open_syms = list((state.get("high_watermarks") or {}).keys())
+
+    entry_counts = state.get("daily_entry_count", {})
+    total_daily_entries = sum(int(v or 0) for v in entry_counts.values()) if isinstance(entry_counts, dict) else 0
+    btc_price = (coin_metrics.get("BTCUSDT") or {}).get("price", "")
+    last_scan_time = ""
+    for cm in coin_metrics.values():
+        if cm.get("updated_at"):
+            last_scan_time = cm["updated_at"]
+
     return {
         "online": port_alive,
         "singleton_port": 49199,
@@ -646,10 +666,14 @@ def get_trade_factory_telemetry() -> dict:
         "loop_interval_sec": 10,
         "cycle_latency_sec": last_cycle_latency,
         "vault_status": "PROTECTED (ZERO-PII)",
-        "open_positions_count": open_positions_count,
+        "open_positions_count": max(open_positions_count, len(open_syms)),
+        "open_symbols": open_syms,
+        "btc_price": btc_price,
+        "total_daily_entries": total_daily_entries,
+        "last_scan_time": last_scan_time or now_vn().strftime("%H:%M:%S ICT"),
         "news_sentiment": {"score": news_score_live, "label": news_sentiment_label},
         "last_heartbeat": last_heartbeat or "Active 10s Loop",
-        "daily_realized_pnl": round(float(state.get("daily_realized_pnl", 0.0)), 2),
+        "daily_realized_pnl": real_daily_pnl,
         "circuit_breaker": state.get("circuit_breaker_triggered", False),
         "fear_and_greed": {"value": fng_value, "label": fng_label},
         "coins": list(coin_metrics.values()),
@@ -677,28 +701,51 @@ def get_trade_factory_telemetry() -> dict:
     }
 
 
+OR_CATALOG_CACHE = {"ts": 0.0, "total": 340, "free": 13}
+
+
+def get_live_openrouter_catalog_counts() -> dict:
+    now = time.time()
+    if now - OR_CATALOG_CACHE["ts"] < 600 and OR_CATALOG_CACHE["ts"] > 0:
+        return {"total": OR_CATALOG_CACHE["total"], "free": OR_CATALOG_CACHE["free"]}
+    try:
+        req = urllib.request.Request("https://openrouter.ai/api/v1/models", headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=3.0) as resp:
+            items = json.loads(resp.read().decode("utf-8", errors="ignore")).get("data", [])
+            if items:
+                free_cnt = sum(1 for m in items if ":free" in str(m.get("id", "")) or str((m.get("pricing") or {}).get("prompt", "")) == "0")
+                OR_CATALOG_CACHE.update({"ts": now, "total": len(items), "free": free_cnt})
+    except Exception:
+        if OR_CATALOG_CACHE["ts"] == 0:
+            OR_CATALOG_CACHE["ts"] = now - 540
+    return {"total": OR_CATALOG_CACHE["total"], "free": OR_CATALOG_CACHE["free"]}
+
+
 def get_routers_and_cloud_telemetry() -> dict:
     omni_alive = is_port_open(20129)
     nine_alive = is_port_open(20128)
     blender_mcp_alive = is_port_open(9876)
+    or_counts = get_live_openrouter_catalog_counts()
+    cfg_model = get_unified_web_config().get("default_ai_model", "openrouter/free")
 
     return {
         "omniroute": {
             "online": omni_alive,
             "port": 20129,
             "version": "v3.8.54",
-            "url": "http://localhost:20129/v1",
-            "mcp_stream": "http://localhost:20129/api/mcp/stream",
-            "total_models": 595,
+            "url": "http://127.0.0.1:20129/v1",
+            "mcp_stream": "http://127.0.0.1:20129/api/mcp/stream",
+            "total_models": or_counts["total"],
+            "free_models": or_counts["free"],
+            "active_model": cfg_model,
             "auto_combos": 48,
             "production_combos": ["trade-council", "fnb-ops", "dev-coding"],
             "token_compression": "RTK + Caveman (12-Stage Pipeline • Tiết kiệm 60-85% token)",
             "active_providers": [
-                "Gemini 3.x Paid Tier (gemini-3.1-pro-preview, gemini-3-pro-image)",
-                "Google Cloud Gemini Multi-Key Pool (Load-Balanced Free Tier)",
-                "Nous Research Portal (upstage/solar-mini4:free, qwen4-max:free, hy4-flash:free)",
-                "OpenCode Zen & Cloudflare Workers AI",
-                "Pollinations AI & DuckDuckGo AI Chat"
+                f"OpenRouter Live Catalog ({or_counts['total']} Models • {or_counts['free']} Free 0đ)",
+                "OpenRouter Auto-Failover (ernie-5.5-flash:free -> openrouter/free -> gemma-4:free)",
+                "OmniRoute Local Loopback (:20129 • 127.0.0.1 Protected)",
+                "Cloudflare Edge Workers + D1 SQLite (5 Separated Sites)"
             ]
         },
         "nine_router": {
@@ -1076,6 +1123,7 @@ def build_full_factory_telemetry() -> dict:
         "fnb_factory": fnb,
         "security": sec,
         "healer": get_healer_telemetry(),
+        "gym_leads_count": len(get_gym_leads()),
         "unified_config": get_unified_web_config()
     })
 

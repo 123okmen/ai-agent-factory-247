@@ -388,11 +388,16 @@
       font-size: 11px;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.7px;
+      letter-spacing: 0.5px;
       margin-bottom: 5px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 8px;
+    }
+    .kpi-label .status-pill {
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .kpi-value {
       font-size: 20px;
@@ -1224,29 +1229,29 @@
 
     <div class="kpi-card">
       <div class="kpi-label">
-        <span>⚡ OMNIROUTE + 9ROUTER + GEMINI 3</span>
-        <span id="kpi-router-badge" class="status-pill ok">20129 / 20128</span>
+        <span>⚡ AI GATEWAY LIVE</span>
+        <span id="kpi-router-badge" class="status-pill ok">CLOUD ACTIVE</span>
       </div>
-      <div class="kpi-value" id="kpi-router-val">595 Models</div>
-      <div class="kpi-sub" id="kpi-router-sub">48 Combos (trade-council, fnb-ops, dev-coding)</div>
+      <div class="kpi-value" id="kpi-router-val">Đang đồng bộ...</div>
+      <div class="kpi-sub" id="kpi-router-sub">OpenRouter + OmniRoute Loopback</div>
     </div>
 
     <div class="kpi-card">
       <div class="kpi-label">
-        <span>🍱 CLOUD RUN F&B + 3D ARCH MCP</span>
+        <span>🌐 HỆ SINH THÁI WEB & F&B</span>
         <span id="kpi-fnb-badge" class="status-pill ok">24/7 LIVE</span>
       </div>
-      <div class="kpi-value" id="kpi-fnb-orders">4 POS • 9 Agencies</div>
-      <div class="kpi-sub">Cloud Run Watchdog • Blender/SketchUp MCP 4K</div>
+      <div class="kpi-value" id="kpi-fnb-orders">Đang đồng bộ...</div>
+      <div class="kpi-sub" id="kpi-fnb-sub">Cloudflare Edge + POS 4 Quán</div>
     </div>
 
     <div class="kpi-card">
       <div class="kpi-label">
-        <span>🛡️ PHÁO ĐÀI BẢO MẬT ZERO-PII</span>
+        <span>🖥️ VPS SINGAPORE 24/7</span>
         <span id="kpi-mode-badge" class="status-pill ok">ZERO-TRUST</span>
       </div>
-      <div class="kpi-value" id="kpi-sec-val">PBKDF2 310K</div>
-      <div class="kpi-sub" id="kpi-sec-sub">Owner: Nguyễn Tân Khanh • OWASP Top 10 Shield</div>
+      <div class="kpi-value" id="kpi-sec-val">Đang đo live...</div>
+      <div class="kpi-sub" id="kpi-sec-sub">Uptime & Tài nguyên trực tiếp</div>
     </div>
   </section>
 
@@ -2023,8 +2028,9 @@
     async function fetchFactoryTelemetry() {
       if (IS_STATIC_CLOUD_MODE) return;
       try {
-        const resp = await fetch(API_BASE + "/api/factory/telemetry", {
-          headers: { "X-Factory-Token": SESSION_TOKEN }
+        const resp = await fetch(API_BASE + "/api/factory/telemetry?_t=" + Date.now(), {
+          headers: { "X-Factory-Token": SESSION_TOKEN },
+          cache: "no-store"
         });
         if (resp.status === 401) {
           document.getElementById("vault-overlay").classList.remove("hidden");
@@ -2934,24 +2940,46 @@
       const pnlEl = document.getElementById("kpi-trade-pnl");
       pnlEl.textContent = (pnlVal >= 0 ? "+" : "") + "$" + pnlVal.toFixed(2) + " USDT";
       pnlEl.style.color = pnlVal >= 0 ? "var(--emerald)" : "var(--rose)";
-      const sentInfo = tr.news_sentiment && tr.news_sentiment.score ? ` • Tin tức: ${tr.news_sentiment.score}` : "";
+      const btcBit = tr.btc_price ? `BTC ${tr.btc_price} • ` : "";
+      const openSymBit = (tr.open_symbols && tr.open_symbols.length) ? ` (${tr.open_symbols.join(",")})` : "";
+      const sentInfo = tr.news_sentiment && tr.news_sentiment.score ? ` • Tin: ${tr.news_sentiment.score}` : "";
       document.getElementById("kpi-trade-sub").textContent =
-        `${tr.last_heartbeat || "10s Loop"} • F&G: ${tr.fear_and_greed?.value ?? "--"} (${tr.fear_and_greed?.label || "Live"})${sentInfo}`;
+        `${btcBit}Mở: ${tr.open_positions_count || 0}${openSymBit} • ${tr.total_daily_entries || 0} lệnh • F&G: ${tr.fear_and_greed?.value ?? "--"} (${tr.fear_and_greed?.label || "Live"})${sentInfo} • ${tr.last_scan_time || ""}`;
 
       const omniOk = pp.omniroute?.online;
       const nineOk = pp.nine_router?.online;
       const isCloudVps = (d.virtual_pc && d.virtual_pc.mode === "GCP_SINGAPORE_247");
       const rtBadge = document.getElementById("kpi-router-badge");
       if (isCloudVps) {
-        rtBadge.textContent = omniOk ? "CLOUD ACTIVE" : "CHECK";
+        rtBadge.textContent = omniOk ? "CLOUD LIVE" : "CHECK";
         rtBadge.className = "status-pill " + (omniOk ? "ok" : "err");
       } else {
         rtBadge.textContent = (omniOk && nineOk) ? "DUAL ACTIVE" : (omniOk ? "OMNI ONLY" : "CHECK");
         rtBadge.className = "status-pill " + ((omniOk && nineOk) ? "ok" : "warn");
       }
+      const rtVal = document.getElementById("kpi-router-val");
+      if (rtVal) rtVal.textContent = `${pp.omniroute?.total_models || 340} Models • ${pp.omniroute?.free_models || 13} Free`;
+      const rtSub = document.getElementById("kpi-router-sub");
+      if (rtSub) rtSub.textContent = `OmniRoute :20129 (${omniOk ? "LIVE" : "OFF"}) • Model: ${d.unified_config?.default_ai_model || pp.omniroute?.active_model || "openrouter/free"}`;
 
-      document.getElementById("kpi-fnb-orders").textContent = `${fn.total_synced_orders || 0} Đơn POS • 4 Quán`;
-      document.getElementById("kpi-sec-sub").textContent = `Owner: Nguyễn Tân Khanh • Zero-PII • Uptime ${Math.floor((sc.uptime_seconds || 0) / 60)}m`;
+      const healerWebs = (d.healer && Array.isArray(d.healer.webs)) ? d.healer.webs : [];
+      const webOkCnt = healerWebs.filter(w => w.ok).length;
+      const avgWebMs = healerWebs.length ? Math.round(healerWebs.reduce((a, w) => a + (w.ms || 0), 0) / healerWebs.length) : 0;
+      document.getElementById("kpi-fnb-orders").textContent = healerWebs.length
+        ? `${webOkCnt}/${healerWebs.length} Web Live • ${avgWebMs}ms`
+        : `${fn.total_synced_orders || 0} Đơn POS • 4 Quán`;
+      const fnbSub = document.getElementById("kpi-fnb-sub");
+      if (fnbSub) fnbSub.textContent = `Portal + Cinema + Sports + Gym • Gym Leads: ${d.gym_leads_count || 0} • F&B POS: ${fn.total_synced_orders || 0}`;
+
+      const vpc = d.virtual_pc || {};
+      const svcsList = vpc.services || [];
+      const svcOkCnt = svcsList.filter(s => s.state === "active").length;
+      const secVal = document.getElementById("kpi-sec-val");
+      if (secVal && vpc.ram_pct !== undefined) {
+        secVal.textContent = `CPU ${vpc.cpu_pct ?? 0}% • RAM ${vpc.ram_pct ?? 0}%`;
+      }
+      document.getElementById("kpi-sec-sub").textContent =
+        `${svcOkCnt}/${svcsList.length || 9} Active • VPS Uptime ${formatUptimeVi(vpc.uptime_sec || sc.uptime_seconds)} • Trống ${vpc.disk_free_gb ?? "--"}GB`;
 
       const syncEl = document.getElementById("last-sync-time");
       if (syncEl) syncEl.textContent = `LIVE SYNC: ${d.timestamp || "24/7"} • ${subs.filter(x => x.online).length}/${subs.length} Subsystems Online`;
