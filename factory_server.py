@@ -88,6 +88,10 @@ SAM_MIX_STATE_JSON = os.path.join(HERMES_DIR, "sam_mix_watch_state.json")
 ALLOWED_CORS_ORIGINS = {
     "https://123okmen.github.io",
     "https://vnpunchflix.pages.dev",
+    "https://vnpunchflix-cinema.pages.dev",
+    "https://vnpunchflix-sports.pages.dev",
+    "https://vnpunchflix-gym.pages.dev",
+    "https://vnpunch-ops-vault.pages.dev",
     "https://live.vnpunchflix.workers.dev",
     "http://localhost:8099",
     "http://127.0.0.1:8099",
@@ -1112,11 +1116,11 @@ def execute_factory_action(action: str, payload: dict, client_ip: str) -> dict:
 
     elif action == "probe_all_webs":
         targets = [
-            ("VNPunchFlix (Cloudflare)", "https://vnpunchflix.pages.dev/"),
-            ("VNPunchFlix Admin D1", "https://vnpunchflix.pages.dev/admin"),
-            ("Sport AI Live (CF)", "https://vnpunchflix.pages.dev/sports/"),
-            ("Quyền PV Gym (CF)", "https://vnpunchflix.pages.dev/gym/"),
-            ("Master Hub (Origin)", "https://136.85.54.204.sslip.io/"),
+            ("Trang Tổng Portal", "https://vnpunchflix.pages.dev/"),
+            ("Web Xem Phim (Cinema)", "https://vnpunchflix-cinema.pages.dev/"),
+            ("Web Bóng Đá AI (Sports)", "https://vnpunchflix-sports.pages.dev/"),
+            ("Web Quyền PV Gym", "https://vnpunchflix-gym.pages.dev/"),
+            ("AI Factory 3D (Origin)", "https://136.85.54.204.sslip.io/"),
         ]
         results = []
         for name, u in targets:
@@ -1138,11 +1142,11 @@ def execute_factory_action(action: str, payload: dict, client_ip: str) -> dict:
     elif action == "probe_ai_models":
         or_key = _load_local_hermes_env_key("OPENROUTER_API_KEY")
         models = [
-            ("openrouter", "google/gemini-2.5-flash", "Chính (Nhanh + Tiếng Việt xuất sắc)"),
-            ("openrouter", "openai/gpt-4o-mini", "Dự phòng #1 (Siêu tốc <700ms)"),
-            ("openrouter", "meta-llama/llama-3.3-70b-instruct", "Dự phòng #2 (Meta 70B ổn định)"),
-            ("openrouter", "deepseek/deepseek-chat-v3-0324", "Dự phòng #3 (Phân tích & Code mạnh)"),
-            ("openrouter", "google/gemini-2.5-pro", "Suy luận sâu (Deep Reasoning)"),
+            ("openrouter", "baidu/ernie-5.5-flash-preview:free", "Free 0đ · Tiếng Việt rất mượt (~2s)"),
+            ("openrouter", "openrouter/free", "Free 0đ · Tự định tuyến model Free mạnh nhất"),
+            ("openrouter", "google/gemma-4-31b-it:free", "Free 0đ · Google Gemma 4 31B"),
+            ("openrouter", "google/gemini-2.5-flash", "Paid · Siêu nhanh khi có credit"),
+            ("openrouter", "openai/gpt-4o-mini", "Paid · Dự phòng <700ms khi có credit"),
         ]
         out = []
         for prov, mid, note in models:
@@ -1168,6 +1172,9 @@ def execute_factory_action(action: str, payload: dict, client_ip: str) -> dict:
         allowed_models = {
             "google/gemini-2.5-flash",
             "openai/gpt-4o-mini",
+            "openrouter/free",
+            "google/gemma-4-31b-it:free",
+            "baidu/ernie-5.5-flash-preview:free",
             "meta-llama/llama-3.3-70b-instruct",
             "deepseek/deepseek-chat-v3-0324",
             "google/gemini-2.5-pro",
