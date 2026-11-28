@@ -345,6 +345,40 @@ def redact_secrets(text: str) -> str:
     return text
 
 
+SMART_ROUTER_STATE_JSON = "/opt/ai-factory/data/smart_router_state.json" if os.name != "nt" else os.path.join(BASE_DIR, "smart_router_state.json")
+SMART_ROUTER_CACHE = {"ts": 0.0, "data": {}}
+
+
+def get_smart_router_telemetry() -> dict:
+    now = time.time()
+    if now - SMART_ROUTER_CACHE["ts"] < 4.0 and SMART_ROUTER_CACHE["data"]:
+        return SMART_ROUTER_CACHE["data"]
+    data = {}
+    try:
+        req = urllib.request.Request("http://127.0.0.1:20135/status", headers={"User-Agent": "FactoryTelemetry/1.0"})
+        with urllib.request.urlopen(req, timeout=1.5) as r:
+            data = json.loads(r.read().decode("utf-8", errors="ignore"))
+            data["online"] = True
+    except Exception:
+        data = safe_read_json(SMART_ROUTER_STATE_JSON, {})
+        data["online"] = is_systemd_active("alice-smart-router") if os.name != "nt" else False
+    if not data:
+        data = {
+            "online": False,
+            "port": 20135,
+            "healthy_slots": 0,
+            "total_slots": 0,
+            "total_requests": 0,
+            "total_failovers": 0,
+            "active_cooldowns": [],
+            "last_route": {},
+            "pool": [],
+            "recent_events": [],
+        }
+    SMART_ROUTER_CACHE.update({"ts": now, "data": data})
+    return data
+
+
 def get_hermes_telemetry() -> dict:
     gw = safe_read_json(HERMES_STATE_JSON, {})
     cron_data = safe_read_json(HERMES_CRON_JSON, {"jobs": []})
@@ -432,6 +466,14 @@ def get_hermes_telemetry() -> dict:
         except Exception:
             pass
 
+    sr = get_smart_router_telemetry()
+    sr_last = sr.get("last_route") or {}
+    sr_active_str = (
+        f"{active_hermes_model} → {sr_last.get('model')} ({sr.get('healthy_slots', 0)}/{sr.get('total_slots', 0)} slots)"
+        if sr.get("online") and sr_last.get("model")
+        else (f"{active_hermes_model} (Smart Router {sr.get('healthy_slots', 0)}/{sr.get('total_slots', 0)} slots)" if sr.get("online") else f"openrouter / {active_hermes_model} (Live 24/7)")
+    )
+
     return {
         "online": is_running,
         "pid": live_pid,
@@ -454,14 +496,16 @@ def get_hermes_telemetry() -> dict:
             "bridge_port": 3000
         },
         "models": {
-            "primary": f"openrouter / {active_hermes_model} (Live 24/7)",
-            "cowork_delegate": "openrouter / baidu/ernie-5.5-flash-preview:free (~2s)",
+            "primary": sr_active_str,
+            "cowork_delegate": "alice/pro (Vertex AI Gemini 3.1 Pro + Auto-Failover)",
+            "smart_router_online": bool(sr.get("online")),
+            "healthy_slots": sr.get("healthy_slots", 0),
+            "total_slots": sr.get("total_slots", 0),
+            "total_failovers": sr.get("total_failovers", 0),
             "fallback_chain": [
-                f"1. openrouter / {active_hermes_model} (Primary Live)",
-                "2. openrouter / google/gemma-4-31b-it:free (Free Tier Backup)",
-                "3. openrouter / baidu/ernie-5.5-flash-preview:free (VN Fast Backup)",
-                "4. openrouter / google/gemini-2.5-flash (Paid Tier Flash)",
-                "5. openrouter / openai/gpt-4o-mini (Paid Tier Mini)"
+                "1. Tier 1 • Google Cloud Vertex AI Paid (gemini-3.8-flash → gemini-3.1-pro-preview → gemini-3.7-flash)",
+                "2. Tier 2 • 3x GCP Projects Free Pool Round-Robin (gemini-3.6-flash → gemini-3.5-flash → gemini-3.1-flash-lite)",
+                "3. Tier 3 • OpenRouter Free Safety Net (ernie-5.5-flash:free → openrouter/free → gemma-4-31b:free)"
             ]
         },
         "stats": {
@@ -726,26 +770,31 @@ def get_routers_and_cloud_telemetry() -> dict:
     nine_alive = is_port_open(20128)
     blender_mcp_alive = is_port_open(9876)
     or_counts = get_live_openrouter_catalog_counts()
-    cfg_model = get_unified_web_config().get("default_ai_model", "openrouter/free")
+    cfg_model = get_unified_web_config().get("default_ai_model", "alice/auto")
+    sr = get_smart_router_telemetry()
 
     return {
+        "smart_router": sr,
         "omniroute": {
-            "online": omni_alive,
-            "port": 20129,
-            "version": "v3.8.54",
-            "url": "http://127.0.0.1:20129/v1",
+            "online": bool(sr.get("online")) or omni_alive,
+            "port": 20135 if sr.get("online") else 20129,
+            "version": "Alice Smart Router v1.0 + OmniRoute v3.8.54",
+            "url": "http://127.0.0.1:20135/v1",
             "mcp_stream": "http://127.0.0.1:20129/api/mcp/stream",
             "total_models": or_counts["total"],
             "free_models": or_counts["free"],
+            "smart_slots_healthy": sr.get("healthy_slots", 0),
+            "smart_slots_total": sr.get("total_slots", 0),
+            "smart_failovers": sr.get("total_failovers", 0),
             "active_model": cfg_model,
             "auto_combos": 48,
-            "production_combos": ["trade-council", "fnb-ops", "dev-coding"],
-            "token_compression": "RTK + Caveman (12-Stage Pipeline • Tiết kiệm 60-85% token)",
+            "production_combos": ["alice/auto", "alice/pro", "alice/fast", "alice/free"],
+            "token_compression": "Auto-Failover Multi-Tier GCP Vertex + 3x GCP Free Pool + OpenRouter",
             "active_providers": [
-                f"OpenRouter Live Catalog ({or_counts['total']} Models • {or_counts['free']} Free 0đ)",
-                "OpenRouter Auto-Failover (ernie-5.5-flash:free -> openrouter/free -> gemma-4:free)",
-                "OmniRoute Local Loopback (:20129 • 127.0.0.1 Protected)",
-                "Cloudflare Edge Workers + D1 SQLite (5 Separated Sites)"
+                f"Alice Smart Router (:20135 • {sr.get('healthy_slots', 0)}/{sr.get('total_slots', 0)} Live Slots • {sr.get('total_failovers', 0)} Auto-Switches)",
+                "Google Cloud Vertex AI Global (gemini-3.8-flash + gemini-3.1-pro-preview via Metadata OAuth2)",
+                "3x Independent GCP Projects Gemini API Pool (gemini-3.6-flash / 3.5-flash / 3.1-flash-lite 0đ)",
+                f"OpenRouter Free Safety Net ({or_counts['total']} Models • {or_counts['free']} Free 0đ)"
             ]
         },
         "nine_router": {
@@ -892,10 +941,11 @@ def get_security_telemetry() -> dict:
 
 
 VPS_WHITELIST_SERVICES = [
+    ("alice-smart-router", "Alice Smart AI Router", "Auto-Model-Switch GCP Vertex + 3x Free (:20135)"),
     ("hermes-gateway", "Hermes Gateway (@alicewordbot)", "Telegram Bot & Cronjobs 24/7"),
     ("hermes-web", "Hermes Web Dashboard", "Giao diện quản trị nội bộ (:9119)"),
     ("omniroute", "OmniRoute AI Gateway", "Loopback Secured AI Router (:20129)"),
-    ("rexapf-trade", "RexAPF Trade Bot v13.0", "Crypto Futures + OpenRouter AI (:49199)"),
+    ("rexapf-trade", "RexAPF Trade Bot v13.0", "Crypto Futures + Smart AI Router (:49199)"),
     ("puchflix-party", "Watch Party WebRTC Signaling", "Xem Chung Face-to-Face (:9999)"),
     ("coturn", "Singapore TURN/STUN Relay", "Xuyên NAT 4G/WiFi WebRTC (:3478)"),
     ("ai-factory-healer", "24/7 Self-Healing Sentinel", "Tự phát hiện & sửa lỗi mỗi 30s"),
@@ -1097,12 +1147,13 @@ def build_full_factory_telemetry() -> dict:
         else {"id": "caddy_tls", "name": "Caddy HTTPS TLS", "detail": "Singapore SSL • :443", "online": True}
     )
 
-    raw_pm = hermes.get("models", {}).get("primary") or "openrouter/free"
+    raw_pm = hermes.get("models", {}).get("primary") or "alice/auto"
     primary_m = raw_pm.split(" / ", 1)[1].split(" ", 1)[0] if " / " in raw_pm else raw_pm.split(" ", 1)[0]
+    sr = routers.get("smart_router") or {}
     live_subsystems = [
         {"id": "hermes_gw", "name": "Hermes Gateway", "detail": f"@alicewordbot • {primary_m}", "online": bool(hermes.get("online"))},
+        {"id": "smart_router", "name": "Alice Smart Router", "detail": f"{sr.get('healthy_slots', 0)}/{sr.get('total_slots', 0)} GCP+OR Slots • :20135", "online": bool(sr.get("online"))},
         {"id": "hermes_web", "name": "Hermes Web UI", "detail": "Dashboard :9119 (Loopback)", "online": bool(hermes.get("web_dashboard", {}).get("online"))},
-        {"id": "omniroute", "name": "OmniRoute v3.8", "detail": "595 Models • :20129", "online": bool(routers.get("omniroute", {}).get("online"))},
         fourth_node,
         {"id": "trade_bot", "name": "RexAPF Trade v13", "detail": f"10s Loop • Mở: {trade.get('open_positions_count', 0)}", "online": bool(trade.get("online"))},
         {"id": "healer_247", "name": "Self-Healer 24/7", "detail": "Auto-Recover VPS Services", "online": is_systemd_active("ai-factory-healer") if os.name != "nt" else True},
@@ -1155,6 +1206,7 @@ def execute_factory_action(action: str, payload: dict, client_ip: str) -> dict:
         healed = []
         if os.name != "nt":
             for svc, label in [
+                ("alice-smart-router", "Alice Smart AI Router (:20135)"),
                 ("omniroute", "OmniRoute (:20129)"),
                 ("hermes-gateway", "Hermes Gateway (@alicewordbot)"),
                 ("hermes-web", "Hermes Web UI (:9119)"),
@@ -1327,36 +1379,71 @@ def execute_factory_action(action: str, payload: dict, client_ip: str) -> dict:
         return {"ok": True, "webs": results, "message": f"Quét xong {ok_cnt}/{len(results)} website đang LIVE 200 OK!"}
 
     elif action == "probe_ai_models":
+        sr_key = _load_local_hermes_env_key("ALICE_ROUTER_TOKEN")
         or_key = _load_local_hermes_env_key("OPENROUTER_API_KEY")
         models = [
-            ("openrouter", "baidu/ernie-5.5-flash-preview:free", "Free 0đ · Tiếng Việt rất mượt (~2s)"),
-            ("openrouter", "openrouter/free", "Free 0đ · Tự định tuyến model Free mạnh nhất"),
-            ("openrouter", "google/gemma-4-31b-it:free", "Free 0đ · Google Gemma 4 31B"),
-            ("openrouter", "google/gemini-2.5-flash", "Paid · Siêu nhanh khi có credit"),
-            ("openrouter", "openai/gpt-4o-mini", "Paid · Dự phòng <700ms khi có credit"),
+            ("alice-smart-router", "alice/auto", "Google Cloud Vertex Gemini 3.8 Flash + Auto-Failover"),
+            ("alice-smart-router", "alice/pro", "Google Cloud Vertex Gemini 3.1 Pro + Auto-Failover"),
+            ("alice-smart-router", "alice/fast", "3x GCP Projects Gemini 3.6/3.5 Flash Pool (0đ)"),
+            ("alice-smart-router", "alice/free", "0đ Strict Free Pool (3x GCP + OpenRouter)"),
+            ("openrouter", "openrouter/free", "OpenRouter Free Safety Net"),
         ]
         out = []
         for prov, mid, note in models:
-            if not or_key:
+            url = "http://127.0.0.1:20135/v1/chat/completions" if prov == "alice-smart-router" else "https://openrouter.ai/api/v1/chat/completions"
+            tok = sr_key if prov == "alice-smart-router" else or_key
+            if not tok:
                 out.append({"provider": prov, "model": mid, "note": note, "ok": False, "ms": 0, "error": "Missing key"})
                 continue
             t0 = time.time()
             try:
                 req = urllib.request.Request(
-                    "https://openrouter.ai/api/v1/chat/completions",
-                    data=json.dumps({"model": mid, "messages": [{"role": "user", "content": "OK"}], "max_tokens": 4}).encode(),
-                    headers={"Authorization": f"Bearer {or_key}", "Content-Type": "application/json"},
+                    url,
+                    data=json.dumps({"model": mid, "messages": [{"role": "user", "content": "OK"}], "max_tokens": 256}).encode(),
+                    headers={"Authorization": f"Bearer {tok}", "Content-Type": "application/json"},
                     method="POST"
                 )
-                with urllib.request.urlopen(req, timeout=12) as r:
-                    out.append({"provider": prov, "model": mid, "note": note, "ok": r.status == 200, "ms": int((time.time() - t0) * 1000)})
+                with urllib.request.urlopen(req, timeout=18) as r:
+                    d = json.loads(r.read().decode("utf-8", errors="ignore"))
+                    xr = d.get("x_alice_router") or {}
+                    routed = f" → {xr.get('actual_model')}" if xr.get("actual_model") else ""
+                    out.append({"provider": prov, "model": mid + routed, "note": note, "ok": r.status == 200, "ms": int((time.time() - t0) * 1000)})
             except Exception as e:
                 out.append({"provider": prov, "model": mid, "note": note, "ok": False, "ms": int((time.time() - t0) * 1000), "error": str(e)[:70]})
         ok_cnt = sum(1 for x in out if x["ok"])
-        return {"ok": True, "models": out, "message": f"Kiểm tra hệ Model AI: {ok_cnt}/{len(out)} model phản hồi mượt mà!"}
+        return {"ok": True, "models": out, "message": f"Kiểm tra hệ Model AI (GCP Vertex + 3x Free Pool): {ok_cnt}/{len(out)} tuyến phản hồi mượt mà!"}
+
+    elif action == "test_smart_failover":
+        sr_key = _load_local_hermes_env_key("ALICE_ROUTER_TOKEN")
+        if not sr_key:
+            return {"ok": False, "message": "Chưa cấu hình ALICE_ROUTER_TOKEN."}
+        try:
+            req = urllib.request.Request(
+                "http://127.0.0.1:20135/admin/test-failover",
+                data=json.dumps({"model": str(payload.get("model") or "alice/auto")}).encode(),
+                headers={"Authorization": f"Bearer {sr_key}", "Content-Type": "application/json"},
+                method="POST",
+            )
+            with urllib.request.urlopen(req, timeout=30) as r:
+                dr = json.loads(r.read().decode("utf-8", errors="ignore"))
+            sw = dr.get("switched_to") or {}
+            return {
+                "ok": bool(dr.get("ok")),
+                "drill": dr,
+                "message": f"⚡ Auto-Failover PASS: Giả lập lỗi 429 trên {dr.get('simulated_failed_primary')} → tự chuyển sang {sw.get('provider_id')}/{sw.get('model')} trong {dr.get('elapsed_ms')}ms!"
+            }
+        except Exception as e:
+            return {"ok": False, "message": f"Lỗi test failover: {e}"}
 
     elif action == "switch_ai_model":
         allowed_models = {
+            "alice/auto",
+            "alice/pro",
+            "alice/fast",
+            "alice/free",
+            "gemini-3.8-flash",
+            "gemini-3.1-pro-preview",
+            "gemini-3.6-flash",
             "google/gemini-2.5-flash",
             "openai/gpt-4o-mini",
             "openrouter/free",
@@ -1588,16 +1675,17 @@ def generate_ai_commentary(body: dict, ip: str) -> dict:
         f"Hãy viết 1 đoạn tường thuật bình luận trực tiếp ngắn gọn (2 đến 4 câu, thuần Việt, tự nhiên, không dùng markdown đậm/tiêu đề) để đọc trực tiếp cho khán giả nghe!"
     )
 
+    sr_key = _load_local_hermes_env_key("ALICE_ROUTER_TOKEN")
     openrouter_key = _load_local_hermes_env_key("OPENROUTER_API_KEY")
-    pref_model = get_unified_web_config().get("default_ai_model", "google/gemini-2.5-flash")
+    pref_model = get_unified_web_config().get("default_ai_model", "alice/auto")
 
     providers = []
+    # Tier 0: Alice Smart AI Router (:20135 -> 3x GCP Free Gemini 3.6/3.5 Flash -> Vertex AI -> OpenRouter!)
+    if sr_key:
+        providers.append(("alice-smart-router", "http://127.0.0.1:20135/v1/chat/completions", sr_key, "alice/fast"))
     if openrouter_key:
         # Tier 1: Paid fast models (skipped for 10m if 402 cached) -> Tier 2: Fastest verified 0-cost OpenRouter Free first!
         ordered = [
-            pref_model,
-            "google/gemini-2.5-flash",
-            "openai/gpt-4o-mini",
             "baidu/ernie-5.5-flash-preview:free",
             "openrouter/free",
             "google/gemma-4-26b-a4b-it:free"
@@ -1610,14 +1698,14 @@ def generate_ai_commentary(body: dict, ip: str) -> dict:
 
     skip_paid_402 = time.time() < SPORTS_AI_LIMIT.get("__paid_402_until__", 0)
     for ptype, url, key, model_id in providers:
-        is_free_model = model_id == "openrouter/free" or model_id.endswith(":free")
+        is_free_model = (ptype == "alice-smart-router") or model_id == "openrouter/free" or model_id.endswith(":free")
         if skip_paid_402 and not is_free_model:
             continue
         try:
             payload = json.dumps({
                 "model": model_id,
                 "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 280,
+                "max_tokens": 512,
                 "temperature": 0.85
             }).encode("utf-8")
             headers = {
@@ -1626,16 +1714,17 @@ def generate_ai_commentary(body: dict, ip: str) -> dict:
                 "User-Agent": "Mozilla/5.0 SportsCenter-AI/2.0"
             }
             req = urllib.request.Request(url, data=payload, headers=headers, method="POST")
-            with urllib.request.urlopen(req, timeout=7) as r:
+            with urllib.request.urlopen(req, timeout=14 if ptype == "alice-smart-router" else 7) as r:
                 res = json.loads(r.read().decode("utf-8", errors="ignore"))
 
             text = (res.get("choices", [{}])[0].get("message", {}).get("content") or "").strip()
-            routed_model = res.get("model") or model_id
+            xr = res.get("x_alice_router") or {}
+            routed_model = xr.get("actual_model") or res.get("model") or model_id
             if text:
                 return {
                     "ok": True,
                     "commentary": text,
-                    "model": f"{ptype}/{routed_model}",
+                    "model": f"{xr.get('provider_id') or ptype}/{routed_model}",
                     "timestamp": datetime.now().strftime("%H:%M:%S")
                 }
         except urllib.error.HTTPError as he:

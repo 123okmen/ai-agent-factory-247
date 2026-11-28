@@ -2946,21 +2946,30 @@
       document.getElementById("kpi-trade-sub").textContent =
         `${btcBit}Mở: ${tr.open_positions_count || 0}${openSymBit} • ${tr.total_daily_entries || 0} lệnh • F&G: ${tr.fear_and_greed?.value ?? "--"} (${tr.fear_and_greed?.label || "Live"})${sentInfo} • ${tr.last_scan_time || ""}`;
 
+      const sr = pp.smart_router || {};
+      const srOk = sr.online !== false && (sr.total_slots || 0) > 0;
       const omniOk = pp.omniroute?.online;
       const nineOk = pp.nine_router?.online;
       const isCloudVps = (d.virtual_pc && d.virtual_pc.mode === "GCP_SINGAPORE_247");
       const rtBadge = document.getElementById("kpi-router-badge");
       if (isCloudVps) {
-        rtBadge.textContent = omniOk ? "CLOUD LIVE" : "CHECK";
-        rtBadge.className = "status-pill " + (omniOk ? "ok" : "err");
+        rtBadge.textContent = srOk ? "AUTO-SWITCH" : (omniOk ? "CLOUD LIVE" : "CHECK");
+        rtBadge.className = "status-pill " + ((srOk || omniOk) ? "ok" : "err");
       } else {
         rtBadge.textContent = (omniOk && nineOk) ? "DUAL ACTIVE" : (omniOk ? "OMNI ONLY" : "CHECK");
         rtBadge.className = "status-pill " + ((omniOk && nineOk) ? "ok" : "warn");
       }
       const rtVal = document.getElementById("kpi-router-val");
-      if (rtVal) rtVal.textContent = `${pp.omniroute?.total_models || 340} Models • ${pp.omniroute?.free_models || 13} Free`;
+      if (rtVal) rtVal.textContent = srOk
+        ? `${sr.healthy_slots ?? 0}/${sr.total_slots ?? 0} GCP Slots • ${sr.total_failovers ?? 0} Failovers`
+        : `${pp.omniroute?.total_models || 340} Models • ${pp.omniroute?.free_models || 13} Free`;
       const rtSub = document.getElementById("kpi-router-sub");
-      if (rtSub) rtSub.textContent = `OmniRoute :20129 (${omniOk ? "LIVE" : "OFF"}) • Model: ${d.unified_config?.default_ai_model || pp.omniroute?.active_model || "openrouter/free"}`;
+      if (rtSub) {
+        const lastM = sr.last_route?.model ? `Last: ${sr.last_route.model} (${sr.last_route.latency_ms}ms)` : `Vertex + 3x GCP Free + OR`;
+        rtSub.textContent = srOk
+          ? `Smart Router :20135 • ${lastM}`
+          : `OmniRoute :20129 (${omniOk ? "LIVE" : "OFF"}) • Model: ${d.unified_config?.default_ai_model || pp.omniroute?.active_model || "alice/auto"}`;
+      }
 
       const healerWebs = (d.healer && Array.isArray(d.healer.webs)) ? d.healer.webs : [];
       const webOkCnt = healerWebs.filter(w => w.ok).length;
