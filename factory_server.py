@@ -1050,7 +1050,8 @@ def build_full_factory_telemetry() -> dict:
         else {"id": "caddy_tls", "name": "Caddy HTTPS TLS", "detail": "Singapore SSL • :443", "online": True}
     )
 
-    primary_m = (hermes.get("models", {}).get("primary") or "openrouter/free").split(" ")[-2] if " / " in (hermes.get("models", {}).get("primary") or "") else "openrouter/free"
+    raw_pm = hermes.get("models", {}).get("primary") or "openrouter/free"
+    primary_m = raw_pm.split(" / ", 1)[1].split(" ", 1)[0] if " / " in raw_pm else raw_pm.split(" ", 1)[0]
     live_subsystems = [
         {"id": "hermes_gw", "name": "Hermes Gateway", "detail": f"@alicewordbot • {primary_m}", "online": bool(hermes.get("online"))},
         {"id": "hermes_web", "name": "Hermes Web UI", "detail": "Dashboard :9119 (Loopback)", "online": bool(hermes.get("web_dashboard", {}).get("online"))},
